@@ -9,7 +9,7 @@
     tools:context=".RegionActivity">
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar3"
+        android:id="@+id/toolbar5"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/border"
@@ -23,7 +23,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="지역 선택"
+            android:text="직종 선택"
             android:textColor="@color/black"
             android:textSize="20dp"
             android:textStyle="bold"
@@ -32,7 +32,7 @@
     </androidx.appcompat.widget.Toolbar>
 
     <Button
-        android:id="@+id/regionSearchButton"
+        android:id="@+id/jobSearchButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="25dp"
@@ -40,12 +40,12 @@
         android:background="@drawable/border"
         android:drawableRight="@drawable/search"
         android:stateListAnimator="@null"
-        android:text="지역을 검색하세요"
+        android:text="직종을 검색하세요"
         android:textAlignment="textStart"
         android:textSize="15dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar3"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar5"
         app:backgroundTint="@null" />
 
     <LinearLayout
@@ -56,7 +56,7 @@
         android:layout_marginTop="15dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/regionSearchButton">
+        app:layout_constraintTop_toBottomOf="@+id/jobSearchButton">
 
         <TextView
             android:layout_width="0dp"
@@ -64,7 +64,7 @@
             android:layout_weight="1"
             android:padding="10dp"
             android:background="#80cbc4"
-            android:text="시/도"
+            android:text="1차 직종"
             android:textColor="@color/black"
             android:textSize="15dp"
             android:textAlignment="center"/>
@@ -75,21 +75,11 @@
             android:layout_weight="1"
             android:padding="10dp"
             android:background="#80cbc4"
-            android:text="구/군/시"
+            android:text="2차 직종"
             android:textColor="@color/black"
             android:textSize="15dp"
             android:textAlignment="center" />
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:padding="10dp"
-            android:background="#80cbc4"
-            android:text="동/읍/면"
-            android:textColor="@color/black"
-            android:textSize="15dp"
-            android:textAlignment="center" />
     </LinearLayout>
 
     <LinearLayout
@@ -102,19 +92,13 @@
         app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/regionView1"
+            android:id="@+id/jobView1"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1" />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/regionView2"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/regionView3"
+            android:id="@+id/jobView2"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1" />
@@ -133,7 +117,7 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <com.google.android.material.chip.ChipGroup
-            android:id="@+id/regionChipGroup"
+            android:id="@+id/jobChipGroup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" >
 

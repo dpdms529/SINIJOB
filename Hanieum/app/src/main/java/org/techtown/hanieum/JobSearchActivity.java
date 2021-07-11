@@ -1,11 +1,5 @@
 package org.techtown.hanieum;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
-import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
@@ -15,11 +9,17 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.android.material.chip.ChipGroup;
 
 import java.util.ArrayList;
 
-public class RegionSearchActivity extends AppCompatActivity {
+public class JobSearchActivity extends AppCompatActivity {
     Toolbar toolbar;
     RecyclerView recyclerView; // 검색 항목 리사이클러뷰
     SearchAdapter adapter; // 검색 항목 어댑터
@@ -67,7 +67,7 @@ public class RegionSearchActivity extends AppCompatActivity {
         View v = searchView.findViewById(androidx.appcompat.R.id.search_plate);
 
         searchView.setMaxWidth(Integer.MAX_VALUE); // 최대 넓이
-        searchView.setQueryHint("지역을 검색하세요"); // 검색 힌트
+        searchView.setQueryHint("직종을 검색하세요"); // 검색 힌트
         searchView.setIconifiedByDefault(false); // 펼쳐서 보이기
 
         v.setBackgroundColor(Color.TRANSPARENT); // 밑줄 제거
@@ -83,14 +83,10 @@ public class RegionSearchActivity extends AppCompatActivity {
     private void loadListData() { // 항목을 로드하는 함수
         ArrayList<Search> items = new ArrayList<>();
 
-        items.add(new Search("경기 오산시 금암동", false, Code.ViewType.REGION_SEARCH));
-        items.add(new Search("충남 계룡시 금암동", false, Code.ViewType.REGION_SEARCH));
-        items.add(new Search("전북 군산시 금암동", false, Code.ViewType.REGION_SEARCH));
-        items.add(new Search("전북 전주시 덕진구 금암동", false, Code.ViewType.REGION_SEARCH));
-        items.add(new Search("전북 전주시 덕진구 금암1동", false, Code.ViewType.REGION_SEARCH));
-        items.add(new Search("전북 전주시 덕진구 금암2동", false, Code.ViewType.REGION_SEARCH));
+        items.add(new Search("운전/배달 전체", false, Code.ViewType.JOB_SEARCH));
+        items.add(new Search("대리운전/일반운전", false, Code.ViewType.JOB_SEARCH));
+        items.add(new Search("택시/버스운전", false, Code.ViewType.JOB_SEARCH));
 
         adapter.setItems(items);
     }
-
 }

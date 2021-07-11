@@ -1,9 +1,9 @@
 package org.techtown.hanieum;
 
 public class Priority {
-    int num; // 우선 순위 숫자
-    String contents; // 우선 순위 내용
-    int viewType; // 숫자인지 내용인지 구분하기 위한 viewType
+    private int num; // 우선 순위 숫자
+    private String contents; // 우선 순위 내용
+    private int viewType; // 숫자인지 내용인지 구분하기 위한 viewType
 
     public Priority(int num, String contents, int viewType) {
         this.num = num;

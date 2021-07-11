@@ -21,7 +21,7 @@
     </androidx.appcompat.widget.Toolbar>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/regionSearchView"
+        android:id="@+id/searchView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/horizontalScrollView2"
@@ -39,6 +39,7 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <com.google.android.material.chip.ChipGroup
+            android:id="@+id/searchChipGroup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 

@@ -9,7 +9,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Hanieum">
-        <activity android:name=".RegionSearchActivity"></activity>
+        <activity android:name=".JobActivity"></activity>
+        <activity android:name=".RegionSearchActivity" />
+        <activity android:name=".JobSearchActivity" />
         <activity android:name=".RegionActivity" />
         <activity android:name=".FilteringActivity" />
         <activity android:name=".MainActivity">

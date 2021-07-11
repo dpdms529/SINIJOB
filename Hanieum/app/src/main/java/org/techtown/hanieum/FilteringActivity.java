@@ -43,12 +43,11 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true); // 뒤로가기
 
+        // 리사이클러뷰와 어댑터 연결
         LinearLayoutManager layoutManager = new LinearLayoutManager(this,
                 LinearLayoutManager.VERTICAL, false);
         LinearLayoutManager layoutManager2 = new LinearLayoutManager(this,
                 LinearLayoutManager.VERTICAL, false);
-
-        // 리사이클러뷰와 어댑터 연결
         priorityContentsView.setLayoutManager(layoutManager);
         priorityNumView.setLayoutManager(layoutManager2);
         contentsAdapter = new PriorityAdapter();
@@ -88,28 +87,28 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
             Intent intent = new Intent(this, RegionActivity.class);
             startActivity(intent);
         } else if (v == jobButton) {
-
+            Intent intent = new Intent(this, JobActivity.class);
+            startActivity(intent);
         }
     }
 
-    public void loadListData() { // 항목을 로드하는 함수
+    private void loadListData() { // 항목을 로드하는 함수
         ArrayList<Priority> contentsItems = new ArrayList<>();
         ArrayList<Priority> numItems = new ArrayList<>();
 
-        contentsItems.add(new Priority(-1, "거리 짧은 순", 1));
-        contentsItems.add(new Priority(-1, "경력 우대 순", 1));
-        contentsItems.add(new Priority(-1, "희망 직종 순", 1));
-        contentsItems.add(new Priority(-1, "근무 형태 순", 1));
-        contentsItems.add(new Priority(-1, "요구 자격증 순", 1));
+        contentsItems.add(new Priority(-1, "거리 짧은 순", Code.ViewType.PRIORITY_CONTENTS));
+        contentsItems.add(new Priority(-1, "경력 우대 순", Code.ViewType.PRIORITY_CONTENTS));
+        contentsItems.add(new Priority(-1, "희망 직종 순", Code.ViewType.PRIORITY_CONTENTS));
+        contentsItems.add(new Priority(-1, "근무 형태 순", Code.ViewType.PRIORITY_CONTENTS));
+        contentsItems.add(new Priority(-1, "요구 자격증 순", Code.ViewType.PRIORITY_CONTENTS));
 
-        numItems.add(new Priority(1, null, 0));
-        numItems.add(new Priority(2, null, 0));
-        numItems.add(new Priority(3, null, 0));
-        numItems.add(new Priority(4, null, 0));
-        numItems.add(new Priority(5, null, 0));
+        numItems.add(new Priority(1, null, Code.ViewType.PRIORITY_NUM));
+        numItems.add(new Priority(2, null, Code.ViewType.PRIORITY_NUM));
+        numItems.add(new Priority(3, null, Code.ViewType.PRIORITY_NUM));
+        numItems.add(new Priority(4, null, Code.ViewType.PRIORITY_NUM));
+        numItems.add(new Priority(5, null, Code.ViewType.PRIORITY_NUM));
 
         contentsAdapter.setItems(contentsItems);
         numAdapter.setItems(numItems);
-
     }
 }

@@ -18,7 +18,7 @@ public class PriorityAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
 
-        if (viewType == 0) { // 숫자 아이템이면
+        if (viewType == Code.ViewType.PRIORITY_NUM) { // 숫자 아이템이면
             View view = inflater.inflate(R.layout.priority_num_item, viewGroup, false);
             return new NumViewHolder(view);
         } else { // 내용 아이템이면
@@ -29,7 +29,7 @@ public class PriorityAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
-        if (viewHolder instanceof NumViewHolder) { // 숫자 아이템의 num을 세팅
+        if (viewHolder instanceof NumViewHolder) { // 숫자 아이템의 num 세팅
             String numStr;
             numStr = String.valueOf(items.get(position).getNum());
             ((NumViewHolder) viewHolder).num.setText(numStr);
@@ -44,7 +44,7 @@ public class PriorityAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     @Override
-    public int getItemViewType(int position) { // viewType을 아이템에 정의된 viewType 사용
+    public int getItemViewType(int position) { // 아이템에 정의된 viewType 사용
         return items.get(position).getViewType();
     }
 
