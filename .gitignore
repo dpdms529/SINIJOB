@@ -1,0 +1,8 @@
+keys.py
+
+### PyCharm ###
+__pycache__/
+.idea/
+
+### macOS ###
+.DS_Store
