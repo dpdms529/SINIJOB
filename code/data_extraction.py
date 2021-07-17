@@ -2,23 +2,27 @@ import requests, bs4
 import pandas as pd
 from urllib.parse import urlencode, quote_plus, unquote
 import pymysql
+
 from keys import worknetKey
 
+# api url and key
 url = 'http://openapi.work.go.kr/opi/opi/opia/wantedApi.do'
 authKey = unquote(worknetKey)
 
-rowList = []
-wantedAuthNo = []
-rowList_detail = []
-certificateList = []
-recruit = []
 
-enterTpNm = []
-certificate = []
-empTpCd = []
-enterTpCd = []
+def db_connection():
+    db = pymysql.connect(
+        user='hanium',
+        passwd='hanium235!',
+        host='haniumdb.caka4pfurzmq.ap-northeast-2.rds.amazonaws.com',
+        port=3306,
+        db='hanium',
+        charset='utf8'
+    )
+    return db
 
-def checkTotal():
+
+def check_total():
     queryParams = '?' + urlencode(
         {
             quote_plus('authKey') : authKey,
@@ -34,7 +38,8 @@ def checkTotal():
     total = xmlobj.find('total')
     return int(total.text)
 
-def recruitList(pageNum):
+
+def recruit_list(pageNum):
     queryParams = '?' + urlencode(
         {
             quote_plus('authKey') : authKey,
@@ -43,6 +48,7 @@ def recruitList(pageNum):
             quote_plus('startPage'): str(pageNum),
             quote_plus('display'): '100',
             quote_plus('pfPreferential'): 'B'   # 시니어 공고: B
+            #, quote_plus('regDate'): 'D-0' # 첫 수집 이후 반복 시 주석 제거 후 사용(오늘 업로드 된 데이터만 가져오도록 함)
          }
     )
 
@@ -59,18 +65,50 @@ def recruitList(pageNum):
         for j in range(0, columnsLen):
             name = columns[j].name
             # 컬럼 값은 모든 행의 값을 저장
-            if name in ['wantedAuthNo', 'company', 'sal', 'holidayTpNm', 'regDt', 'closeDt', 'wantedMobileInfoUrl', 'strtnmCd', 'basicAddr', 'detailAddr', 'jobsCd']:
+            if name in [
+                'wantedAuthNo', 'company', 'sal', 'holidayTpNm', 'regDt', 'closeDt',
+                'wantedMobileInfoUrl', 'strtnmCd', 'basicAddr', 'detailAddr', 'jobsCd'
+            ]:
                 eachColumn = columns[j].text
                 columnList.append(eachColumn)
         rowList.append(columnList)
         columnList = []  # 다음 row 값을 넣기 위해 비워준다.
 
-def recruitID():
+
+def check_duplicates(flag):
+    cursor = db.cursor()
+    # DB의 데이터 중 가장 최근 날짜에 업로드 된 공고들의 id를 가져온다.
+    try:
+        sql = """select recruit_id from recruit 
+            where regDt = (select MAX(regDt) from recruit)"""
+        cursor.execute(sql)
+        result = cursor.fetchall()
+        for recent_id in result:
+            # DB의 공고 id와 api에서 새로 받아온 공고 id를 비교. 같은 id를 발견하면 이후의 데이터는 중복 데이터로 간주.
+            # 해당 id 이후의 공고 목록을 list에서 삭제하고, 목록 가져오기를 멈춘다.
+            for i in range(0, len(rowList)):
+                if recent_id[0] == rowList[i][0]:
+                    for j in range(i, len(rowList)):
+                        del rowList[j]
+                    flag[0] = True
+                    break
+            if flag[0]:
+                break
+
+    except pymysql.err.InternalError as e:
+        code, msg = e.args
+
+    finally:
+        cursor.close()
+
+
+def recruit_id():
     rowsLen = len(rowList)
     for i in range(0, rowsLen):
         wantedAuthNo.append(rowList[i][0])
 
-def recruitDetail():
+
+def recruit_detail():
     rows = []
     rowsLen = len(rowList)
     for i in range(0, rowsLen):
@@ -93,7 +131,7 @@ def recruitDetail():
 
     for i in range(0, rowsLen):
         row = rows[i]
-        if not row: # 종종 데이터를 받아오지 못하는 경우 존재함 -> 제외
+        if not row:     # 종종 데이터를 받아오지 못하는 경우 존재함 -> 제외
             delList.append(i)
             continue
         columns = row[0].find_all() + row[1].find_all()
@@ -101,7 +139,12 @@ def recruitDetail():
         for j in range(0, columnsLen):
             name = columns[j].name
             eachColumn = columns[j].text
-            if name in ['wantedTitle', 'jobCont', 'collectPsncnt', 'compAbl', 'pfCond', 'etcPfCond', 'selMthd', 'rcptMthd', 'submitDoc', 'etcHopeCont', 'workdayWorkhrCont', 'fourIns', 'retirepay', 'etcWelfare', 'disableCvntl', 'minEdubgIcd', 'salTpCd', 'contactTelno']:
+            if name in [
+                'wantedTitle', 'jobCont', 'collectPsncnt', 'compAbl', 'pfCond', 'etcPfCond',
+                'selMthd', 'rcptMthd', 'submitDoc', 'etcHopeCont', 'workdayWorkhrCont',
+                'fourIns', 'retirepay', 'etcWelfare', 'disableCvntl', 'minEdubgIcd',
+                'salTpCd', 'contactTelno'
+            ]:
                 columnList.append(eachColumn)
             elif name == 'enterTpNm':
                 enterTpNm.append(eachColumn)
@@ -121,6 +164,7 @@ def recruitDetail():
             del rowList[i-count]
             del rows[i-count]
             count += 1
+
 
 def processing():
     # 데이터 가공
@@ -165,36 +209,64 @@ def processing():
         elif empTpCd[i] == '20' or empTpCd[i] == '21':
             rowList_detail[i].append('P')
 
-def dbInsert():
-    db = pymysql.connect(
-        user='hanium',
-        passwd='hanium235!',
-        host='haniumdb.caka4pfurzmq.ap-northeast-2.rds.amazonaws.com',
-        port=3306,
-        db='hanium',
-        charset='utf8'
-    )
 
+def db_insert():
     cursor = db.cursor(pymysql.cursors.DictCursor)
 
-    # recruit INSERT
-    # sql = "INSERT INTO `recruit`(recruit_id, organization, salary, work_day, register_date, close_date, url, street_code, basic_address, detail_address, job_code, main_no, additional_no, title, content, num_of_people, computer_able, preference_cond, etc_preference_cond, screening_process, register_method, submission_doc, etc_info, work_time, four_insurence, retire_pay, etc_welfare, disable_conv, min_education_code, salary_type_code, contact, gender_limit, gender, certificate_required, career_required, career_min, enrollment_code) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"
-    # cursor.executemany(sql, recruit)
-    # db.commit()
+    try:
+        # recruit INSERT
+        sql = """INSERT INTO `recruit`(recruit_id, organization, salary, work_day, register_date, 
+                                        close_date, url, street_code, basic_address, detail_address, 
+                                        job_code, main_no, additional_no, title, content, num_of_people, 
+                                        computer_able, preference_cond, etc_preference_cond, screening_process, 
+                                        register_method, submission_doc, etc_info, work_time, four_insurence, 
+                                        retire_pay, etc_welfare, disable_conv, min_education_code, 
+                                        salary_type_code, contact, gender_limit, gender, certificate_required, 
+                                        career_required, career_min, enrollment_code) 
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 
+                        %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
+        # cursor.executemany(sql, recruit)
+        # db.commit()
 
-    # certificate INSERT
-    # sql = "INSERT INTO `certificate`(certificate_no, recruit_id, certificate_id) VALUES (%s, %s, %s);"
-    # cursor.executemany(sql, certificateList)
-    # db.commit()
+        # certificate INSERT
+        sql = """INSERT INTO `certificate`(certificate_no, recruit_id, certificate_id) 
+                VALUES (%s, %s, %s);"""
+        # cursor.executemany(sql, certificateList)
+        # db.commit()
+
+    except pymysql.err.InternalError as e:
+        code, msg = e.args
+
+    finally:
+        cursor.close()
+        db.close()
+
 
 if __name__ == '__main__':
-    for i in range(0, int(checkTotal() / 100) + 1):
-        recruitList(i+1)
-    recruitID()
-    recruitDetail()
+    # init lists
+    rowList = []
+    wantedAuthNo = []
+    rowList_detail = []
+    certificateList = []
+    recruit = []
+    enterTpNm = []
+    certificate = []
+    empTpCd = []
+    enterTpCd = []
+
+    db = db_connection()
+    flag = [False]
+    for i in range(0, int(check_total() / 100) + 1):
+        recruit_list(i+1)
+        # check_duplicates(flag) # 첫 수집 이후 반복 시 주석 제거 후 사용(새로 업데이트 된 데이터만 받아오도록 함)
+        if flag[0]:
+            break
+    recruit_id()
+    recruit_detail()
     processing()
     # 리스트 합치기
     rowsLen = len(rowList)
     for i in range(0, rowsLen):
         recruit.append(rowList[i] + rowList_detail[i])
-    dbInsert()
+    db_insert()
+
