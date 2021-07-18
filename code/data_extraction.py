@@ -1,3 +1,4 @@
+import re
 import requests, bs4
 import pandas as pd
 from urllib.parse import urlencode, quote_plus, unquote
@@ -166,42 +167,115 @@ def recruit_detail():
             count += 1
 
 
+def find_id(certificateTxt, certifiInfo): # 자격증 ID를 찾는 함수
+    for i in range(len(selectCertificate)):
+        if selectCertificate[i]['certificate_name'] == certificateTxt[-1]:
+            certifiInfo.append(selectCertificate[i]['certificate_id']) # 자격증 ID
+            return
+
+
 def processing():
     # 데이터 가공
     rowsLen = len(rowList)
     for i in range(0, rowsLen):
-        # 건물 본번, 부번 뽑아내는 함수 사용, basicAddr: rowList[i][9]
-        rowList[i].append('건물 본번 함수(rowList[i][9])')
-        rowList[i].append('건물 부번 함수(rowList[i][9])')
+        # 건물 본번, 부번
+        tmp = re.findall(r'[로길] (.+)', rowList[i][8])
+        if tmp:
+            if '-' in tmp[0]:  # '-'가 있으면
+                rowList[i].append(tmp[0].split('-')[0])
+                rowList[i].append(tmp[0].split('-')[1])
+            elif ' ' in tmp[0]:  # 가끔 '22 22', '26 26' 이런식이 있음
+                rowList[i].append(tmp[0].split(' ')[0])
+                rowList[i].append(0)  # 부번이 없으므로 0
+            else:  # '-'가 없으면
+                rowList[i].append(tmp[0])
+                rowList[i].append(0)  # 부번이 없으므로 0
+        else:  # 건물 번호가 없으면
+            rowList[i].append(0)  # 본번이 없으므로 0
+            rowList[i].append(0)  # 부번이 없으므로 0
 
         # 자격증
-        if certificate[i]:
+        certificateTxt = []  # 자격증 이름을 담아두는 임시 리스트
+        certifiInfoList = []  # 자격증 정보(하나 이상)를 저장하는 임시 리스트
+        certifiInfo = []  # 자격증 정보 하나를 저장하는 임시 리스트
+
+        if certificate[i]:  # 요구 자격증이 있으면
             rowList_detail[i].append(1)
-            # for문으로 요구 자격증 개수만큼 돌아야 함.(여러 개 존재할 수 있으므로)
-            # tempList = []
-            # tempList.append(j) # 자격증 순번
-            # tempList.append(rowList[i][0]) # 공고 ID
-            # tempList.append('자격증 id 가져오는 함수(certificate[i])') # 자격증 ID
-            # certificateList.append(tempList)
-            # 괄호(기타)가 있다면, 괄호 안 내용 기타 우대 조건에 추가
-        else:
+            if '기타' in certificate[i]:  # 기타 조건이 있으면
+                etc = re.findall(r'기타: (.+).', certificate[i])
+                if rowList_detail[i][5] == '':  # 기타 우대 조건이 비어 있으면
+                    rowList_detail[i][5] = rowList_detail[i][5] + etc[0]
+                else:  # 기타 우대 조건에 문자열이 들어 있으면
+                    rowList_detail[i][5] = rowList_detail[i][5] + '\n' + etc[0]
+
+                tmp = re.findall(r'(.+)\(기타:', certificate[i])
+                if tmp:  # 기타 앞에 정보가 있으면
+                    if ',' in tmp[0]:  # 자격증이 여러개이면
+                        tmp = tmp[0].split(',')
+                        for j in range(len(tmp)):
+                            certificateTxt.append(tmp[j])
+                            certifiInfo.append(j)  # 자격증 순번
+                            certifiInfo.append(rowList[i][0])  # 공고 ID
+                            find_id(certificateTxt, certifiInfo)  # 자격증 ID
+
+                            certifiInfoList.append(certifiInfo)
+                            certifiInfo = []
+
+                        certificateList.append(certifiInfoList)
+                    else:
+                        certificateTxt.append(tmp[0])
+                        certifiInfo.append(0)  # 자격증 순번
+                        certifiInfo.append(rowList[i][0])  # 공고 ID
+                        find_id(certificateTxt, certifiInfo)  # 자격증 ID
+
+                        certifiInfoList.append(certifiInfo)
+                        certificateList.append(certifiInfoList)
+            else:  # 기타 조건이 없으면
+                tmp = re.findall(r'(.+)', certificate[i])
+                if ',' in tmp[0]:  # 자격증이 여러개이면
+                    tmp = tmp[0].split(',')
+                    for j in range(len(tmp)):
+                        certificateTxt.append(tmp[j])
+                        certifiInfo.append(j)  # 자격증 순번
+                        certifiInfo.append(rowList[i][0])  # 공고 ID
+                        find_id(certificateTxt, certifiInfo)  # 자격증 ID
+
+                        certifiInfoList.append(certifiInfo)
+                        certifiInfo = []
+
+                    certificateList.append(certifiInfoList)
+                else:
+                    certificateTxt.append(tmp[0])
+                    certifiInfo.append(0)  # 자격증 순번
+                    certifiInfo.append(rowList[i][0])  # 공고 ID
+                    find_id(certificateTxt, certifiInfo)  # 자격증 ID
+
+                    certifiInfoList.append(certifiInfo)
+                    certificateList.append(certifiInfoList)
+        else:  # 요구 자격증이 없으면
             rowList_detail[i].append(0)
 
         # 경력
         if enterTpCd[i] == 'N' or enterTpCd[i] == 'Z':
-            rowList_detail[i].append(0)
+            rowList_detail[i].append(0)  # 신입, 관계없음
             rowList_detail[i].append('')
         elif enterTpCd[i] == 'E':
-            if '우대/필수 뽑는 함수(entertpNm[i])' == '우대':
-                rowList_detail[i].append(1)
-            #elif '우대/필수 뽑는 함수(entertpNm[i])' == '필수':
-            else:
-                rowList_detail[i].append(2)
-            if '개월/년 뽑는 함수(entertpNm[i])' == '개월':
-                rowList_detail[i].append('괄호 안 숫자 뽑는 함수(entertpNm[i])')
-            #elif '개월/년 뽑는 함수(entertpNm[i])' == '년':
-            else:
-                rowList_detail[i].append('괄호 안 숫자 뽑는 함수(entertpNm[i])* 12')
+            tmp = re.findall(r'.+(..)', enterTpNm[i])
+            if tmp[0] == '우대':
+                rowList_detail[i].append(1)  # 우대
+            elif tmp[0] == '필수':
+                rowList_detail[i].append(2)  # 필수
+
+            if '년' in enterTpNm[i]:
+                tmp = re.findall(r'([0-9]+)년', enterTpNm[i])
+                if '개월' in enterTpNm[i]:
+                    tmp2 = re.findall(r'([0-9]+)개월', enterTpNm[i])
+                    rowList_detail[i].append(int(tmp[0]) * 12 + int(tmp2[0]))  # x년y개월
+                else:
+                    rowList_detail[i].append(int(tmp[0]) * 12)  # x년
+            elif '개월' in enterTpNm[i]:
+                tmp = re.findall(r'([0-9]+)개월', enterTpNm[i])
+                rowList_detail[i].append(int(tmp[0]))  # x개월
 
         # 고용 형태
         if empTpCd[i] == '10' or empTpCd[i] == '11':
@@ -242,6 +316,18 @@ def db_insert():
         db.close()
 
 
+def db_select_certificate():
+    global selectCertificate
+    cursor = db.cursor(pymysql.cursors.DictCursor)
+
+    sql = "select * from certificate"
+    cursor.execute(sql)
+    selectCertificate = list(cursor.fetchall())
+
+    cursor.close()
+    db.commit()
+
+
 if __name__ == '__main__':
     # init lists
     rowList = []
@@ -253,6 +339,7 @@ if __name__ == '__main__':
     certificate = []
     empTpCd = []
     enterTpCd = []
+    selectCertificate = []  # db에서 읽은 자격증을 저장하는 리스트
 
     db = db_connection()
     flag = [False]
@@ -263,6 +350,7 @@ if __name__ == '__main__':
             break
     recruit_id()
     recruit_detail()
+    db_select_certificate()  # db에서 자격증 테이블 읽어오기
     processing()
     # 리스트 합치기
     rowsLen = len(rowList)
