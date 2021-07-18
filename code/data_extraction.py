@@ -22,7 +22,7 @@ def db_connection():
     return db
 
 
-def check_total():
+def check_total():  # 가져올 데이터의 개수 확인
     queryParams = '?' + urlencode(
         {
             quote_plus('authKey') : authKey,
@@ -31,7 +31,8 @@ def check_total():
             quote_plus('startPage'): '1',
             quote_plus('display'): '1',
             quote_plus('pfPreferential'): 'B'   # 시니어 공고: B
-         }
+            # , quote_plus('regDate'): 'D-0' # 첫 수집 이후 반복 시 주석 제거 후 사용(오늘 업로드 된 데이터만 가져오도록 함)
+        }
     )
     response = requests.get(url + queryParams).text.encode('utf-8')
     xmlobj = bs4.BeautifulSoup(response, 'lxml-xml')
@@ -39,7 +40,7 @@ def check_total():
     return int(total.text)
 
 
-def recruit_list(pageNum):
+def recruit_list(pageNum):  # 공고 목록 불러와 리스트에 저장
     queryParams = '?' + urlencode(
         {
             quote_plus('authKey') : authKey,
@@ -75,7 +76,7 @@ def recruit_list(pageNum):
         columnList = []  # 다음 row 값을 넣기 위해 비워준다.
 
 
-def check_duplicates(flag):
+def check_duplicates(flag):     # 중복 데이터의 유무 확인, 새로운 데이터만 가져오도록 범위 설정
     cursor = db.cursor()
     # DB의 데이터 중 가장 최근 날짜에 업로드 된 공고들의 id를 가져온다.
     try:
@@ -102,13 +103,13 @@ def check_duplicates(flag):
         cursor.close()
 
 
-def recruit_id():
+def recruit_id():   # 공고 id만 추출 -> 각 공고의 채용 상세 데이터를 불러오기 위함
     rowsLen = len(rowList)
     for i in range(0, rowsLen):
         wantedAuthNo.append(rowList[i][0])
 
 
-def recruit_detail():
+def recruit_detail():   # 채용 상세 데이터 불러와 리스트에 저장
     rows = []
     rowsLen = len(rowList)
     for i in range(0, rowsLen):
@@ -166,8 +167,7 @@ def recruit_detail():
             count += 1
 
 
-def processing():
-    # 데이터 가공
+def processing():   # 데이터 전처리
     rowsLen = len(rowList)
     for i in range(0, rowsLen):
         # 건물 본번, 부번 뽑아내는 함수 사용, basicAddr: rowList[i][9]
