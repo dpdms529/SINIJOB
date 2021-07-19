@@ -186,13 +186,13 @@ def processing():   # 데이터 전처리
                 rowList[i].append(tmp[0].split('-')[1])
             elif ' ' in tmp[0]:  # 가끔 '22 22', '26 26' 이런식이 있음
                 rowList[i].append(tmp[0].split(' ')[0])
-                rowList[i].append(0)  # 부번이 없으므로 0
+                rowList[i].append('0')  # 부번이 없으므로 0
             else:  # '-'가 없으면
                 rowList[i].append(tmp[0])
-                rowList[i].append(0)  # 부번이 없으므로 0
+                rowList[i].append('0')  # 부번이 없으므로 0
         else:  # 건물 번호가 없으면
-            rowList[i].append(0)  # 본번이 없으므로 0
-            rowList[i].append(0)  # 부번이 없으므로 0
+            rowList[i].append('0')  # 본번이 없으므로 0
+            rowList[i].append('0')  # 부번이 없으므로 0
 
         # 자격증
         certificateTxt = []  # 자격증 이름을 담아두는 임시 리스트
@@ -200,7 +200,7 @@ def processing():   # 데이터 전처리
         certifiInfo = []  # 자격증 정보 하나를 저장하는 임시 리스트
 
         if certificate[i]:  # 요구 자격증이 있으면
-            rowList_detail[i].append(1)
+            rowList_detail[i].append('1')
             if '기타' in certificate[i]:  # 기타 조건이 있으면
                 etc = re.findall(r'기타: (.+).', certificate[i])
                 if rowList_detail[i][5] == '':  # 기타 우대 조건이 비어 있으면
@@ -253,18 +253,18 @@ def processing():   # 데이터 전처리
                     certifiInfoList.append(certifiInfo)
                     certificateList.append(certifiInfoList)
         else:  # 요구 자격증이 없으면
-            rowList_detail[i].append(0)
+            rowList_detail[i].append('0')
 
         # 경력
         if enterTpCd[i] == 'N' or enterTpCd[i] == 'Z':
-            rowList_detail[i].append(0)  # 신입, 관계없음
+            rowList_detail[i].append('0')  # 신입, 관계없음
             rowList_detail[i].append('')
         elif enterTpCd[i] == 'E':
             tmp = re.findall(r'.+(..)', enterTpNm[i])
             if tmp[0] == '우대':
-                rowList_detail[i].append(1)  # 우대
+                rowList_detail[i].append('1')  # 우대
             elif tmp[0] == '필수':
-                rowList_detail[i].append(2)  # 필수
+                rowList_detail[i].append('2')  # 필수
 
             if '년' in enterTpNm[i]:
                 tmp = re.findall(r'([0-9]+)년', enterTpNm[i])
@@ -290,13 +290,13 @@ def db_insert():
     try:
         # recruit INSERT
         sql = """INSERT INTO `recruit`(recruit_id, organization, salary, work_day, register_date, 
-                                        close_date, url, street_code, basic_address, detail_address, 
-                                        job_code, main_no, additional_no, title, content, num_of_people, 
-                                        computer_able, preference_cond, etc_preference_cond, screening_process, 
-                                        register_method, submission_doc, etc_info, work_time, four_insurence, 
-                                        retire_pay, etc_welfare, disable_conv, min_education_code, 
-                                        salary_type_code, contact, gender_limit, gender, certificate_required, 
-                                        career_required, career_min, enrollment_code) 
+                                        close_date, url, street_code, basic_address, 
+                                        detail_address, job_code, main_no, additional_no, 
+                                        title, content, num_of_people, computer_able, preference_cond, 
+                                        etc_preference_cond, screening_process, register_method, submission_doc, 
+                                        etc_info, work_time, four_insurence, retire_pay, etc_welfare, 
+                                        disable_conv, min_education_code, salary_type_code, contact, 
+                                        certificate_required, career_required, career_min, enrollment_code) 
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 
                         %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
         # cursor.executemany(sql, recruit)
