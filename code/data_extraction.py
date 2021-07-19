@@ -196,8 +196,7 @@ def processing():   # 데이터 전처리
 
         # 자격증
         certificateTxt = []  # 자격증 이름을 담아두는 임시 리스트
-        certifiInfoList = []  # 자격증 정보(하나 이상)를 저장하는 임시 리스트
-        certifiInfo = []  # 자격증 정보 하나를 저장하는 임시 리스트
+        certifiInfoList = []  # 자격증 정보를 저장하는 임시 리스트
 
         if certificate[i]:  # 요구 자격증이 있으면
             rowList_detail[i].append('1')
@@ -214,21 +213,18 @@ def processing():   # 데이터 전처리
                         tmp = tmp[0].split(',')
                         for j in range(len(tmp)):
                             certificateTxt.append(tmp[j])
-                            certifiInfo.append(j)  # 자격증 순번
-                            certifiInfo.append(rowList[i][0])  # 공고 ID
-                            find_id(certificateTxt, certifiInfo)  # 자격증 ID
+                            certifiInfoList.append(j)  # 자격증 순번
+                            certifiInfoList.append(rowList[i][0])  # 공고 ID
+                            find_id(certificateTxt, certifiInfoList)  # 자격증 ID
 
-                            certifiInfoList.append(certifiInfo)
-                            certifiInfo = []
-
-                        certificateList.append(certifiInfoList)
+                            certificateList.append(certifiInfoList)
+                            certifiInfoList = []
                     else:
                         certificateTxt.append(tmp[0])
-                        certifiInfo.append(0)  # 자격증 순번
-                        certifiInfo.append(rowList[i][0])  # 공고 ID
-                        find_id(certificateTxt, certifiInfo)  # 자격증 ID
+                        certifiInfoList.append(0)  # 자격증 순번
+                        certifiInfoList.append(rowList[i][0])  # 공고 ID
+                        find_id(certificateTxt, certifiInfoList)  # 자격증 ID
 
-                        certifiInfoList.append(certifiInfo)
                         certificateList.append(certifiInfoList)
             else:  # 기타 조건이 없으면
                 tmp = re.findall(r'(.+)', certificate[i])
@@ -236,21 +232,18 @@ def processing():   # 데이터 전처리
                     tmp = tmp[0].split(',')
                     for j in range(len(tmp)):
                         certificateTxt.append(tmp[j])
-                        certifiInfo.append(j)  # 자격증 순번
-                        certifiInfo.append(rowList[i][0])  # 공고 ID
-                        find_id(certificateTxt, certifiInfo)  # 자격증 ID
+                        certifiInfoList.append(j)  # 자격증 순번
+                        certifiInfoList.append(rowList[i][0])  # 공고 ID
+                        find_id(certificateTxt, certifiInfoList)  # 자격증 ID
 
-                        certifiInfoList.append(certifiInfo)
-                        certifiInfo = []
-
-                    certificateList.append(certifiInfoList)
+                        certificateList.append(certifiInfoList)
+                        certifiInfoList = []
                 else:
                     certificateTxt.append(tmp[0])
-                    certifiInfo.append(0)  # 자격증 순번
-                    certifiInfo.append(rowList[i][0])  # 공고 ID
-                    find_id(certificateTxt, certifiInfo)  # 자격증 ID
+                    certifiInfoList.append(0)  # 자격증 순번
+                    certifiInfoList.append(rowList[i][0])  # 공고 ID
+                    find_id(certificateTxt, certifiInfoList)  # 자격증 ID
 
-                    certifiInfoList.append(certifiInfo)
                     certificateList.append(certifiInfoList)
         else:  # 요구 자격증이 없으면
             rowList_detail[i].append('0')
