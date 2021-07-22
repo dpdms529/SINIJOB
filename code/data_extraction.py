@@ -1,10 +1,12 @@
+import sys
+
 import re
 import requests, bs4
 import pandas as pd
 from urllib.parse import urlencode, quote_plus, unquote
 import pymysql
 
-from keys import worknetKey
+from keys import worknetKey, kakaoRESTAPI
 
 # api url and key
 url = 'http://openapi.work.go.kr/opi/opi/opia/wantedApi.do'
@@ -276,6 +278,53 @@ def processing():   # 데이터 전처리
         elif empTpCd[i] == '20' or empTpCd[i] == '21':
             rowList_detail[i].append('P')
 
+        # x,y 구하기
+        pk = (rowList[i][7], rowList[i][11], rowList[i][12])
+        if db_checknull(pk) == 1:   # 해당 주소의 x, y 값 존재 여부 확인 - 없으면 구해서 삽입
+            xy.append(getXY(pk[0], pk[1], pk[2], rowList[i][8]))
+
+
+def getXY(street_code, main_no, additional_no, address):
+    result = []
+
+    url = 'https://dapi.kakao.com/v2/local/search/address.json?query=' + address
+    header = {'Authorization': 'KakaoAK ' + kakaoRESTAPI}
+
+    r = requests.get(url, headers=header)
+
+    if r.status_code == 200:
+        result_address = r.json()["documents"][0]["address"]
+        result.append(result_address["x"])
+        result.append(result_address["y"])
+        result.append(street_code)
+        result.append(main_no)
+        result.append(additional_no)
+    else:
+        sys.exit("kakao API ERROR[" + str(r.status_code) + "]")
+
+    return result
+
+
+def db_checknull(pk):
+    cursor = db.cursor(pymysql.cursors.DictCursor)
+
+    try:
+        # address(x,y) SELECT
+        sql = """SELECT x, y from `address`
+                WHERE street_code = %s and main_no = %s and additional_no = %s;"""
+        cursor.execute(sql, pk)
+        results = cursor.fetchall()
+        if not results[0]['x'] or not results[0]['y']:
+            return 1
+        else:
+            return 0
+
+    except pymysql.err.InternalError as e:
+        code, msg = e.args
+
+    finally:
+        cursor.close()
+
 
 def db_insert():
     cursor = db.cursor(pymysql.cursors.DictCursor)
@@ -299,6 +348,13 @@ def db_insert():
         sql = """INSERT INTO `certificate`(certificate_no, recruit_id, certificate_id) 
                 VALUES (%s, %s, %s);"""
         # cursor.executemany(sql, certificateList)
+        # db.commit()
+
+        # address(x,y) UPDATE
+        sql = """UPDATE `address`
+                SET x = %s, y = %s
+                WHERE street_code = %s and main_no = %s and additional_no = %s;"""
+        # cursor.executemany(sql, xy)
         # db.commit()
 
     except pymysql.err.InternalError as e:
@@ -333,6 +389,7 @@ if __name__ == '__main__':
     empTpCd = []
     enterTpCd = []
     selectCertificate = []  # db에서 읽은 자격증을 저장하는 리스트
+    xy = []
 
     db = db_connection()
     flag = [False]
@@ -345,6 +402,8 @@ if __name__ == '__main__':
     recruit_detail()
     db_select_certificate()  # db에서 자격증 테이블 읽어오기
     processing()
+    for i in xy:
+        print(i)
     # 리스트 합치기
     rowsLen = len(rowList)
     for i in range(0, rowsLen):
