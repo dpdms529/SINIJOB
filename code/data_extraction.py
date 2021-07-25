@@ -127,29 +127,38 @@ def recruit_detail():   # 채용 상세 데이터 불러와 리스트에 저장
         )
         response_detail = requests.get(url + queryParams_detail).text.encode('utf-8')
         xmlobj_detail = bs4.BeautifulSoup(response_detail, 'lxml-xml')
-        rows.append(xmlobj_detail.findAll('wantedInfo') + xmlobj_detail.findAll('empchargeInfo'))
+        rows.append(xmlobj_detail.findAll('wantedInfo')
+                    + xmlobj_detail.findAll('empchargeInfo')
+                    + xmlobj_detail.findAll('corpInfo'))
 
     columnList = []
-
+    columnNames = (
+                'wantedTitle', 'jobCont', 'collectPsncnt', 'compAbl', 'pfCond', 'etcPfCond',
+                'selMthd', 'rcptMthd', 'submitDoc', 'etcHopeCont', 'workdayWorkhrCont',
+                'fourIns', 'retirepay', 'etcWelfare', 'disableCvntl', 'minEdubgIcd',
+                'salTpCd', 'contactTelno', 'reperNm', 'totPsncnt',
+                'yrSalesAmt', 'indTpCdNm', 'corpAddr'
+            )
     delList = []
 
     for i in range(0, rowsLen):
+        nameList = []
         row = rows[i]
         if not row:     # 종종 데이터를 받아오지 못하는 경우 존재함 -> 제외
             delList.append(i)
             continue
-        columns = row[0].find_all() + row[1].find_all()
+        columns = row[0].find_all() + row[1].find_all() + row[2].find_all()
         columnsLen = len(columns)
+        attachCount = 0
         for j in range(0, columnsLen):
             name = columns[j].name
             eachColumn = columns[j].text
-            if name in [
-                'wantedTitle', 'jobCont', 'collectPsncnt', 'compAbl', 'pfCond', 'etcPfCond',
-                'selMthd', 'rcptMthd', 'submitDoc', 'etcHopeCont', 'workdayWorkhrCont',
-                'fourIns', 'retirepay', 'etcWelfare', 'disableCvntl', 'minEdubgIcd',
-                'salTpCd', 'contactTelno'
-            ]:
-                columnList.append(eachColumn)
+            if name in columnNames:
+                if name in nameList:   # 중복된 태그 무시(corpInfo 태그에 empchargeInfo 데이터가 들어가 있는 경우)
+                    continue
+                else:
+                    columnList.append(eachColumn)
+                    nameList.append(name)
             elif name == 'enterTpNm':
                 enterTpNm.append(eachColumn)
             elif name == 'certificate':
@@ -158,6 +167,21 @@ def recruit_detail():   # 채용 상세 데이터 불러와 리스트에 저장
                 empTpCd.append(eachColumn)
             elif name == 'enterTpCd':
                 enterTpCd.append(eachColumn)
+            elif name == 'corpAttachList':
+                attachedFiles = columns[j].find_all()
+                attachedLen = len(attachedFiles)
+                for k in range(0, attachedLen):
+                    tempList = []
+                    eachFile = attachedFiles[k].text
+                    tempList.append(rowList[i][0])
+                    tempList.append(1 + attachCount)
+                    tempList.append(eachFile)
+                    corpAttachList.append(tempList)
+                    attachCount += 1
+        for index, name in enumerate(columnNames):  # 태그 자체가 없는 경우, 해당 자리에 ''값을 삽입한다.
+            if name not in nameList:
+                columnList.insert(index, '')
+
         rowList_detail.append(columnList)
         columnList = []  # 다음 row의 값을 넣기 위해 비워준다.
 
@@ -178,6 +202,7 @@ def find_id(certificateTxt, certifiInfo): # 자격증 ID를 찾는 함수
 
 
 def processing():   # 데이터 전처리
+    delList = []
     rowsLen = len(rowList)
     for i in range(0, rowsLen):
         # 건물 본번, 부번
@@ -189,6 +214,7 @@ def processing():   # 데이터 전처리
             elif ' ' in tmp[0]:  # 가끔 '22 22', '26 26' 이런식이 있음
                 rowList[i].append(tmp[0].split(' ')[0])
                 rowList[i].append('0')  # 부번이 없으므로 0
+                rowList[i][8] = rowList[i][8][:(len(tmp[0].split(' ')[0]) * (-1) - 1)]  # basicAddr의 값을 바꿔줌(중복 제거)
             else:  # '-'가 없으면
                 rowList[i].append(tmp[0])
                 rowList[i].append('0')  # 부번이 없으므로 0
@@ -201,7 +227,6 @@ def processing():   # 데이터 전처리
         certifiInfoList = []  # 자격증 정보를 저장하는 임시 리스트
 
         if certificate[i]:  # 요구 자격증이 있으면
-            rowList_detail[i].append('1')
             if '기타' in certificate[i]:  # 기타 조건이 있으면
                 etc = re.findall(r'기타: (.+).', certificate[i])
                 if rowList_detail[i][5] == '':  # 기타 우대 조건이 비어 있으면
@@ -211,6 +236,7 @@ def processing():   # 데이터 전처리
 
                 tmp = re.findall(r'(.+)\(기타:', certificate[i])
                 if tmp:  # 기타 앞에 정보가 있으면
+                    rowList_detail[i].append('1')
                     if ',' in tmp[0]:  # 자격증이 여러개이면
                         tmp = tmp[0].split(',')
                         for j in range(len(tmp)):
@@ -228,7 +254,10 @@ def processing():   # 데이터 전처리
                         find_id(certificateTxt, certifiInfoList)  # 자격증 ID
 
                         certificateList.append(certifiInfoList)
+                else:   # 기타 앞에 정보가 없으면
+                    rowList_detail[i].append('0')
             else:  # 기타 조건이 없으면
+                rowList_detail[i].append('1')
                 tmp = re.findall(r'(.+)', certificate[i])
                 if ',' in tmp[0]:  # 자격증이 여러개이면
                     tmp = tmp[0].split(',')
@@ -280,11 +309,29 @@ def processing():   # 데이터 전처리
 
         # x,y 구하기
         pk = (rowList[i][7], rowList[i][11], rowList[i][12])
-        if db_checknull(pk) == 1:   # 해당 주소의 x, y 값 존재 여부 확인 - 없으면 구해서 삽입
-            xy.append(getXY(pk[0], pk[1], pk[2], rowList[i][8]))
+        checked = db_checknull(pk)
+        if checked == 1:   # 해당 주소의 x, y 값 존재 여부 확인 - 없으면 구해서 삽입
+            result_xy = getXY(pk[0], pk[1], pk[2], rowList[i][8], i, delList)
+            if result_xy:   # 응답 값이 없을 경우 result_xy는 비어있음. 이 경우를 제외
+                xy.append(result_xy)
+        elif checked == 2:
+            delList.append(i)   # 종종 업데이트 되지 않은 도로명 주소 존재 -> 제외
+
+    # 무효 데이터 삭제
+    if delList:
+        count = 0
+        for i in delList:
+            certifi_count = 0
+            for j in enumerate(certificateList):
+                if rowList[i-count][0] == certificateList[j][1]:
+                    del certificateList[j - certifi_count]
+                    certifi_count += 1
+            del rowList[i - count]
+            del rowList_detail[i - count]
+            count += 1
 
 
-def getXY(street_code, main_no, additional_no, address):
+def getXY(street_code, main_no, additional_no, address, index, del_list):
     result = []
 
     url = 'https://dapi.kakao.com/v2/local/search/address.json?query=' + address
@@ -293,12 +340,17 @@ def getXY(street_code, main_no, additional_no, address):
     r = requests.get(url, headers=header)
 
     if r.status_code == 200:
-        result_address = r.json()["documents"][0]["address"]
-        result.append(result_address["x"])
-        result.append(result_address["y"])
-        result.append(street_code)
-        result.append(main_no)
-        result.append(additional_no)
+        if r.json()["documents"]:
+            result_address = r.json()["documents"][0]["address"]
+            if not result_address:
+                result_address = r.json()["documents"][0]["road_address"]
+            result.append(result_address["x"])
+            result.append(result_address["y"])
+            result.append(street_code)
+            result.append(main_no)
+            result.append(additional_no)
+        else:   # 응답은 정상적이나, 응답 값이 없는 경우 -> 제외
+            del_list.append(index)
     else:
         sys.exit("kakao API ERROR[" + str(r.status_code) + "]")
 
@@ -314,7 +366,9 @@ def db_checknull(pk):
                 WHERE street_code = %s and main_no = %s and additional_no = %s;"""
         cursor.execute(sql, pk)
         results = cursor.fetchall()
-        if not results[0]['x'] or not results[0]['y']:
+        if not results:
+            return 2
+        elif not results[0]['x'] or not results[0]['y']:
             return 1
         else:
             return 0
@@ -338,24 +392,31 @@ def db_insert():
                                         etc_preference_cond, screening_process, register_method, submission_doc, 
                                         etc_info, work_time, four_insurence, retire_pay, etc_welfare, 
                                         disable_conv, min_education_code, salary_type_code, contact, 
+                                        representative, total_worker, sales_amount, industry, corp_address,
                                         certificate_required, career_required, career_min, enrollment_code) 
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 
-                        %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
+                        %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
         # cursor.executemany(sql, recruit)
         # db.commit()
 
         # certificate INSERT
-        sql = """INSERT INTO `certificate`(certificate_no, recruit_id, certificate_id) 
+        sql = """INSERT INTO `recruit_certificate`(certificate_no, recruit_id, certificate_id) 
                 VALUES (%s, %s, %s);"""
         # cursor.executemany(sql, certificateList)
         # db.commit()
+
+        # recruit_files INSERT
+        sql = """INSERT INTO `recruit_files`(recruit_id, file_no, file_url) 
+                        VALUES (%s, %s, %s);"""
+        cursor.executemany(sql, corpAttachList)
+        db.commit()
 
         # address(x,y) UPDATE
         sql = """UPDATE `address`
                 SET x = %s, y = %s
                 WHERE street_code = %s and main_no = %s and additional_no = %s;"""
-        # cursor.executemany(sql, xy)
-        # db.commit()
+        cursor.executemany(sql, xy)
+        db.commit()
 
     except pymysql.err.InternalError as e:
         code, msg = e.args
@@ -388,6 +449,7 @@ if __name__ == '__main__':
     certificate = []
     empTpCd = []
     enterTpCd = []
+    corpAttachList = []
     selectCertificate = []  # db에서 읽은 자격증을 저장하는 리스트
     xy = []
 
@@ -402,8 +464,6 @@ if __name__ == '__main__':
     recruit_detail()
     db_select_certificate()  # db에서 자격증 테이블 읽어오기
     processing()
-    for i in xy:
-        print(i)
     # 리스트 합치기
     rowsLen = len(rowList)
     for i in range(0, rowsLen):
