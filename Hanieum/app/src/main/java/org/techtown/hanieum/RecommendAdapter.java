@@ -11,8 +11,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-public class RecommendAdapter extends RecyclerView.Adapter<RecommendAdapter.ViewHolder> {
+public class RecommendAdapter extends RecyclerView.Adapter<RecommendAdapter.ViewHolder> implements
+        OnRecoItemClickListener {
     static ArrayList<Recommendation> items = new ArrayList<Recommendation>();
+    OnRecoItemClickListener listener;
 
     @NonNull
     @Override
@@ -20,7 +22,7 @@ public class RecommendAdapter extends RecyclerView.Adapter<RecommendAdapter.View
         LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
         View view = inflater.inflate(R.layout.recommendation_item, viewGroup, false);
 
-        return new ViewHolder(view);
+        return new ViewHolder(view, this);
     }
 
     @Override
@@ -50,6 +52,17 @@ public class RecommendAdapter extends RecyclerView.Adapter<RecommendAdapter.View
         items.set(position, item);
     }
 
+    @Override
+    public void OnItemClick(ViewHolder holder, View view, int position) {
+        if (listener != null) {
+            listener.OnItemClick(holder, view, position);
+        }
+    }
+
+    public void setItemClickListener(OnRecoItemClickListener listener) {
+        this.listener = listener;
+    }
+
     static class ViewHolder extends RecyclerView.ViewHolder {
         TextView companyName;
         TextView title;
@@ -57,7 +70,7 @@ public class RecommendAdapter extends RecyclerView.Adapter<RecommendAdapter.View
         TextView timeCost;
         ImageButton bookmark;
 
-        public ViewHolder(View view) {
+        public ViewHolder(View view, OnRecoItemClickListener listener) {
             super(view);
 
             companyName = view.findViewById(R.id.companyName);
@@ -77,6 +90,16 @@ public class RecommendAdapter extends RecyclerView.Adapter<RecommendAdapter.View
                     } else {
                         item.setBookmark(true);
                         bookmark.setImageResource(R.drawable.bookmark);
+                    }
+                }
+            });
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int position = getAdapterPosition();
+                    if (listener != null) {
+                        listener.OnItemClick(ViewHolder.this, v, position);
                     }
                 }
             });
