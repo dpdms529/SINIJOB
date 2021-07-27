@@ -13,18 +13,20 @@
         android:layout_marginTop="15dp"
         android:text="무진장흑돼지푸드"
         android:textColor="@color/black"
+        android:textSize="15dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/advertisementTitle"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
+        android:layout_marginHorizontal="15dp"
         android:text="사무경리 여직원/생산직 구함"
+        android:textColor="@color/black"
         android:textSize="17dp"
         android:textStyle="bold"
-        android:textColor="@color/black"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/companyName" />
 

@@ -36,7 +36,6 @@
         android:background="#00ff0000"
         android:drawableLeft="@drawable/reset"
         android:text="초기화"
-
         android:textSize="15dp"
         app:layout_constraintBottom_toBottomOf="@+id/toolbar2"
         app:layout_constraintEnd_toEndOf="parent"
