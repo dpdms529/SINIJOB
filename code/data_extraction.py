@@ -1,5 +1,5 @@
 import sys
-
+import html
 import re
 import requests, bs4
 import pandas as pd
@@ -74,7 +74,8 @@ def recruit_list(pageNum):  # 공고 목록 불러와 리스트에 저장
                 'wantedMobileInfoUrl', 'strtnmCd', 'basicAddr', 'detailAddr', 'jobsCd'
             ]:
                 eachColumn = columns[j].text
-                columnList.append(eachColumn)
+                eachColumn_decoded = html.unescape(eachColumn)  # html 디코딩
+                columnList.append(eachColumn_decoded)
         rowList.append(columnList)
         columnList = []  # 다음 row 값을 넣기 위해 비워준다.
 
@@ -157,7 +158,8 @@ def recruit_detail():   # 채용 상세 데이터 불러와 리스트에 저장
                 if name in nameList:   # 중복된 태그 무시(corpInfo 태그에 empchargeInfo 데이터가 들어가 있는 경우)
                     continue
                 else:
-                    columnList.append(eachColumn)
+                    eachColumn_decoded = html.unescape(eachColumn)  # html 디코딩
+                    columnList.append(eachColumn_decoded)
                     nameList.append(name)
             elif name == 'enterTpNm':
                 enterTpNm.append(eachColumn)
