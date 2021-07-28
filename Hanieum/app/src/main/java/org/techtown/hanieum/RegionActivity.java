@@ -7,13 +7,18 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
 import com.google.android.material.chip.ChipGroup;
 
+import org.techtown.hanieum.db.AppDatabase;
+import org.techtown.hanieum.db.entity.Bdong;
+
 import java.util.ArrayList;
+import java.util.List;
 
 public class RegionActivity extends AppCompatActivity implements View.OnClickListener {
     Toolbar toolbar;
@@ -79,6 +84,9 @@ public class RegionActivity extends AppCompatActivity implements View.OnClickLis
             Intent intent = new Intent(this, RegionSearchActivity.class);
             startActivity(intent);
         }
+        else if(v == regionView1) {
+
+        }
     }
 
     private void loadListData() { // 항목을 로드하는 함수
@@ -86,6 +94,20 @@ public class RegionActivity extends AppCompatActivity implements View.OnClickLis
         ArrayList<Region> items2 = new ArrayList<>();
         ArrayList<Region> items3 = new ArrayList<>();
 
+        items1.add(new Region("전체", null, null, Code.ViewType.REGION1));
+
+        AppDatabase db = AppDatabase.getInstance(this);
+        List<String> item1 = db.BdongDao().getsido();
+        for(int i=0;i<item1.size();i++) {
+            if(item1.get(i).length() == 4) {
+                items1.add(new Region(item1.get(i).substring(0,1) + item1.get(i).substring(2,3), null, null, Code.ViewType.REGION1));
+            }
+            else {
+                items1.add(new Region(item1.get(i).substring(0, 2), null, null, Code.ViewType.REGION1));
+            }
+        }
+
+        /*
         items1.add(new Region("전체", null, null, Code.ViewType.REGION1));
         items1.add(new Region("서울", null, null, Code.ViewType.REGION1));
         items1.add(new Region("경기", null, null, Code.ViewType.REGION1));
@@ -148,6 +170,8 @@ public class RegionActivity extends AppCompatActivity implements View.OnClickLis
         items3.add(new Region("전북", "전주시 덕진구", "팔복동", Code.ViewType.REGION3));
         items3.add(new Region("전북", "전주시 덕진구", "호성동", Code.ViewType.REGION3));
         items3.add(new Region("전북", "전주시 덕진구", "화전동", Code.ViewType.REGION3));
+        */
+
 
         adapter1.setItems(items1);
         adapter2.setItems(items2);

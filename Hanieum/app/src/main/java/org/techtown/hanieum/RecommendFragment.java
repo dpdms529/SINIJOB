@@ -13,7 +13,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 public class RecommendFragment extends Fragment implements View.OnClickListener {
     RecyclerView recyclerView; // 추천 목록 리사이클러뷰
@@ -21,6 +28,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
     Button changeButton; // 조건 변경 화면으로 이동하는 버튼
     ImageButton searchButton; // 검색 버튼
     ImageButton menuButton; // 메뉴 버튼
+    TextView itemNum;
 
     public RecommendFragment() {
         // Required empty public constructor
@@ -40,6 +48,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
         changeButton = view.findViewById(R.id.changeButton);
         searchButton = view.findViewById(R.id.searchButton);
         menuButton = view.findViewById(R.id.menuButton);
+        itemNum = view.findViewById(R.id.itemNum);
 
         // 리사이클러뷰와 어댑터 연결
         LinearLayoutManager layoutManager = new LinearLayoutManager(view.getContext(),
@@ -49,32 +58,21 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
         adapter = new RecommendAdapter();
         recyclerView.setAdapter(adapter);
 
-        adapter.addItem(new Recommendation("무진장흑돼지푸드",
-                "사무경리 여직원/생산직 구함", "자동차", "25분", false));
-        adapter.addItem(new Recommendation("무진장흑돼지푸드",
-                "사무경리 여직원/생산직 구함", "자동차", "25분", false));
-        adapter.addItem(new Recommendation("무진장흑돼지푸드",
-                "사무경리 여직원/생산직 구함", "자동차", "25분", false));
-        adapter.addItem(new Recommendation("무진장흑돼지푸드",
-                "사무경리 여직원/생산직 구함", "자동차", "25분", false));
-        adapter.addItem(new Recommendation("무진장흑돼지푸드",
-                "사무경리 여직원/생산직 구함", "자동차", "25분", false));
-        adapter.addItem(new Recommendation("무진장흑돼지푸드",
-                "사무경리 여직원/생산직 구함", "자동차", "25분", false));
-        adapter.addItem(new Recommendation("무진장흑돼지푸드",
-                "사무경리 여직원/생산직 구함", "자동차", "25분", false));
-        adapter.addItem(new Recommendation("무진장흑돼지푸드",
-                "사무경리 여직원/생산직 구함", "자동차", "25분", false));
-        adapter.addItem(new Recommendation("무진장흑돼지푸드",
-                "사무경리 여직원/생산직 구함", "자동차", "25분", false));
-        adapter.addItem(new Recommendation("무진장흑돼지푸드",
-                "사무경리 여직원/생산직 구함", "자동차", "25분", false));
-        adapter.addItem(new Recommendation("무진장흑돼지푸드",
-                "사무경리 여직원/생산직 구함", "자동차", "25분", false));
+        adapter.setItemClickListener(new OnRecoItemClickListener() {
+            @Override
+            public void OnItemClick(RecommendAdapter.ViewHolder holder, View view, int position) {
+                Recommendation item = adapter.getItem(position);
+                Intent intent = new Intent(getContext(), DetailActivity.class);
+                intent.putExtra("id", item.getId());
+                startActivity(intent);
+            }
+        });
 
         changeButton.setOnClickListener(this);
         searchButton.setOnClickListener(this);
         menuButton.setOnClickListener(this);
+
+        loadListData();
 
         return view;
     }
@@ -89,5 +87,47 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
         } else if (v == menuButton) {
             Toast.makeText(v.getContext(), "메뉴 버튼 눌림", Toast.LENGTH_LONG).show();
         }
+    }
+
+    private void loadListData() { // 항목을 로드하는 함수
+        ArrayList<Recommendation> items = new ArrayList<>();
+
+        String test = "http://3.36.129.83/recruit.php";
+        URLConnector task = new URLConnector(test);
+
+        task.start();
+
+        try {
+            task.join();
+            System.out.println("Waiting...for result");
+        }
+        catch(InterruptedException e) {
+
+        }
+
+        String result = task.getResult();
+
+        try {
+            JSONObject jsonObject = new JSONObject(result);
+            String num = jsonObject.getString("rownum");
+            itemNum.setText(num);
+            JSONArray jsonArray = jsonObject.getJSONArray("result");
+
+            for (int i=0; i<jsonArray.length(); i++)
+            {
+                JSONObject jsonObject1 = jsonArray.getJSONObject(i);
+
+                String id = jsonObject1.getString("recruit_id");
+                String title = jsonObject1.getString("title");
+                String organization = jsonObject1.getString("organization");
+
+                items.add(new Recommendation(id, organization, title, "자동차",
+                        "25분", false));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        adapter.setItems(items);
     }
 }
