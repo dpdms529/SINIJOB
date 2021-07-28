@@ -6,7 +6,7 @@ import pandas as pd
 from urllib.parse import urlencode, quote_plus, unquote
 import pymysql
 
-from keys import worknetKey, kakaoRESTAPI
+from keys import worknetKey, kakaoRESTAPI, dbpw, dbhost
 
 # api url and key
 url = 'http://openapi.work.go.kr/opi/opi/opia/wantedApi.do'
@@ -16,12 +16,13 @@ authKey = unquote(worknetKey)
 def db_connection():
     db = pymysql.connect(
         user='hanium',
-        passwd='hanium235!',
-        host='haniumdb.caka4pfurzmq.ap-northeast-2.rds.amazonaws.com',
+        passwd=dbpw,
+        host=dbhost,
         port=3306,
         db='hanium',
         charset='utf8'
     )
+    print("db connected")
     return db
 
 
@@ -74,10 +75,12 @@ def recruit_list(pageNum):  # 공고 목록 불러와 리스트에 저장
                 'wantedMobileInfoUrl', 'strtnmCd', 'basicAddr', 'detailAddr', 'jobsCd'
             ]:
                 eachColumn = columns[j].text
-                eachColumn_decoded = html.unescape(eachColumn)  # html 디코딩
-                columnList.append(eachColumn_decoded)
+                # eachColumn_decoded = html.unescape(eachColumn)  # html 디코딩
+                # columnList.append(eachColumn_decoded)
+                columnList.append(eachColumn)
         rowList.append(columnList)
         columnList = []  # 다음 row 값을 넣기 위해 비워준다.
+    print("recruit_list() done")
 
 
 def check_duplicates(flag):     # 중복 데이터의 유무 확인, 새로운 데이터만 가져오도록 범위 설정
@@ -158,8 +161,9 @@ def recruit_detail():   # 채용 상세 데이터 불러와 리스트에 저장
                 if name in nameList:   # 중복된 태그 무시(corpInfo 태그에 empchargeInfo 데이터가 들어가 있는 경우)
                     continue
                 else:
-                    eachColumn_decoded = html.unescape(eachColumn)  # html 디코딩
-                    columnList.append(eachColumn_decoded)
+                    # eachColumn_decoded = html.unescape(eachColumn)  # html 디코딩
+                    # columnList.append(eachColumn_decoded)
+                    columnList.append(eachColumn)
                     nameList.append(name)
             elif name == 'enterTpNm':
                 enterTpNm.append(eachColumn)
@@ -195,6 +199,7 @@ def recruit_detail():   # 채용 상세 데이터 불러와 리스트에 저장
             del rows[i-count]
             count += 1
 
+    print("recruit_detail() done")
 
 def find_id(certificateTxt, certifiInfo): # 자격증 ID를 찾는 함수
     for i in range(len(selectCertificate)):
@@ -207,6 +212,7 @@ def processing():   # 데이터 전처리
     delList = []
     rowsLen = len(rowList)
     for i in range(0, rowsLen):
+        print("processing-%s-, id:"%i, rowList[i][0])
         # 건물 본번, 부번
         tmp = re.findall(r'[로길] (.+)', rowList[i][8])
         if tmp:
@@ -424,8 +430,10 @@ def db_insert():
         code, msg = e.args
 
     finally:
+        print("db inserted")
         cursor.close()
         db.close()
+        print("db closed")
 
 
 def db_select_certificate():
