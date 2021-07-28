@@ -27,6 +27,10 @@ public class SharedPreference {
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
         Gson gson = new Gson();
         String json = sharedPrefs.getString(key, null);
+        if(json == null){
+            setArrayPref(context,new ArrayList<ChipList>(),key);
+            json = sharedPrefs.getString(key,null);
+        }
         Type type = new TypeToken<ArrayList<ChipList>>() {
         }.getType();
         ArrayList<ChipList> arrayList = gson.fromJson(json, type);
