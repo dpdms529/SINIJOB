@@ -324,12 +324,12 @@ def processing():   # 데이터 전처리
         count = 0
         for i in delList:
             certifi_count = 0
-            for j in enumerate(certificateList):
-                if rowList[i-count][0] == certificateList[j][1]:
-                    del certificateList[j - certifi_count]
+            for j in range(0, len(certificateList)):     # 삭제 공고의 자격증 데이터 또한 삭제
+                if rowList[i-count][0] == certificateList[j-certifi_count][1]:
+                    del certificateList[j-certifi_count]
                     certifi_count += 1
-            del rowList[i - count]
-            del rowList_detail[i - count]
+            del rowList[i-count]
+            del rowList_detail[i-count]
             count += 1
 
 
@@ -398,14 +398,14 @@ def db_insert():
                                         certificate_required, career_required, career_min, enrollment_code) 
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 
                         %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
-        # cursor.executemany(sql, recruit)
-        # db.commit()
+        cursor.executemany(sql, recruit)
+        db.commit()
 
         # certificate INSERT
         sql = """INSERT INTO `recruit_certificate`(certificate_no, recruit_id, certificate_id) 
                 VALUES (%s, %s, %s);"""
-        # cursor.executemany(sql, certificateList)
-        # db.commit()
+        cursor.executemany(sql, certificateList)
+        db.commit()
 
         # recruit_files INSERT
         sql = """INSERT INTO `recruit_files`(recruit_id, file_no, file_url) 
