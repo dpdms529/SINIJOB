@@ -5,9 +5,8 @@ public class Search {
     private boolean isChecked; // 체크 박스 체크여부
     private int viewType; // 직업 검색인지 지역 검색인지 구분하기 위한 viewType
 
-    public Search(String title, boolean isChecked, int viewType) {
+    public Search(String title, int viewType) {
         this.title = title;
-        this.isChecked = isChecked;
         this.viewType = viewType;
     }
 

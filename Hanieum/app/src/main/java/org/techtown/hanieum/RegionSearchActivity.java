@@ -83,12 +83,12 @@ public class RegionSearchActivity extends AppCompatActivity {
     private void loadListData() { // 항목을 로드하는 함수
         ArrayList<Search> items = new ArrayList<>();
 
-        items.add(new Search("경기 오산시 금암동", false, Code.ViewType.REGION_SEARCH));
-        items.add(new Search("충남 계룡시 금암동", false, Code.ViewType.REGION_SEARCH));
-        items.add(new Search("전북 군산시 금암동", false, Code.ViewType.REGION_SEARCH));
-        items.add(new Search("전북 전주시 덕진구 금암동", false, Code.ViewType.REGION_SEARCH));
-        items.add(new Search("전북 전주시 덕진구 금암1동", false, Code.ViewType.REGION_SEARCH));
-        items.add(new Search("전북 전주시 덕진구 금암2동", false, Code.ViewType.REGION_SEARCH));
+        items.add(new Search("경기 오산시 금암동", Code.ViewType.REGION_SEARCH));
+        items.add(new Search("충남 계룡시 금암동", Code.ViewType.REGION_SEARCH));
+        items.add(new Search("전북 군산시 금암동", Code.ViewType.REGION_SEARCH));
+        items.add(new Search("전북 전주시 덕진구 금암동", Code.ViewType.REGION_SEARCH));
+        items.add(new Search("전북 전주시 덕진구 금암1동", Code.ViewType.REGION_SEARCH));
+        items.add(new Search("전북 전주시 덕진구 금암2동", Code.ViewType.REGION_SEARCH));
 
         adapter.setItems(items);
     }

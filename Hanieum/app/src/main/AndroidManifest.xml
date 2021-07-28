@@ -19,11 +19,17 @@
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+                <!-- 검색 기능 구현 코드 (아래) -->
+                <action android:name="android.intent.action.SEARCH" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <!-- 검색 기능 구현 코드 (아래) -->
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
         </activity>
-        <meta-data android:name="com.kakao.sdk.AppKey" android:value="09fa3d68d014559092e413abf340b1be"/>
+        <meta-data android:name="com.kakao.sdk.AppKey" android:value="@string/kakaoAPI" />
     </application>
     <uses-permission android:name="android.permission.INTERNET"></uses-permission>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>

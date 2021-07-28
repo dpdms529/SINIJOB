@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -92,14 +93,13 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
     private void loadListData() { // 항목을 로드하는 함수
         ArrayList<Recommendation> items = new ArrayList<>();
 
-        String test = "http://3.36.129.83/recruit.php";
-        URLConnector task = new URLConnector(test);
+        String list = getResources().getString(R.string.serverIP)+"recruit.php";
+        URLConnector task = new URLConnector(list);
 
         task.start();
 
         try {
             task.join();
-            System.out.println("Waiting...for result");
         }
         catch(InterruptedException e) {
 
