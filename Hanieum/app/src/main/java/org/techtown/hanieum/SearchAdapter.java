@@ -13,9 +13,11 @@ import com.google.android.material.chip.Chip;
 
 import java.util.ArrayList;
 
+import static org.techtown.hanieum.SharedPreference.getArrayPref;
+import static org.techtown.hanieum.SharedPreference.setArrayPref;
+
 public class SearchAdapter extends  RecyclerView.Adapter<RecyclerView.ViewHolder> {
     ArrayList<Search> items = new ArrayList<Search>();
-    ArrayList<ChipList> chipList = new ArrayList<ChipList>(); // 선택된 칩을 관리하는 list
 
     @NonNull
     @Override
@@ -74,19 +76,28 @@ public class SearchAdapter extends  RecyclerView.Adapter<RecyclerView.ViewHolder
             super(view);
 
             checkBox = view.findViewById(R.id.checkBox);
-            checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            checkBox.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                public void onClick(View v) {
+                    ArrayList<ChipList> chipList = getArrayPref(itemView.getContext(), SharedPreference.JOB_LIST);
                     int position = getLayoutPosition();
-                    if (isChecked) { // 체크 상태이면
+
+                    if (items.get(position).isChecked()) { // 이미 클릭된 상태이면
+                        // 아이템 삭제 코드
+                        for (int i=0; i<chipList.size(); i++) {
+                            if (chipList.get(i).getName().equals(items.get(position).getTitle())) {
+                                chipList.remove(i);
+                            }
+                        }
+
+                        items.get(position).setChecked(false);
+                    } else {
                         items.get(position).setChecked(true);
                         chipList.add(new ChipList(items.get(position).getTitle(), position));
-                    } else { // 체크 상태가 아니면
-                        items.get(position).setChecked(false);
-
-                        // 아이템 삭제 코드
                     }
-                    loadChip();
+                    setArrayPref(itemView.getContext(), chipList, SharedPreference.JOB_LIST);
+                    notifyItemChanged(position);
+                    JobSearchActivity.loadChip(itemView.getContext(), JobSearchActivity.chipGroup);
                 }
             });
         }
@@ -97,30 +108,6 @@ public class SearchAdapter extends  RecyclerView.Adapter<RecyclerView.ViewHolder
                 checkBox.setChecked(true);
             } else { // 체크 상태가 아니면
                 checkBox.setChecked(false);
-            }
-        }
-
-        public void loadChip() {
-            JobSearchActivity.chipGroup.removeAllViews(); // 칩그룹 초기화
-            for (int i=0;i<chipList.size();i++) { // chipList에 있는 것을 추가
-                String name = chipList.get(i).getName();
-                int position = chipList.get(i).getPosition();
-
-                Chip chip = new Chip(itemView.getContext());
-                chip.setText(name);
-                chip.setCloseIconResource(R.drawable.close);
-                chip.setCloseIconVisible(true);
-                chip.setOnCloseIconClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        // 아이템 삭제 코드
-
-                        JobSearchActivity.chipGroup.removeView(chip);
-                        items.get(position).setChecked(false);
-                        notifyItemChanged(position);
-                    }
-                });
-                JobSearchActivity.chipGroup.addView(chip);
             }
         }
     }
@@ -138,13 +125,13 @@ public class SearchAdapter extends  RecyclerView.Adapter<RecyclerView.ViewHolder
                     int position = getLayoutPosition();
                     if (isChecked) { // 체크 상태이면
                         items.get(position).setChecked(true);
-                        chipList.add(new ChipList(items.get(position).getTitle(), position));
+//                        chipList.add(new ChipList(items.get(position).getTitle(), position));
                     } else { // 체크 상태가 아니면
                         items.get(position).setChecked(false);
 
                         // 아이템 삭제 코드
                     }
-                    loadChip();
+//                    loadChip();
                 }
             });
         }
@@ -155,30 +142,6 @@ public class SearchAdapter extends  RecyclerView.Adapter<RecyclerView.ViewHolder
                 checkBox.setChecked(true);
             } else { // 체크 상태가 아니면
                 checkBox.setChecked(false);
-            }
-        }
-
-        public void loadChip() {
-            RegionSearchActivity.chipGroup.removeAllViews(); // 칩그룹 초기화
-            for (int i=0;i<chipList.size();i++) { // chipList에 있는 것을 추가
-                String name = chipList.get(i).getName();
-                int position = chipList.get(i).getPosition();
-
-                Chip chip = new Chip(itemView.getContext());
-                chip.setText(name);
-                chip.setCloseIconResource(R.drawable.close);
-                chip.setCloseIconVisible(true);
-                chip.setOnCloseIconClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        // 아이템 삭제 코드
-
-                        RegionSearchActivity.chipGroup.removeView(chip);
-                        items.get(position).setChecked(false);
-                        notifyItemChanged(position);
-                    }
-                });
-                RegionSearchActivity.chipGroup.addView(chip);
             }
         }
     }
