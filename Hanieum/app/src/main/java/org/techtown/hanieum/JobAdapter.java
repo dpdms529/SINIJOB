@@ -9,13 +9,13 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.chip.Chip;
-
 import java.util.ArrayList;
+
+import static org.techtown.hanieum.SharedPreference.getArrayPref;
+import static org.techtown.hanieum.SharedPreference.setArrayPref;
 
 public class JobAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements OnJobItemClickListener {
     ArrayList<Job> items = new ArrayList<Job>();
-    ArrayList<ChipList> chipList = new ArrayList<ChipList>(); // 선택된 칩을 관리하는 list
     OnJobItemClickListener listener;
     private int lastSelectedPosition1 = -1; // 전에 선택한 아이템(1차 직종)의 위치
 
@@ -86,22 +86,6 @@ public class JobAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> im
             super(view);
             jobText = view.findViewById(R.id.regionJobText);
 
-//            view.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    if (getLayoutPosition() != lastSelectedPosition1) { // 이미 선택한 아이템이 아니면
-//                        if (lastSelectedPosition1 >= 0) { // 이전에 선택한 아이템이 있으면
-//                            items.get(lastSelectedPosition1).setSelected(false);
-//                            notifyItemChanged(lastSelectedPosition1); // lastSelectedPosition 아이템 갱신
-//                        }
-//                        items.get(getLayoutPosition()).setSelected(true);
-//                        jobText.setBackgroundColor(Color.parseColor("#80cbc4"));
-//
-//                        lastSelectedPosition1 = getLayoutPosition();
-//                    }
-//                }
-//            });
-
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -113,7 +97,7 @@ public class JobAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> im
                                 notifyItemChanged(lastSelectedPosition1); // lastSelectedPosition 아이템 갱신
                             }
                             items.get(getLayoutPosition()).setSelected(true);
-                            jobText.setBackgroundColor(Color.parseColor("#80cbc4"));
+                            notifyItemChanged(position);
 
                             lastSelectedPosition1 = getLayoutPosition();
                         }
@@ -126,10 +110,10 @@ public class JobAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> im
 
         public void setItem(Job item) {
             jobText.setText(item.getJob1());
-            if (!item.isSelected()) { // 선택된 아이템이 아니면
-                jobText.setBackgroundColor(Color.WHITE);
-            } else { // 선택된 아이템이면
+            if (item.isSelected()) { // 선택된 아이템이면
                 jobText.setBackgroundColor(Color.parseColor("#80cbc4"));
+            } else { // 선택된 아이템이 아니면
+                jobText.setBackgroundColor(Color.WHITE);
             }
         }
     }
@@ -144,63 +128,35 @@ public class JobAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> im
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    ArrayList<ChipList> chipList = getArrayPref(itemView.getContext(), SharedPreference.JOB_LIST);
                     int position = getLayoutPosition();
+
                     if (items.get(position).isSelected()) { // 이미 클릭된 상태이면
                         // 아이템 삭제 코드
                         for (int i=0; i<chipList.size(); i++) {
-                            if (chipList.get(i).getPosition() == position) {
+                            if (chipList.get(i).getName().equals(items.get(position).getJob2())) {
                                 chipList.remove(i);
                             }
                         }
 
                         items.get(position).setSelected(false);
-                        jobText.setBackgroundColor(Color.WHITE);
                     } else {
                         items.get(position).setSelected(true);
-                        jobText.setBackgroundColor(Color.parseColor("#80cbc4"));
                         chipList.add(new ChipList(items.get(position).getJob2(), position));
                     }
-
-                    loadChip();
+                    setArrayPref(itemView.getContext(), chipList, SharedPreference.JOB_LIST);
+                    notifyItemChanged(position);
+                    JobActivity.loadChip(itemView.getContext(), JobActivity.chipGroup);
                 }
             });
         }
 
         public void setItem(Job item) {
             jobText.setText(item.getJob2());
-            if (!item.isSelected()) {
-                jobText.setBackgroundColor(Color.WHITE);
-            } else { // 선택된 아이템이면
+            if (item.isSelected()) { // 선택된 아이템이면
                 jobText.setBackgroundColor(Color.parseColor("#80cbc4"));
-            }
-        }
-
-        public void loadChip() {
-            JobActivity.chipGroup.removeAllViews(); // 칩그룹 초기화
-            for (int i=0;i<chipList.size();i++) { // chipList에 있는 것을 추가
-                String name = chipList.get(i).getName();
-                int position = chipList.get(i).getPosition();
-
-                Chip chip = new Chip(itemView.getContext());
-                chip.setText(name);
-                chip.setCloseIconResource(R.drawable.close);
-                chip.setCloseIconVisible(true);
-                chip.setOnCloseIconClickListener(new View.OnClickListener() { // 삭제 클릭 시
-                    @Override
-                    public void onClick(View v) {
-                        // 아이템 삭제 코드
-                        for (int i=0; i<chipList.size(); i++) {
-                            if (chipList.get(i).getPosition() == position) {
-                                chipList.remove(i);
-                            }
-                        }
-
-                        JobActivity.chipGroup.removeView(chip);
-                        items.get(position).setSelected(false);
-                        notifyItemChanged(position);
-                    }
-                });
-                JobActivity.chipGroup.addView(chip);
+            } else { // 선택된 아이템이 아니면
+                jobText.setBackgroundColor(Color.WHITE);
             }
         }
     }

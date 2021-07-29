@@ -12,6 +12,7 @@ import java.util.ArrayList;
 
 public class SharedPreference {
     public static final String JOB_LIST = "jobList";
+    public static final String REGION_LIST = "regionList";
     // chipList를 저장
     public static void setArrayPref(Context context, ArrayList<ChipList> chipList, String key) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -26,7 +27,11 @@ public class SharedPreference {
     public static ArrayList<ChipList> getArrayPref(Context context, String key) {
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
         Gson gson = new Gson();
-        String json = sharedPrefs.getString(key, "EMPTY");
+        String json = sharedPrefs.getString(key, null);
+        if(json == null){
+            setArrayPref(context,new ArrayList<ChipList>(),key);
+            json = sharedPrefs.getString(key,null);
+        }
         Type type = new TypeToken<ArrayList<ChipList>>() {
         }.getType();
         ArrayList<ChipList> arrayList = gson.fromJson(json, type);

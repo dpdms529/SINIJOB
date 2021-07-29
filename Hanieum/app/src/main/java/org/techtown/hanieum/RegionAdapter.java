@@ -9,13 +9,13 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.chip.Chip;
-
 import java.util.ArrayList;
+
+import static org.techtown.hanieum.SharedPreference.getArrayPref;
+import static org.techtown.hanieum.SharedPreference.setArrayPref;
 
 public class RegionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements OnRegion1ItemClickListener, OnRegion2ItemClickListener {
     ArrayList<Region> items = new ArrayList<Region>();
-    ArrayList<ChipList> chipList = new ArrayList<ChipList>(); // 선택된 칩을 관리하는 list
     OnRegion1ItemClickListener listener1;
     OnRegion2ItemClickListener listener2;
     private int lastSelectedPosition1 = -1; // 전에 선택한 아이템의 위치
@@ -110,7 +110,7 @@ public class RegionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                                 notifyItemChanged(lastSelectedPosition1); // lastSelectedPosition 아이템 갱신
                             }
                             items.get(getLayoutPosition()).setSelected(true);
-                            regionText.setBackgroundColor(Color.parseColor("#80cbc4"));
+                            notifyItemChanged(position);
 
                             lastSelectedPosition1 = getLayoutPosition();
                         }
@@ -150,7 +150,7 @@ public class RegionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                                 notifyItemChanged(lastSelectedPosition2); // lastSelectedPosition 아이템 갱신
                             }
                             items.get(getLayoutPosition()).setSelected(true);
-                            regionText.setBackgroundColor(Color.parseColor("#80cbc4"));
+                            notifyItemChanged(position);
 
                             lastSelectedPosition2 = getLayoutPosition();
                         }
@@ -182,23 +182,24 @@ public class RegionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    ArrayList<ChipList> chipList = getArrayPref(itemView.getContext(), SharedPreference.REGION_LIST);
                     int position = getLayoutPosition();
+
                     if (items.get(position).isSelected()) { // 이미 클릭된 상태이면
                         // 아이템 삭제 코드
                         for(int i=0;i<chipList.size(); i++) {
-                            if(chipList.get(i).getPosition() == position)
+                            if(chipList.get(i).getName().equals(items.get(position).getRegion3()))
                                 chipList.remove(i);
                         }
 
                         items.get(position).setSelected(false);
-                        regionText.setBackgroundColor(Color.WHITE);
                     } else {
                         items.get(position).setSelected(true);
-                        regionText.setBackgroundColor(Color.parseColor("#80cbc4"));
                         chipList.add(new ChipList(items.get(position).getRegion3(), position));
                     }
-
-                    loadChip();
+                    setArrayPref(itemView.getContext(), chipList, SharedPreference.REGION_LIST);
+                    notifyItemChanged(position);
+                    RegionActivity.loadChip(itemView.getContext(), RegionActivity.chipGroup);
                 }
             });
         }
@@ -209,35 +210,6 @@ public class RegionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 regionText.setBackgroundColor(Color.WHITE);
             } else { // 선택된 아이템이면
                 regionText.setBackgroundColor(Color.parseColor("#80cbc4"));
-            }
-        }
-
-        public void loadChip() {
-            RegionActivity.chipGroup.removeAllViews(); // 칩그룹 초기화
-            for (int i=0;i<chipList.size();i++) { // chipList에 있는 것을 추가
-                String name = chipList.get(i).getName();
-                int position = chipList.get(i).getPosition();
-
-                Chip chip = new Chip(itemView.getContext());
-                chip.setText(name);
-                chip.setCloseIconResource(R.drawable.close);
-                chip.setCloseIconVisible(true);
-                chip.setOnCloseIconClickListener(new View.OnClickListener() { // 삭제 클릭 시
-                    @Override
-                    public void onClick(View v) {
-                        // 아이템 삭제 코드
-                        for(int i=0; i<chipList.size(); i++) {
-                            if (chipList.get(i).getPosition() == position) {
-                                chipList.remove(i);
-                            }
-                        }
-
-                        RegionActivity.chipGroup.removeView(chip);
-                        items.get(position).setSelected(false);
-                        notifyItemChanged(position);
-                    }
-                });
-                RegionActivity.chipGroup.addView(chip);
             }
         }
     }

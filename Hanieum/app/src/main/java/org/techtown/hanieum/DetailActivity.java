@@ -196,10 +196,10 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     public void loadData(String id) {
-        String detailPhp = getResources().getString(R.string.serverIP) + "detail.php?recruit_id=" + id;
-        String certificatePhp = "http://3.36.129.83/certificate.php?recruit_id=" + id;
-        String recruitFilesPhp = "http://3.36.129.83/recruit_files.php?recruit_id=" + id;
-        String recruitAddrPhp = "http://3.36.129.83/recruit_address.php?recruit_id=" + id;
+        String detailPhp = getResources().getString(R.string.serverIP)+"detail.php?recruit_id=" + id;
+        String certificatePhp = getResources().getString(R.string.serverIP)+"certificate.php?recruit_id=" + id;
+        String recruitFilesPhp = getResources().getString(R.string.serverIP)+"recruit_files.php?recruit_id=" + id;
+        String recruitAddrPhp = getResources().getString(R.string.serverIP)+"recruit_address.php?recruit_id=" + id;
         URLConnector urlConnectorDetail = new URLConnector(detailPhp);
         URLConnector urlConnectorCertificate = new URLConnector(certificatePhp);
         URLConnector urlConnectorRecruitFiles = new URLConnector(recruitFilesPhp);
@@ -406,10 +406,9 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                } else {
                     file_url = file_url + "\n" + jsonObject1.getString("file_url");
                }
+           }
 
-            }
-
-            attachFileUrl.setText(file_url);
+           attachFileUrl.setText(file_url);
         } catch (JSONException e) {
             e.printStackTrace();
         }

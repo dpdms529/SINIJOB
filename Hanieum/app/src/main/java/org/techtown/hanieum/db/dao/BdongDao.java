@@ -9,6 +9,9 @@ import java.util.List;
 
 @Dao
 public interface BdongDao {
+    @Query("SELECT * FROM b_dong")
+    List<Bdong> getAll();
+
     @Query("SELECT distinct(sido_name) FROM b_dong")
     List<String> getsido() ;
 
