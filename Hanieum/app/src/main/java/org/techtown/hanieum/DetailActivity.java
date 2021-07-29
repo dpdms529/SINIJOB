@@ -196,7 +196,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     public void loadData(String id) {
-        String detailPhp = "http://3.36.129.83/detail.php?recruit_id=" + id;
+        String detailPhp = getResources().getString(R.string.serverIP) + "detail.php?recruit_id=" + id;
         String certificatePhp = "http://3.36.129.83/certificate.php?recruit_id=" + id;
         String recruitFilesPhp = "http://3.36.129.83/recruit_files.php?recruit_id=" + id;
         String recruitAddrPhp = "http://3.36.129.83/recruit_address.php?recruit_id=" + id;

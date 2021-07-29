@@ -7,6 +7,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.view.menu.MenuView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.chip.Chip;
@@ -132,21 +133,7 @@ public class SearchAdapter extends  RecyclerView.Adapter<RecyclerView.ViewHolder
             super(view);
 
             checkBox = view.findViewById(R.id.checkBox);
-            checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    int position = getLayoutPosition();
-                    if (isChecked) { // 체크 상태이면
-                        items.get(position).setChecked(true);
-                        chipList.add(new ChipList(items.get(position).getTitle(), position));
-                    } else { // 체크 상태가 아니면
-                        items.get(position).setChecked(false);
 
-                        // 아이템 삭제 코드
-                    }
-                    loadChip();
-                }
-            });
         }
 
         public void setItem(Search item) {

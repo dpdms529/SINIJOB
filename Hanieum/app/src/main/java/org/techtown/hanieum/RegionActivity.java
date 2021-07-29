@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -15,7 +14,6 @@ import android.widget.Button;
 import com.google.android.material.chip.ChipGroup;
 
 import org.techtown.hanieum.db.AppDatabase;
-import org.techtown.hanieum.db.entity.Bdong;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +28,7 @@ public class RegionActivity extends AppCompatActivity implements View.OnClickLis
     RegionAdapter adapter2; // 지역 분류(구/군/시) 어댑터
     RegionAdapter adapter3; // 지역 분류(동/읍/면) 어댑터
     static ChipGroup chipGroup; // 선택한 지역을 나타내기 위한 ChipGroup
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +59,40 @@ public class RegionActivity extends AppCompatActivity implements View.OnClickLis
         regionView2.setAdapter(adapter2);
         regionView3.setAdapter(adapter3);
 
+        AppDatabase db = AppDatabase.getInstance(this);
+
+        adapter1.setRegion1ClickListener(new OnRegion1ItemClickListener() {
+            @Override
+            public void OnRegion1Click(RegionAdapter.Region1ViewHolder holder, View view, int position) {
+                Region item = adapter1.getItem(position);
+                ArrayList<Region> items2 = new ArrayList<>();
+
+                List<String> item2 = db.BdongDao().getsigungu(item.getRegion1());
+                for(int i=0;i<item2.size();i++) {
+                    items2.add(new Region(item.getRegion1(), item2.get(i), null, Code.ViewType.REGION2));
+                }
+                adapter2.setItems(items2);
+                adapter2.notifyDataSetChanged();
+            }
+        });
+
+        adapter2.setRegion2ClickListener(new OnRegion2ItemClickListener() {
+            @Override
+            public void OnRegion2Click(RegionAdapter.Region2ViewHolder holder, View view, int position) {
+                Region item = adapter2.getItem(position);
+                ArrayList<Region> items3 = new ArrayList<>();
+
+                List<String> item3 = db.BdongDao().geteupmyeondong(item.getRegion1(), item.getRegion2());
+                for(int i=0;i<item3.size();i++)
+                {
+                    items3.add(new Region(item.getRegion1(), item.getRegion2(), item3.get(i), Code.ViewType.REGION3));
+                }
+                adapter3.setItems(items3);
+                adapter3.notifyDataSetChanged();
+
+            }
+        });
+
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -84,27 +117,20 @@ public class RegionActivity extends AppCompatActivity implements View.OnClickLis
             Intent intent = new Intent(this, RegionSearchActivity.class);
             startActivity(intent);
         }
-        else if(v == regionView1) {
-
-        }
     }
+
 
     private void loadListData() { // 항목을 로드하는 함수
         ArrayList<Region> items1 = new ArrayList<>();
-        ArrayList<Region> items2 = new ArrayList<>();
-        ArrayList<Region> items3 = new ArrayList<>();
+
+
 
         items1.add(new Region("전체", null, null, Code.ViewType.REGION1));
 
         AppDatabase db = AppDatabase.getInstance(this);
         List<String> item1 = db.BdongDao().getsido();
         for(int i=0;i<item1.size();i++) {
-            if(item1.get(i).length() == 4) {
-                items1.add(new Region(item1.get(i).substring(0,1) + item1.get(i).substring(2,3), null, null, Code.ViewType.REGION1));
-            }
-            else {
-                items1.add(new Region(item1.get(i).substring(0, 2), null, null, Code.ViewType.REGION1));
-            }
+            items1.add(new Region(item1.get(i), null, null, Code.ViewType.REGION1));
         }
 
         /*
@@ -174,7 +200,6 @@ public class RegionActivity extends AppCompatActivity implements View.OnClickLis
 
 
         adapter1.setItems(items1);
-        adapter2.setItems(items2);
-        adapter3.setItems(items3);
+        adapter1.notifyDataSetChanged();
     }
 }

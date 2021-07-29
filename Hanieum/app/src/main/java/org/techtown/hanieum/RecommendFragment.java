@@ -92,8 +92,8 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
     private void loadListData() { // 항목을 로드하는 함수
         ArrayList<Recommendation> items = new ArrayList<>();
 
-        String test = "http://3.36.129.83/recruit.php";
-        URLConnector task = new URLConnector(test);
+        String list = getResources().getString(R.string.serverIP)+"recruit.php";
+        URLConnector task = new URLConnector(list);
 
         task.start();
 
