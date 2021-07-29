@@ -1,38 +1,65 @@
 package org.techtown.hanieum;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
+import org.techtown.hanieum.db.AppDatabase;
+import org.techtown.hanieum.db.entity.Bdong;
+
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.List;
+
+import static org.techtown.hanieum.SharedPreference.getArrayPref;
+import static org.techtown.hanieum.SharedPreference.setArrayPref;
 
 public class RegionSearchActivity extends AppCompatActivity {
     Toolbar toolbar;
     RecyclerView recyclerView; // 검색 항목 리사이클러뷰
-    SearchAdapter adapter; // 검색 항목 어댑터
     static ChipGroup chipGroup; // 선택 항목을 나타내는 ChipGroup
+    static SearchAdapter adapter; // 지역 분류(동/읍/면) 어댑터
+    Context context;
+
+    List<Bdong> bDong;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
+        AppDatabase db = AppDatabase.getInstance(this);
+        Log.e("BdongDatabase", "region data 조회");
+        bDong = db.BdongDao().getAll();
+
         toolbar = findViewById(R.id.toolbar4);
         recyclerView = findViewById(R.id.searchView);
         chipGroup = findViewById(R.id.searchChipGroup);
+        context = this;
 
         // 리사이클러뷰와 어댑터 연결
         LinearLayoutManager layoutManager = new LinearLayoutManager(this,
@@ -44,7 +71,9 @@ public class RegionSearchActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        loadListData();
+        loadChip(this, chipGroup);
+
+        setResult(Activity.RESULT_OK);
     }
 
     @Override
@@ -58,7 +87,7 @@ public class RegionSearchActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) { // toolbar 검색
+    public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.search_menu, menu);
 
@@ -66,13 +95,40 @@ public class RegionSearchActivity extends AppCompatActivity {
         ImageView icon = (ImageView)searchView.findViewById(androidx.appcompat.R.id.search_mag_icon);
         View v = searchView.findViewById(androidx.appcompat.R.id.search_plate);
 
-        searchView.setMaxWidth(Integer.MAX_VALUE); // 최대 넓이
-        searchView.setQueryHint("지역을 검색하세요"); // 검색 힌트
-        searchView.setIconifiedByDefault(false); // 펼쳐서 보이기
+        searchView.setMaxWidth(Integer.MAX_VALUE);
+        searchView.setQueryHint("지역을 검색하세요");
+        searchView.setIconifiedByDefault(false);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
 
-        v.setBackgroundColor(Color.TRANSPARENT); // 밑줄 제거
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                ArrayList<Search> items = new ArrayList<>();
+                ArrayList<ChipList> chipList = getArrayPref(context, SharedPreference.REGION_LIST);
 
-        // 검색 아이콘 제거
+                for(int i=0;i<bDong.size();i++) {
+                    items.add(new Search(bDong.get(i).sido_name + " " + bDong.get(i).sigungu_name + " " + bDong.get(i).eupmyeondong_name, Code.ViewType.REGION_SEARCH));
+                }
+
+                for(int i=0;i<items.size();i++) {
+                    for(int j=0;j<chipList.size();j++) {
+                        if(items.get(i).getTitle().equals(chipList.get(j).getName())) {
+                            items.get(i).setChecked(true);
+                        }
+                    }
+                }
+                adapter.setItems(items);
+                adapter.notifyDataSetChanged();
+
+                return false;
+            }
+        });
+
+        v.setBackgroundColor(Color.TRANSPARENT);
+
         icon.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT));
         icon.setImageDrawable(null);
@@ -80,17 +136,39 @@ public class RegionSearchActivity extends AppCompatActivity {
         return true;
     }
 
-    private void loadListData() { // 항목을 로드하는 함수
-        ArrayList<Search> items = new ArrayList<>();
 
-        items.add(new Search("경기 오산시 금암동", false, Code.ViewType.REGION_SEARCH));
-        items.add(new Search("충남 계룡시 금암동", false, Code.ViewType.REGION_SEARCH));
-        items.add(new Search("전북 군산시 금암동", false, Code.ViewType.REGION_SEARCH));
-        items.add(new Search("전북 전주시 덕진구 금암동", false, Code.ViewType.REGION_SEARCH));
-        items.add(new Search("전북 전주시 덕진구 금암1동", false, Code.ViewType.REGION_SEARCH));
-        items.add(new Search("전북 전주시 덕진구 금암2동", false, Code.ViewType.REGION_SEARCH));
+    public static void loadChip(Context context, ChipGroup chipgroup) {
+        chipgroup.removeAllViews();
+        ArrayList<ChipList> chipList = getArrayPref(context, SharedPreference.REGION_LIST);
 
-        adapter.setItems(items);
+        for(int i=0;i<chipList.size();i++) {
+            String name = chipList.get(i).getName();
+            int position = chipList.get(i).getPosition();
+
+            Chip chip = new Chip(context);
+            chip.setText(name);
+            chip.setCloseIconResource(R.drawable.close);
+            chip.setCloseIconVisible(true);
+            chipGroup.addView(chip);
+            chip.setOnCloseIconClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    for(int i=0;i<chipList.size();i++) {
+                        if(chipList.get(i).getName().equals(name)) {
+                            chipList.remove(i);
+
+                            if((adapter.getItemCount() != 0) && name.equals(adapter.getItem(position).getTitle())) {
+                                adapter.getItem(position).setChecked(false);
+                                setArrayPref(context, chipList, SharedPreference.REGION_LIST);
+                                adapter.notifyItemChanged(position);
+                            } else {
+                                setArrayPref(context, chipList, SharedPreference.REGION_LIST);
+                            }
+                        }
+                    }
+                    chipgroup.removeView(chip);
+                }
+            });
+        }
     }
-
 }

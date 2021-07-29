@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -99,7 +100,6 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
 
         try {
             task.join();
-            System.out.println("Waiting...for result");
         }
         catch(InterruptedException e) {
 

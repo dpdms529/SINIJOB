@@ -8,14 +8,17 @@ import androidx.room.RoomDatabase;
 
 import org.techtown.hanieum.db.dao.BdongDao;
 import org.techtown.hanieum.db.dao.JobCategoryDao;
+import org.techtown.hanieum.db.dao.RecruitDao;
 import org.techtown.hanieum.db.entity.Bdong;
 import org.techtown.hanieum.db.entity.JobCategory;
+import org.techtown.hanieum.db.entity.Recruit;
 
 
-@Database(entities = {JobCategory.class, Bdong.class}, version = 1, exportSchema = false)
+@Database(entities = {JobCategory.class, Bdong.class, Recruit.class}, version = 1, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
     public abstract JobCategoryDao jobCategoryDao();
     public abstract BdongDao BdongDao();
+    public abstract RecruitDao RecruitDao();
 
     private static AppDatabase INSTANCE = null;
 
