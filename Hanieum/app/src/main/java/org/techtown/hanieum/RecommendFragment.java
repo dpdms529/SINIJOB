@@ -199,13 +199,13 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
         if(text.length() == 0){ //검색어 없을 때 전체 데이터 보여줌
             items.addAll(allItems);
         }else{  //검색어 있을 때 검색어를 포함하는 데이터만 보여줌
-            for(int i = 0;i<allItems.size();i++){
-                if(allItems.get(i).getTitle().contains(text) || allItems.get(i).getCompanyName().contains(text)){
+            for(int i = 0;i<allItems.size();i++) {
+                if (allItems.get(i).getTitle().contains(text) || allItems.get(i).getCompanyName().contains(text)) {
                     items.add(allItems.get(i));
                 }
             }
-            itemNum.setText(String.valueOf(items.size()));
         }
+        itemNum.setText(String.valueOf(items.size()));
         adapter.notifyDataSetChanged();
     }
 }

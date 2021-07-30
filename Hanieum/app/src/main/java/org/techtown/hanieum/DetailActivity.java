@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import net.daum.mf.map.api.MapPOIItem;
@@ -45,6 +46,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     ArrayList<TextView> attachFileUrl = new ArrayList<>(); //접수방법_제출서류양식
     TextView pfCond, etcPfCond, certificate, compAbl; // 우대사항
     TextView corpNm, reperNm, indTpCdNm, corpAddr, totPsncnt, yrSalesAmt; // 기업정보
+    ScrollView scrollView;
 
     String url;
     Context context;
@@ -100,6 +102,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         corpAddr = findViewById(R.id.corpAddr);
         totPsncnt = findViewById(R.id.totPsncnt);
         yrSalesAmt = findViewById(R.id.yrSalesAmt);
+        scrollView = findViewById(R.id.detailScrollView);
 
         mapView = new MapView(this);
         ViewGroup mapViewContainer = (ViewGroup) findViewById(R.id.map);
@@ -168,42 +171,42 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onMapViewCenterPointMoved(MapView mapView, MapPoint mapPoint) {
-
+        scrollView.requestDisallowInterceptTouchEvent(true);
     }
 
     @Override
     public void onMapViewZoomLevelChanged(MapView mapView, int i) {
-
+        scrollView.requestDisallowInterceptTouchEvent(true);
     }
 
     @Override
     public void onMapViewSingleTapped(MapView mapView, MapPoint mapPoint) {
-
+        scrollView.requestDisallowInterceptTouchEvent(true);
     }
 
     @Override
     public void onMapViewDoubleTapped(MapView mapView, MapPoint mapPoint) {
-
+        scrollView.requestDisallowInterceptTouchEvent(true);
     }
 
     @Override
     public void onMapViewLongPressed(MapView mapView, MapPoint mapPoint) {
-
+        scrollView.requestDisallowInterceptTouchEvent(true);
     }
 
     @Override
     public void onMapViewDragStarted(MapView mapView, MapPoint mapPoint) {
-
+        scrollView.requestDisallowInterceptTouchEvent(true);
     }
 
     @Override
     public void onMapViewDragEnded(MapView mapView, MapPoint mapPoint) {
-
+        scrollView.requestDisallowInterceptTouchEvent(true);
     }
 
     @Override
     public void onMapViewMoveFinished(MapView mapView, MapPoint mapPoint) {
-
+        scrollView.requestDisallowInterceptTouchEvent(true);
     }
 
     public void loadData(String id) {
