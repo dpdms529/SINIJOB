@@ -121,8 +121,8 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
                 String title = jsonObject1.getString("title");
                 String organization = jsonObject1.getString("organization");
 
-                items.add(new Recommendation(id, organization, title, "자동차",
-                        "25분", false));
+                items.add(new Recommendation(id, organization, title, "월",
+                        "250", false));
             }
         } catch (JSONException e) {
             e.printStackTrace();
