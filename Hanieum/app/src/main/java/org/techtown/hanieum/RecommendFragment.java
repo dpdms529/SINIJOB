@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,8 +21,13 @@ import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.techtown.hanieum.db.AppDatabase;
+import org.techtown.hanieum.db.entity.Recruit;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 public class RecommendFragment extends Fragment implements View.OnClickListener {
     RecyclerView recyclerView; // 추천 목록 리사이클러뷰
@@ -91,43 +97,47 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
     }
 
     private void loadListData() { // 항목을 로드하는 함수
+        // 항목 로드
+        AppDatabase db = AppDatabase.getInstance(this.getContext());
+        List<Recruit> rows = db.RecruitDao().getAll();
+        Log.d("dbdb", String.valueOf(rows.get(0).recruit_id));
+
         ArrayList<Recommendation> items = new ArrayList<>();
 
-        String list = getResources().getString(R.string.serverIP)+"recruit.php";
-        URLConnector task = new URLConnector(list);
+        itemNum.setText(String.valueOf(rows.size()));
 
-        task.start();
-
-        try {
-            task.join();
-        }
-        catch(InterruptedException e) {
-
-        }
-
-        String result = task.getResult();
-
-        try {
-            JSONObject jsonObject = new JSONObject(result);
-            String num = jsonObject.getString("rownum");
-            itemNum.setText(num);
-            JSONArray jsonArray = jsonObject.getJSONArray("result");
-
-            for (int i=0; i<jsonArray.length(); i++)
-            {
-                JSONObject jsonObject1 = jsonArray.getJSONObject(i);
-
-                String id = jsonObject1.getString("recruit_id");
-                String title = jsonObject1.getString("title");
-                String organization = jsonObject1.getString("organization");
-
-                items.add(new Recommendation(id, organization, title, "월",
-                        "250", false));
+        for (int i=0; i<rows.size(); i++) {
+            Recruit row = rows.get(i);
+            String salaryType = new String();
+            switch (row.salary_type_code) {     // 급여 타입에 알맞은 단어
+                case "H":
+                    salaryType = "시";
+                    break;
+                case "D":
+                    salaryType = "일";
+                    break;
+                case "M":
+                    salaryType = "월";
+                    break;
+                case "Y":
+                    salaryType = "연";
+                    break;
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
+            String sal = new String();
+            String[] tmp = row.salary.split(" ~ ");
+            if (tmp.length == 1 || tmp[0].equals(tmp[1])) {
+                String[] tmp2 = tmp[0].split("만원|원");
+                sal = tmp2[0];
+            } else {
+                String[] tmp2 = tmp[0].split("만원|원");
+                String[] tmp3 = tmp[1].split("만원|원");
+                sal = tmp2[0] + " ~ " + tmp3[0];
+            }
+            DistanceCalculator distance =  new DistanceCalculator("127.12934", "35.84688", row.x_coordinate, row.y_coordinate);
+            Double dist = distance.getStraightDist();   // 직선거리 구하는 함수
+            items.add(new Recommendation(row.recruit_id, row.organization, row.recruit_title, salaryType, sal, dist, false));
         }
-
+        Collections.sort(items);    // 거리순으로 정렬
         adapter.setItems(items);
     }
 }

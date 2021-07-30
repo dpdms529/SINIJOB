@@ -1,19 +1,19 @@
 package org.techtown.hanieum;
 
 public class DistanceCalculator {
-    private String start_x; // 시작지점 x좌표
-    private String start_y; // 시작지점 y좌표
-    private String end_x; // 끝지점 x좌표
-    private String end_y; // 끝지점 y좌표
+    private static Double start_x; // 시작지점 x좌표
+    private static Double start_y; // 시작지점 y좌표
+    private static Double end_x; // 끝지점 x좌표
+    private static Double end_y; // 끝지점 y좌표
 
     public DistanceCalculator(String start_x, String start_y, String end_x, String end_y){
-        this.start_x = start_x;
-        this.start_y = start_y;
-        this.end_x = end_x;
-        this.end_y = end_y;
+        this.start_x = Double.valueOf(start_x);
+        this.start_y = Double.valueOf(start_y);
+        this.end_x = Double.valueOf(end_x);
+        this.end_y = Double.valueOf(end_y);
     }
 
-    private static double getStraightDist(double start_x, double start_y, double end_x, double end_y) {
+    static double getStraightDist() {
         double theta = start_x - end_x;
         double dist = Math.sin(deg2rad(start_y)) * Math.sin(deg2rad(end_y)) + Math.cos(deg2rad(start_y)) * Math.cos(deg2rad(end_y)) * Math.cos(deg2rad(theta));
 
