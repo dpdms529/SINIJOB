@@ -56,6 +56,7 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <ScrollView
+        android:id="@+id/detailScrollView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/applyButton"
@@ -739,16 +740,64 @@
                     android:text="제출서류양식"
                     android:textSize="17dp"/>
 
-                <TextView
-                    android:id="@+id/attachFileUrl"
+                -<LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
-                    android:linksClickable="true"
-                    android:autoLink="web"
-                    android:text="-"
-                    android:textColor="@color/black"
-                    android:textSize="17dp" />
+                    android:orientation="vertical">
+                    <TextView
+                        android:id="@+id/attachFileUrl1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:linksClickable="true"
+                        android:text="다운로드 링크 1"
+                        android:textColor="@color/black"
+                        android:textSize="17dp"
+                        android:visibility="gone"/>
+                    <TextView
+                        android:id="@+id/attachFileUrl2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:linksClickable="true"
+                        android:text="다운로드 링크 2"
+                        android:textColor="@color/black"
+                        android:textSize="17dp"
+                        android:visibility="gone"/>
+                    <TextView
+                        android:id="@+id/attachFileUrl3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:linksClickable="true"
+                        android:text="다운로드 링크 3"
+                        android:textColor="@color/black"
+                        android:textSize="17dp"
+                        android:visibility="gone"/>
+                    <TextView
+                        android:id="@+id/attachFileUrl4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:linksClickable="true"
+                        android:text="다운로드 링크 4"
+                        android:textColor="@color/black"
+                        android:textSize="17dp"
+                        android:visibility="gone"/>
+                    <TextView
+                        android:id="@+id/attachFileUrl5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:linksClickable="true"
+                        android:text="다운로드 링크 5"
+                        android:textColor="@color/black"
+                        android:textSize="17dp"
+                        android:visibility="gone"/>
+                </LinearLayout>
+
+
             </LinearLayout>
 
             <View
