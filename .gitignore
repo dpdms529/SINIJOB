@@ -7,4 +7,8 @@ __pycache__/
 ### macOS ###
 .DS_Store
 
+<<<<<<< HEAD
 key.xml
+=======
+key.xml
+>>>>>>> 01b3ec9c8fdf77c7dc47173bc88a52ecd48026ac
