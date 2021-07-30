@@ -9,13 +9,15 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.chip.Chip;
-
 import java.util.ArrayList;
 
-public class RegionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+import static org.techtown.hanieum.SharedPreference.getArrayPref;
+import static org.techtown.hanieum.SharedPreference.setArrayPref;
+
+public class RegionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements OnRegion1ItemClickListener, OnRegion2ItemClickListener {
     ArrayList<Region> items = new ArrayList<Region>();
-    ArrayList<ChipList> chipList = new ArrayList<ChipList>(); // 선택된 칩을 관리하는 list
+    OnRegion1ItemClickListener listener1;
+    OnRegion2ItemClickListener listener2;
     private int lastSelectedPosition1 = -1; // 전에 선택한 아이템의 위치
     private int lastSelectedPosition2 = -1; // 전에 선택한 아이템의 위치
 
@@ -26,9 +28,9 @@ public class RegionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         View view = inflater.inflate(R.layout.region_job_item, viewGroup, false);
 
         if (viewType == Code.ViewType.REGION1) { // 지역 분류(시/도)이면
-            return new Region1ViewHolder(view);
+            return new Region1ViewHolder(view, this);
         } else if (viewType == Code.ViewType.REGION2) { // 지역 분류(구/군/시)이면
-            return new Region2ViewHolder(view);
+            return new Region2ViewHolder(view, this);
         } else { // 지역 분류(동/읍/면)이면
             return new Region3ViewHolder(view);
         }
@@ -72,26 +74,50 @@ public class RegionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         items.set(position, item);
     }
 
+    public void setRegion1ClickListener(OnRegion1ItemClickListener listener) { this.listener1 = listener; }
+
+    public void setRegion2ClickListener(OnRegion2ItemClickListener listener) { this.listener2 = listener; }
+
+    @Override
+    public void OnRegion1Click(Region1ViewHolder holder, View view, int position) {
+        if (listener1 != null) {
+            listener1.OnRegion1Click(holder, view, position);
+        }
+    }
+
+    @Override
+    public void OnRegion2Click(Region2ViewHolder holder, View view, int position) {
+        if (listener2 != null) {
+            listener2.OnRegion2Click(holder, view, position);
+        }
+    }
+
     public class Region1ViewHolder extends RecyclerView.ViewHolder {
         TextView regionText;
 
-        public Region1ViewHolder(View view) {
+        public Region1ViewHolder(View view, OnRegion1ItemClickListener listener) {
             super(view);
             regionText = view.findViewById(R.id.regionJobText);
 
-            view.setOnClickListener(new View.OnClickListener() {
+            itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (getLayoutPosition() != lastSelectedPosition1) { // 이미 선택한 아이템이 아니면
-                        if (lastSelectedPosition1 >= 0) { // 이전에 선택한 아이템이 있으면
-                            items.get(lastSelectedPosition1).setSelected(false);
-                            notifyItemChanged(lastSelectedPosition1); // lastSelectedPosition 아이템 갱신
-                        }
-                        items.get(getLayoutPosition()).setSelected(true);
-                        regionText.setBackgroundColor(Color.parseColor("#80cbc4"));
+                    int position = getAdapterPosition();
+                    if (listener != null) {
+                        if (getLayoutPosition() != lastSelectedPosition1) { // 이미 선택한 아이템이 아니면
+                            if (lastSelectedPosition1 >= 0) { // 이전에 선택한 아이템이 있으면
+                                items.get(lastSelectedPosition1).setSelected(false);
+                                notifyItemChanged(lastSelectedPosition1); // lastSelectedPosition 아이템 갱신
+                            }
+                            items.get(getLayoutPosition()).setSelected(true);
+                            notifyItemChanged(position);
 
-                        lastSelectedPosition1 = getLayoutPosition();
+                            lastSelectedPosition1 = getLayoutPosition();
+                        }
+
+                        listener.OnRegion1Click(Region1ViewHolder.this, v, position);
                     }
+
                 }
             });
         }
@@ -109,23 +135,29 @@ public class RegionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     public class Region2ViewHolder extends RecyclerView.ViewHolder {
         TextView regionText;
 
-        public Region2ViewHolder(View view) {
+        public Region2ViewHolder(View view, OnRegion2ItemClickListener listener) {
             super(view);
             regionText = view.findViewById(R.id.regionJobText);
 
-            view.setOnClickListener(new View.OnClickListener() {
+            itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (getLayoutPosition() != lastSelectedPosition2) { // 이미 선택한 아이템이 아니면
-                        if (lastSelectedPosition2 >= 0) { // 이전에 선택한 아이템이 있으면
-                            items.get(lastSelectedPosition2).setSelected(false);
-                            notifyItemChanged(lastSelectedPosition2); // lastSelectedPosition 아이템 갱신
-                        }
-                        items.get(getLayoutPosition()).setSelected(true);
-                        regionText.setBackgroundColor(Color.parseColor("#80cbc4"));
+                    int position = getAdapterPosition();
+                    if(listener != null) {
+                        if (getLayoutPosition() != lastSelectedPosition2) { // 이미 선택한 아이템이 아니면
+                            if (lastSelectedPosition2 >= 0) { // 이전에 선택한 아이템이 있으면
+                                items.get(lastSelectedPosition2).setSelected(false);
+                                notifyItemChanged(lastSelectedPosition2); // lastSelectedPosition 아이템 갱신
+                            }
+                            items.get(getLayoutPosition()).setSelected(true);
+                            notifyItemChanged(position);
 
-                        lastSelectedPosition2 = getLayoutPosition();
+                            lastSelectedPosition2 = getLayoutPosition();
+                        }
+
+                        listener.OnRegion2Click(Region2ViewHolder.this, v, position);
                     }
+
                 }
             });
         }
@@ -150,19 +182,24 @@ public class RegionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    ArrayList<ChipList> chipList = getArrayPref(itemView.getContext(), SharedPreference.REGION_LIST);
                     int position = getLayoutPosition();
+
                     if (items.get(position).isSelected()) { // 이미 클릭된 상태이면
                         // 아이템 삭제 코드
+                        for(int i=0;i<chipList.size(); i++) {
+                            if(chipList.get(i).getName().equals(items.get(position).getRegion3()))
+                                chipList.remove(i);
+                        }
 
                         items.get(position).setSelected(false);
-                        regionText.setBackgroundColor(Color.WHITE);
                     } else {
                         items.get(position).setSelected(true);
-                        regionText.setBackgroundColor(Color.parseColor("#80cbc4"));
                         chipList.add(new ChipList(items.get(position).getRegion3(), position));
                     }
-
-                    loadChip();
+                    setArrayPref(itemView.getContext(), chipList, SharedPreference.REGION_LIST);
+                    notifyItemChanged(position);
+                    RegionActivity.loadChip(itemView.getContext(), RegionActivity.chipGroup);
                 }
             });
         }
@@ -173,30 +210,6 @@ public class RegionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 regionText.setBackgroundColor(Color.WHITE);
             } else { // 선택된 아이템이면
                 regionText.setBackgroundColor(Color.parseColor("#80cbc4"));
-            }
-        }
-
-        public void loadChip() {
-            RegionActivity.chipGroup.removeAllViews(); // 칩그룹 초기화
-            for (int i=0;i<chipList.size();i++) { // chipList에 있는 것을 추가
-                String name = chipList.get(i).getName();
-                int position = chipList.get(i).getPosition();
-
-                Chip chip = new Chip(itemView.getContext());
-                chip.setText(name);
-                chip.setCloseIconResource(R.drawable.close);
-                chip.setCloseIconVisible(true);
-                chip.setOnCloseIconClickListener(new View.OnClickListener() { // 삭제 클릭 시
-                    @Override
-                    public void onClick(View v) {
-                        // 아이템 삭제 코드
-
-                        RegionActivity.chipGroup.removeView(chip);
-                        items.get(position).setSelected(false);
-                        notifyItemChanged(position);
-                    }
-                });
-                RegionActivity.chipGroup.addView(chip);
             }
         }
     }
