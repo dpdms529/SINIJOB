@@ -6,14 +6,25 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+
+import static org.techtown.hanieum.SharedPreference.WORKFORM_LIST;
+import static org.techtown.hanieum.SharedPreference.getArrayPref;
+import static org.techtown.hanieum.SharedPreference.getWorkFormPref;
+import static org.techtown.hanieum.SharedPreference.setWorkFormPref;
 
 public class FilteringActivity extends AppCompatActivity implements View.OnClickListener {
     Toolbar toolbar;
@@ -26,6 +37,19 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
     Button resetButton; // 초기화 버튼
     Button regionButton; // 지역 선택 화면으로 이동하는 버튼
     Button jobButton; // 직종 선택 화면으로 이동하는 버튼
+    RadioGroup careerGroup;
+    RadioGroup licenseGroup;
+    RadioButton noCareerButton;
+    RadioButton yesCareerButton;
+    RadioButton noLicenseButton;
+    RadioButton yesLicenseButton;
+    CheckBox workFormCheckBox1; // 정규직 체크박스
+    CheckBox workFormCheckBox2; // 계약직 체크박스
+    SharedPreferences pref;
+    SharedPreferences.Editor edit;
+    String careerStatus = "0";
+    String licenseStatus = "0";
+    Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +63,78 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
         resetButton = findViewById(R.id.resetButton);
         regionButton = findViewById(R.id.regionButton);
         jobButton = findViewById(R.id.jobButton);
+        careerGroup = findViewById(R.id.careerGroup);
+        licenseGroup = findViewById(R.id.licenseGroup);
+        noCareerButton = findViewById(R.id.noCareer);
+        yesCareerButton = findViewById(R.id.yesCareer);
+        noLicenseButton = findViewById(R.id.noLicense);
+        yesLicenseButton = findViewById(R.id.yesLicense);
+        workFormCheckBox1 = findViewById(R.id.workFormCheck1);
+        workFormCheckBox2 = findViewById(R.id.workFormCheck2);
+        context = this;
+
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // 경력 조건 저장
+                pref = getSharedPreferences(SharedPreference.CAREER_STATUS, 0);
+                edit = pref.edit();
+                edit.putString(SharedPreference.CAREER_STATUS, careerStatus);
+                edit.commit();
+
+                // 자격증 조건 저장
+                pref = getSharedPreferences(SharedPreference.LICENSE_STATUS, 0);
+                edit = pref.edit();
+                edit.putString(SharedPreference.LICENSE_STATUS, "1");
+                edit.commit();
+
+                Toast.makeText(getApplicationContext(),"저장 완료",Toast.LENGTH_SHORT).show();
+
+            }
+
+        });
+
+        careerGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                if(i == R.id.noCareer) { // 적용 안함을 선택하면
+                    careerStatus = "0";
+//                    pref = getSharedPreferences(SharedPreference.CAREER_STATUS, 0);
+//                    edit = pref.edit();
+//                    edit.putString(SharedPreference.CAREER_STATUS, "0");
+//                    edit.commit();
+                    Toast.makeText(FilteringActivity.this, "noCareer",Toast.LENGTH_SHORT).show();
+                } else if(i == R.id.yesCareer) { // 나의 경력 적용(이력서)를 선택하면
+                    careerStatus = "1";
+//                    pref = getSharedPreferences(SharedPreference.CAREER_STATUS, 0);
+//                    edit = pref.edit();
+//                    edit.putString(SharedPreference.CAREER_STATUS, "1");
+//                    edit.commit();
+                }
+            }
+        });
+
+        licenseGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                if(i == R.id.noLicense) { // 적용 안함을 선택하면
+                    licenseStatus = "0";
+//                    pref = getSharedPreferences(SharedPreference.LICENSE_STATUS, 0);
+//                    edit = pref.edit();
+//                    edit.putString(SharedPreference.LICENSE_STATUS, "0");
+//                    edit.commit();
+                } else if(i == R.id.yesLicense) { // 나의 자격증 적용(이력서)를 선택하면
+                    licenseStatus = "1";
+//                    pref = getSharedPreferences(SharedPreference.LICENSE_STATUS, 0);
+//                    edit = pref.edit();
+//                    edit.putString(SharedPreference.LICENSE_STATUS, "1");
+//                    edit.commit();
+                }
+            }
+        });
+
+
+
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true); // 뒤로가기
@@ -111,4 +207,5 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
         contentsAdapter.setItems(contentsItems);
         numAdapter.setItems(numItems);
     }
+
 }

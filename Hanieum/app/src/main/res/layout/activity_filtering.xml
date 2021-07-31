@@ -189,6 +189,7 @@
                 android:textStyle="bold" />
 
             <RadioGroup
+                android:id="@+id/careerGroup"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginHorizontal="25dp" >
@@ -258,6 +259,7 @@
                 android:textStyle="bold" />
 
             <RadioGroup
+                android:id="@+id/licenseGroup"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginHorizontal="25dp" >
