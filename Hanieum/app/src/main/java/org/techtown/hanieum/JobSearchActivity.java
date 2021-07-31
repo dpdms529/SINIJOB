@@ -115,7 +115,9 @@ public class JobSearchActivity extends AppCompatActivity {
                 ArrayList<ChipList> chipList = getArrayPref(context, SharedPreference.JOB_LIST);
 
                 for (int i=0; i<category.size(); i++) {
-                    if (category.get(i).category_code.length() != 2 && category.get(i).category_name.contains(newText)) {
+                    if (newText.equals("")) {
+                        break;
+                    } else if (category.get(i).category_code.length() != 2 && category.get(i).category_name.contains(newText)) {
                         items.add(new Search(category.get(i).category_name, Code.ViewType.JOB_SEARCH));
                     }
                 }
@@ -125,6 +127,8 @@ public class JobSearchActivity extends AppCompatActivity {
                     for (int j=0; j<chipList.size(); j++) {
                         if (items.get(i).getTitle().equals(chipList.get(j).getName())) {
                             items.get(i).setChecked(true);
+//                            setArrayPref(context, chipList, SharedPreference.JOB_LIST);
+//                            adapter.notifyItemChanged(i);
                         }
                     }
                 }
@@ -167,13 +171,24 @@ public class JobSearchActivity extends AppCompatActivity {
                         if (chipList.get(i).getName().equals(name)) {
                             chipList.remove(i);
 
-                            if ((adapter.getItemCount()!=0) && name.equals(adapter.getItem(position).getTitle())) {
-                                adapter.getItem(position).setChecked(false);
-                                setArrayPref(context, chipList, SharedPreference.JOB_LIST);
-                                adapter.notifyItemChanged(position);
-                            } else {
-                                setArrayPref(context, chipList, SharedPreference.JOB_LIST);
+                            for (int j=0; j<adapter.getItemCount(); j++) {
+                                if (name.equals(adapter.getItem(i).getTitle())) {
+                                    Log.d("delete", String.valueOf(i));
+                                    adapter.getItem(i).setChecked(false);
+                                    setArrayPref(context, chipList, SharedPreference.JOB_LIST);
+                                    adapter.notifyItemChanged(i);
+                                } else {
+                                    setArrayPref(context, chipList, SharedPreference.JOB_LIST);
+                                }
                             }
+//                            if ((adapter.getItemCount()!=0) && name.equals(adapter.getItem(position).getTitle())) {
+//                                Log.d("delete", String.valueOf(position));
+//                                adapter.getItem(position).setChecked(false);
+//                                setArrayPref(context, chipList, SharedPreference.JOB_LIST);
+//                                adapter.notifyItemChanged(position);
+//                            } else {
+//                                setArrayPref(context, chipList, SharedPreference.JOB_LIST);
+//                            }
 
                         }
                     }
