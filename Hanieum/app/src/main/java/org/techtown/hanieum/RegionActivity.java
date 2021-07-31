@@ -13,6 +13,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -24,6 +25,7 @@ import org.techtown.hanieum.db.AppDatabase;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static org.techtown.hanieum.SharedPreference.getArrayPref;
@@ -83,12 +85,12 @@ public class RegionActivity extends AppCompatActivity implements View.OnClickLis
 
                 List<String> item2 = db.BdongDao().getsigungu(region1.getRegion1());
                 for(int i=0;i<item2.size();i++) {
-                    items2.add(new Region(region1.getRegion1(), item2.get(i), null, Code.ViewType.REGION2));
+                    items2.add(new Region(region1.getRegion1(), item2.get(i), null, "0" , Code.ViewType.REGION2));
                 }
 
                 for(int i=0;i<items2.size();i++) {
                     for(int j=0;j<chipList.size();j++) {
-                        if(items2.get(i).getRegion2().equals(chipList.get(j).getName())) {
+                        if(items2.get(i).equals(chipList.get(j).getName())) {
                             items2.get(i).setSelected(true);
                         }
                     }
@@ -106,14 +108,16 @@ public class RegionActivity extends AppCompatActivity implements View.OnClickLis
                 ArrayList<ChipList> chipList = getArrayPref(context, SharedPreference.REGION_LIST);
 
                 List<String> item3 = db.BdongDao().geteupmyeondong(item.getRegion1(), item.getRegion2());
+                String bDongCode = db.BdongDao().getBDongCode(item.getRegion1(), item.getRegion2(), item.getRegion3());
+                Log.e("RegionDatabase", item3.get(0));
                 for(int i=0;i<item3.size();i++)
                 {
-                    items3.add(new Region(item.getRegion1(), item.getRegion2(), item3.get(i), Code.ViewType.REGION3));
+                    items3.add(new Region(item.getRegion1(), item.getRegion2(), item3.get(i), bDongCode, Code.ViewType.REGION3));
                 }
 
                 for(int i=0;i< items3.size();i++) {
                     for(int j=0;j<chipList.size();j++) {
-                        if(items3.get(i).getRegion3().equals(chipList.get(j).getName())) {
+                        if(items3.get(i).equals(chipList.get(j).getName())) {
                             items3.get(i).setSelected(true);
                         }
                     }
@@ -168,7 +172,7 @@ public class RegionActivity extends AppCompatActivity implements View.OnClickLis
         List<String> item1 = db.BdongDao().getsido();
 
         for(int i=0;i<item1.size();i++) {
-            items1.add(new Region(item1.get(i), null, null, Code.ViewType.REGION1));
+            items1.add(new Region(item1.get(i), null, null, "0" , Code.ViewType.REGION1));
         }
 
         adapter1.setItems(items1);
