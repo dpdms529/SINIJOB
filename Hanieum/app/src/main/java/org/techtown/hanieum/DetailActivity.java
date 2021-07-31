@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,6 +13,9 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.util.Linkify;
+import android.util.Log;
+import android.util.Patterns;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +33,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -58,6 +63,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     String epX;
     String epY;
     String url;
+    String contact;
     Context context;
 
     @Override
@@ -151,64 +157,62 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     public void onClick(View v) {
         if (v == applyButton) {
-            CharSequence[] items = {"전화", "문자", "이메일"};
-            AlertDialog.Builder dialog = new AlertDialog.Builder(this, android.R.style.Theme_Material_Light_Dialog_Alert);
-            dialog.setTitle("지원 유형을 선택하세요");
-            dialog.setItems(items, new DialogInterface.OnClickListener() {
+            // 접수 방법 알림 다이얼로그
+            AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+            alertDialog.setTitle("접수 방법을 확인해주세요\n");
+            alertDialog.setMessage(rcptMthd.getText());
+            alertDialog.setPositiveButton("확인", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    if (which == 0) {
-                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("tel:01012341234"));
-                        startActivity(intent);
-                    } else if (which == 1) {
-                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("tel:01012341234"));
-                        intent.setType("vnd.android-dir/mms-sms");
-                        intent.putExtra("address", "01012341234");
-                        intent.putExtra("sms_body", "message");
-                        startActivity(intent);
-                    } else {
-                        String uriText = "mailto:email@email.com" + "?subject=" +
-                                Uri.encode("subject") + "&body=" + Uri.encode("mail body");
-                        Uri uri = Uri.parse(uriText);
-
-                        Intent intent = new Intent(Intent.ACTION_SENDTO);
-                        intent.setData(uri);
-                        startActivity(Intent.createChooser(intent, "이메일 앱을 선택하세요"));
+                    // 아이템 추가
+                    List<CharSequence> items = new ArrayList<>();
+                    if (!contact.equals("")) {      // 전화번호 있을 경우
+                        items.add("전화");
                     }
+                    items.add("문자");
+                    items.add("이메일");
+                    items.add("워크넷");
+                    CharSequence[] charSequences = items.toArray(new CharSequence[items.size()]);
+
+                    AlertDialog.Builder applyDialog = new AlertDialog.Builder(context, android.R.style.Theme_Material_Light_Dialog_Alert);
+                    applyDialog.setTitle("지원 유형을 선택하세요");
+                    applyDialog.setItems(charSequences, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            if (charSequences[which] == "전화") {
+                                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("tel:"+contact));
+                                startActivity(intent);
+                            } else if (charSequences[which] == "문자") {
+                                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("tel:"));
+                                intent.setType("vnd.android-dir/mms-sms");
+                                intent.putExtra("address", "");
+                                intent.putExtra("sms_body", companyNameDetail.getText()+"에 지원합니다.");
+                                startActivity(intent);
+                            } else if (charSequences[which] == "이메일") {
+                                String uriText = "mailto:" + "?subject=" +
+                                        Uri.encode(companyNameDetail.getText()+"에 지원합니다.") + "&body=" + Uri.encode("");
+                                Uri uri = Uri.parse(uriText);
+
+                                Intent intent = new Intent(Intent.ACTION_SENDTO);
+                                intent.setData(uri);
+                                startActivity(Intent.createChooser(intent, "이메일 앱을 선택하세요"));
+                            } else if (charSequences[which] == "워크넷") {
+                                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                                startActivity(intent);
+                            }
+                        }
+                    });
+                    applyDialog.show();
                 }
             });
-            dialog.show();
+            alertDialog.show();
         } else if (v == findWay) {
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("kakaomap://route?sp=37.537229,127.005515&ep="+epY+","+epX+"&by=CAR"));
-            startActivity(intent);
-
-//            Intent launch = getPackageManager().getLaunchIntentForPackage("net.daum.android.map");
-//
-//            if (launch == null) {
-//                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=net.daum.android.map")));
-//            } else {
-//                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("kakaomap://route?sp=37.537229,127.005515&ep="+epY+","+epX+"&by=CAR"));
-//                startActivity(intent);
-//            }
-
-//            PackageManager manager = context.getPackageManager();
-//            PackageInfo pi;
-//            try {
-//                pi = manager.getPackageInfo("net.daum.android.map", PackageManager.GET_META_DATA);
-//                if(pi!=null){
-////                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=net.daum.android.map")));
-//                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("kakaomap://route?sp=37.537229,127.005515&ep="+epY+","+epX+"&by=CAR"));
-//                    startActivity(intent);
-////                    return;
-//                }
-//            } catch (PackageManager.NameNotFoundException e) {
-////                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("kakaomap://route?sp=37.537229,127.005515&ep="+epY+","+epX+"&by=CAR"));
-////                startActivity(intent);
-//                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=net.daum.android.map")));
-//            }
-
-
-
+            try {
+                startActivity(intent);
+            } catch (ActivityNotFoundException e) {
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=net.daum.android.map")));
+            }
         } else if (v == goWorknetBtn) {
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
             startActivity(intent);
@@ -314,16 +318,14 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             JSONArray jsonArray = jsonObject.getJSONArray("result");
             JSONObject jsonObject1 = jsonArray.getJSONObject(0);
 
-            String school = "";
             String careerMin = "";
             String careerRequired = "";
-            String salaryType = "";
 
             String organization = jsonObject1.getString("organization");
             String title = jsonObject1.getString("title");
             String enrollment_name = jsonObject1.getString("enrollment_name");
-            String min_education_code = jsonObject1.getString("min_education_code");
-            String career_required = jsonObject1.getString("career_required");
+            String education_scope = jsonObject1.getString("education_scope");
+            String required = jsonObject1.getString("required");
             String career_min = jsonObject1.getString("career_min");
             String basic_address = jsonObject1.getString("basic_address");
             String detail_address = jsonObject1.getString("detail_address");
@@ -331,7 +333,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             String content = jsonObject1.getString("content");
             String num_of_people = jsonObject1.getString("num_of_people");
             String etc_info = jsonObject1.getString("etc_info");
-            String salary_type_code = jsonObject1.getString("salary_type_code");
+            String salary_type_name = jsonObject1.getString("salary_type_name");
             String salary_ = jsonObject1.getString("salary");
             String work_time = jsonObject1.getString("work_time");
             String work_day = jsonObject1.getString("work_day");
@@ -351,62 +353,21 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             String total_worker = jsonObject1.getString("total_worker");
             String sales_amount = jsonObject1.getString("sales_amount");
             url = jsonObject1.getString("url");
+            contact = jsonObject1.getString("contact");
 
-            // 학력조건
-            switch (min_education_code) {
-                case "00":
-                    school = "학력무관";
-                    break;
-                case "01":
-                    school = "초졸이하";
-                    break;
-                case "02":
-                    school = "중졸";
-                    break;
-                case "03":
-                    school = "고졸";
-                    break;
-                case "04":
-                    school = "대졸(2-3년)";
-                    break;
-                case "05":
-                    school = "대졸(4년)";
-                    break;
-                case "06":
-                    school = "석사";
-                    break;
-                case "07":
-                    school = "박사";
-                    break;
-            }
             // 경력조건
-            switch (career_required) {
-                case "0":
-                    careerRequired = "경력무관";
-                    careerMin = "경력무관";
+            switch (required) {
+                case "무관":
+                    careerRequired = "경력 무관";
+                    careerMin = "경력 무관";
                     break;
-                case "1":
-                    careerRequired = "경력우대";
+                case "우대":
+                    careerRequired = "경력 우대";
                     careerMin = "경력 " + career_min + "개월 우대";
                     break;
-                case "2":
-                    careerRequired = "경력필수";
+                case "필수":
+                    careerRequired = "경력 필수";
                     careerMin = "경력 " + career_min + "개월 필수";
-                    break;
-            }
-            // 임금 형태
-            switch (salary_type_code) {
-                case "D":
-                    salaryType = "일급";
-                    break;
-                case "H":
-                    salaryType = "시급";
-                    break;
-                case "M":
-                    salaryType = "월급";
-                    break;
-                case "Y":
-                    salaryType = "연봉";
                     break;
             }
             // 우대조건
@@ -416,17 +377,17 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             companyNameDetail.setText(organization);
             titleDetail.setText(title);
             workFormDetail.setText(enrollment_name);
-            schoolDetail.setText(school);
+            schoolDetail.setText(education_scope);
             careerDetail.setText(careerRequired);
             addressDetail.setText(basic_address + " " + detail_address);
             jobsNm.setText(job_name);
             jobCont.setText(content);
             enterTpNm.setText(careerMin);
-            eduNm.setText(school);
+            eduNm.setText(education_scope);
             empTpNm.setText(enrollment_name);
             collectPsncnt.setText(num_of_people);
             etcHopeCont.setText(etc_info);
-            salaryTypeCode.setText(salaryType);
+            salaryTypeCode.setText(salary_type_name);
             salary.setText(salary_);
             workTime.setText(work_time);
             workDay.setText(work_day);
