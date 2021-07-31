@@ -42,7 +42,7 @@ public class RegionSearchActivity extends AppCompatActivity {
     Toolbar toolbar;
     RecyclerView recyclerView; // 검색 항목 리사이클러뷰
     static ChipGroup chipGroup; // 선택 항목을 나타내는 ChipGroup
-    static SearchAdapter adapter; // 지역 분류(동/읍/면) 어댑터
+    static SearchAdapter adapter; // 검색 항목 어댑터
     Context context;
 
     List<Bdong> bDong;
@@ -109,12 +109,14 @@ public class RegionSearchActivity extends AppCompatActivity {
                 ArrayList<Search> items = new ArrayList<>();
                 ArrayList<ChipList> chipList = getArrayPref(context, SharedPreference.REGION_LIST);
 
-                for(int i=0;i<bDong.size();i++) {
-                    items.add(new Search(bDong.get(i).sido_name + " " + bDong.get(i).sigungu_name + " " + bDong.get(i).eupmyeondong_name, Code.ViewType.REGION_SEARCH));
+                for(int i=0; i<bDong.size(); i++) {
+                    if(bDong.get(i).sido_name.contains(newText) || bDong.get(i).sigungu_name.contains(newText) || bDong.get(i).eupmyeondong_name.contains(newText)) {
+                        items.add(new Search(bDong.get(i).sido_name + " " + bDong.get(i).sigungu_name + " " + bDong.get(i).eupmyeondong_name, Code.ViewType.REGION_SEARCH));
+                    }
                 }
 
-                for(int i=0;i<items.size();i++) {
-                    for(int j=0;j<chipList.size();j++) {
+                for(int i=0; i<items.size(); i++) {
+                    for(int j=0; j<chipList.size(); j++) {
                         if(items.get(i).getTitle().equals(chipList.get(j).getName())) {
                             items.get(i).setChecked(true);
                         }
@@ -137,8 +139,8 @@ public class RegionSearchActivity extends AppCompatActivity {
     }
 
 
-    public static void loadChip(Context context, ChipGroup chipgroup) {
-        chipgroup.removeAllViews();
+    public static void loadChip(Context context, ChipGroup chipGroup) {
+        chipGroup.removeAllViews();
         ArrayList<ChipList> chipList = getArrayPref(context, SharedPreference.REGION_LIST);
 
         for(int i=0;i<chipList.size();i++) {
@@ -166,7 +168,7 @@ public class RegionSearchActivity extends AppCompatActivity {
                             }
                         }
                     }
-                    chipgroup.removeView(chip);
+                    chipGroup.removeView(chip);
                 }
             });
         }
