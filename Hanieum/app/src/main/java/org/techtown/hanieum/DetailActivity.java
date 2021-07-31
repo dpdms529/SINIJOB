@@ -47,6 +47,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     TextView pfCond, etcPfCond, certificate, compAbl; // 우대사항
     TextView corpNm, reperNm, indTpCdNm, corpAddr, totPsncnt, yrSalesAmt; // 기업정보
     ScrollView scrollView;
+    Button shareButton;
 
     String url;
     Context context;
@@ -103,6 +104,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         totPsncnt = findViewById(R.id.totPsncnt);
         yrSalesAmt = findViewById(R.id.yrSalesAmt);
         scrollView = findViewById(R.id.detailScrollView);
+        shareButton = findViewById(R.id.shareButton);
 
         mapView = new MapView(this);
         ViewGroup mapViewContainer = (ViewGroup) findViewById(R.id.map);
@@ -120,6 +122,8 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
         goWorknetBtn.setOnClickListener(this);
         goWorknetImg.setOnClickListener(this);
+
+        shareButton.setOnClickListener(this);
     }
 
     @Override
@@ -140,6 +144,14 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         } else if (v == goWorknetImg) {
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.work.go.kr"));
             startActivity(intent);
+        } else if(v == shareButton){
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.putExtra(Intent.EXTRA_TEXT,"text");
+            intent.setType("text/plain");
+
+            Intent shareIntent = Intent.createChooser(intent,null);
+            startActivity(shareIntent);
+
         }
     }
 
