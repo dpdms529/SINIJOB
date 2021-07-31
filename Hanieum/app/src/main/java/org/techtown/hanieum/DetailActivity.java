@@ -1,5 +1,6 @@
 package org.techtown.hanieum;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -8,20 +9,18 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.util.Linkify;
-import android.util.Log;
-import android.util.Patterns;
-import android.view.Gravity;
+import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ScrollView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import net.daum.mf.map.api.MapPOIItem;
@@ -33,32 +32,28 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class DetailActivity extends AppCompatActivity implements View.OnClickListener,
+public class DetailActivity extends AppCompatActivity implements View.OnClickListener, SeekBar.OnSeekBarChangeListener,
         MapView.POIItemEventListener, MapView.MapViewEventListener {
     Toolbar toolbar;
     MapView mapView;
     Button applyButton;
     Button findWay;
     Button goWorknetBtn;
+    Button shareButton;
     ImageView goWorknetImg;
     TextView companyNameDetail;
     TextView titleDetail;
     TextView workFormDetail;
     TextView schoolDetail;
     TextView careerDetail;
-    TextView addressDetail;
-    TextView jobsNm, jobCont, enterTpNm, eduNm, empTpNm, collectPsncnt, etcHopeCont; // 모집조건
-    TextView salaryTypeCode, salary, workTime, workDay, retirepay, fourIns, etcWelfare; // 근무조건
-    TextView receiptCloseDt, selMthd, rcptMthd, submitDoc; //접수방법
-    ArrayList<TextView> attachFileUrl = new ArrayList<>(); //접수방법_제출서류양식
-    TextView pfCond, etcPfCond, certificate, compAbl; // 우대사항
-    TextView corpNm, reperNm, indTpCdNm, corpAddr, totPsncnt, yrSalesAmt; // 기업정보
     ScrollView scrollView;
-    Button shareButton;
+    SeekBar textSizeChangeBar;
+    TextView textSize;
 
     String epX;
     String epY;
@@ -66,6 +61,92 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     String contact;
     Context context;
 
+    ArrayList<TextView> attachFileUrl = new ArrayList<>(); //접수방법_제출서류양식
+
+    HashMap<String,TextView> address = new HashMap<String,TextView>(){{ //근무예정지
+        put("addressT", null);
+        put("addressDetailT",null);
+        put("addressDetail",null);  //주소
+    }};
+
+    HashMap<String,TextView> recruitCd = new HashMap<String,TextView>(){{   //모집조건
+        put("recruitCdT",null);
+        put("jobsNmT",null);
+        put("jobsNm",null); //모집직종
+        put("jobsContT",null);
+        put("jobCont",null); //직무내용
+        put("enterTpNmT",null);
+        put("enterTpNm",null); //경력조건
+        put("eduNmT",null);
+        put("eduNm",null); //학력조건
+        put("empTpNmT",null);
+        put("empTpNm",null); //고용형태
+        put("collectPsncntT",null);
+        put("collectPsncnt",null); //모집인원
+        put("collectPsncntM",null);
+        put("etcHopeContT",null);
+        put("etcHopeCont",null); //기타안내
+    }};
+
+    HashMap<String,TextView> workCd = new HashMap<String,TextView>(){{  //근무조건
+        put("workCdT",null);
+        put("salaryT",null);
+        put("salaryTypeCode",null); //임금조건(연,월,일,시)
+        put("salary",null); //임금조건(금액)
+        put("workTimeT",null);
+        put("workTime",null); //근무시간
+        put("workDayT",null);
+        put("workDay",null); //근무형태
+        put("retirepayT",null);
+        put("retirepay",null); //퇴직급여
+        put("fourInsT",null);
+        put("fourIns",null); //연금4대보험
+        put("etcWelfareT",null);
+        put("etcWelfare",null); //기타복리후생
+    }};
+
+    HashMap<String,TextView> apply = new HashMap<String,TextView>(){{   //접수방법
+        put("applyT",null);
+        put("receiptCloseDtT",null);
+        put("receiptCloseDt",null); //접수마감일
+        put("selMthdT",null);
+        put("selMthd",null); //전형방법
+        put("rcptMthdT",null);
+        put("rcptMthd",null); //접수방법
+        put("submitDocT",null);
+        put("submitDoc",null); //제출서류 준비물
+        put("attachFileUrlT",null);
+    }};
+
+    HashMap<String,TextView> prefer = new HashMap<String,TextView>(){{  //우대사항
+        put("preferT",null);
+        put("pfCondT",null);
+        put("pfCond",null); //우대조건
+        put("etcPfCondT",null);
+        put("etcPfCond",null); //기타우대사항
+        put("certificateT",null);
+        put("certificate",null); //자격면허
+        put("compAblT",null);
+        put("compAbl",null); //컴퓨터활용능력
+    }};
+
+    HashMap<String,TextView> corp = new HashMap<String,TextView>(){{    //기업정보
+        put("corpT",null);
+        put("corpNmT",null);
+        put("corpNm",null); //기업명
+        put("reperNmT",null);
+        put("reperNm",null); //대표자명
+        put("indTpCdNmT",null);
+        put("indTpCdNm",null); //업종
+        put("corpAddrT",null);
+        put("corpAddr",null); //주소
+        put("totPsncntT",null);
+        put("totPsncnt",null); //근로자수
+        put("yrSalesAmtT",null);
+        put("yrSalesAmt",null); //연매출액
+    }};
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,50 +158,52 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         applyButton = findViewById(R.id.applyButton);
         findWay = findViewById(R.id.findWay);
         goWorknetBtn = findViewById(R.id.goWorknetBtn);
+        shareButton = findViewById(R.id.shareButton);
         goWorknetImg = findViewById(R.id.goWorknetImg);
         companyNameDetail = findViewById(R.id.companyNameDetail);
         titleDetail = findViewById(R.id.titleDetail);
         workFormDetail = findViewById(R.id.workFormDetail);
         schoolDetail = findViewById(R.id.schoolDetail);
         careerDetail = findViewById(R.id.careerDetail);
-        addressDetail = findViewById(R.id.addressDetail);
-        jobsNm = findViewById(R.id.jobsNm);
-        jobCont = findViewById(R.id.jobCont);
-        enterTpNm = findViewById(R.id.enterTpNm);
-        eduNm = findViewById(R.id.eduNm);
-        empTpNm = findViewById(R.id.empTpNm);
-        collectPsncnt = findViewById(R.id.collectPsncnt);
-        etcHopeCont = findViewById(R.id.etcHopeCont);
-        salaryTypeCode = findViewById(R.id.salaryTypeCode);
-        salary = findViewById(R.id.salary);
-        workTime = findViewById(R.id.workTime);
-        workDay = findViewById(R.id.workDay);
-        retirepay = findViewById(R.id.retirepay);
-        fourIns = findViewById(R.id.fourIns);
-        etcWelfare = findViewById(R.id.etcWelfare);
-        receiptCloseDt = findViewById(R.id.receiptCloseDt);
-        selMthd = findViewById(R.id.selMthd);
-        rcptMthd = findViewById(R.id.rcptMthd);
-        submitDoc = findViewById(R.id.submitDoc);
+        scrollView = findViewById(R.id.detailScrollView);
+        textSizeChangeBar = findViewById(R.id.textSizeChangeBar);
+        textSize = findViewById(R.id.textSize);
 
+        for(String key : address.keySet()){    //동적으로 ID부여
+            String addressId = key;
+            int resId = getResources().getIdentifier(addressId,"id",getApplicationContext().getPackageName());
+            address.replace(key,findViewById(resId));
+        }
+        for(String key : recruitCd.keySet()){    //동적으로 ID부여
+            String recruitCdId = key;
+            int resId = getResources().getIdentifier(recruitCdId,"id",getApplicationContext().getPackageName());
+            recruitCd.replace(key,findViewById(resId));
+        }
+        for(String key : workCd.keySet()){    //동적으로 ID부여
+            String workCdId = key;
+            int resId = getResources().getIdentifier(workCdId,"id",getApplicationContext().getPackageName());
+            workCd.replace(key,findViewById(resId));
+        }
+        for(String key : apply.keySet()){    //동적으로 ID부여
+            String applyId = key;
+            int resId = getResources().getIdentifier(applyId,"id",getApplicationContext().getPackageName());
+            apply.replace(key,findViewById(resId));
+        }
         for(int i = 1;i<=5;i++){    //동적으로 ID부여
             String attachFileUrlId = "attachFileUrl" + i;
             int resId = getResources().getIdentifier(attachFileUrlId,"id",getApplicationContext().getPackageName());
             attachFileUrl.add(findViewById(resId));
         }
-
-        pfCond = findViewById(R.id.pfCond);
-        etcPfCond = findViewById(R.id.etcPfCond);
-        certificate = findViewById(R.id.certificate);
-        compAbl = findViewById(R.id.compAbl);
-        corpNm = findViewById(R.id.corpNm);
-        reperNm = findViewById(R.id.reperNm);
-        indTpCdNm = findViewById(R.id.indTpCdNm);
-        corpAddr = findViewById(R.id.corpAddr);
-        totPsncnt = findViewById(R.id.totPsncnt);
-        yrSalesAmt = findViewById(R.id.yrSalesAmt);
-        scrollView = findViewById(R.id.detailScrollView);
-        shareButton = findViewById(R.id.shareButton);
+        for(String key : prefer.keySet()){    //동적으로 ID부여
+            String preferId = key;
+            int resId = getResources().getIdentifier(preferId,"id",getApplicationContext().getPackageName());
+            prefer.replace(key,findViewById(resId));
+        }
+        for(String key : corp.keySet()){    //동적으로 ID부여
+            String corpId = key;
+            int resId = getResources().getIdentifier(corpId,"id",getApplicationContext().getPackageName());
+            corp.replace(key,findViewById(resId));
+        }
 
         mapView = new MapView(this);
         ViewGroup mapViewContainer = (ViewGroup) findViewById(R.id.map);
@@ -140,8 +223,9 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         findWay.setOnClickListener(this);
         goWorknetBtn.setOnClickListener(this);
         goWorknetImg.setOnClickListener(this);
-
         shareButton.setOnClickListener(this);
+
+        textSizeChangeBar.setOnSeekBarChangeListener(this);
     }
 
     @Override
@@ -160,7 +244,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             // 접수 방법 알림 다이얼로그
             AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
             alertDialog.setTitle("접수 방법을 확인해주세요\n");
-            alertDialog.setMessage(rcptMthd.getText());
+            alertDialog.setMessage(apply.get("rcptMthd").getText());
             alertDialog.setPositiveButton("확인", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -221,7 +305,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             startActivity(intent);
         } else if(v == shareButton){
             Intent intent = new Intent(Intent.ACTION_SEND);
-            String shareContent = "제목 : " + titleDetail.getText().toString() + "\n기업명 : " + corpNm.getText().toString() + "\n접수마감일 : " + receiptCloseDt.getText().toString() + "\n" + url;
+            String shareContent = "제목 : " + titleDetail.getText().toString() + "\n기업명 : " + companyNameDetail.getText().toString() + "\n접수마감일 : " + apply.get("receiptCloseDt").getText().toString() + "\n" + url;
             intent.putExtra(Intent.EXTRA_TEXT,shareContent);
             intent.setType("text/plain");
             startActivity(Intent.createChooser(intent,null));
@@ -378,34 +462,34 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             workFormDetail.setText(enrollment_name);
             schoolDetail.setText(education_scope);
             careerDetail.setText(careerRequired);
-            addressDetail.setText(basic_address + " " + detail_address);
-            jobsNm.setText(job_name);
-            jobCont.setText(content);
-            enterTpNm.setText(careerMin);
-            eduNm.setText(education_scope);
-            empTpNm.setText(enrollment_name);
-            collectPsncnt.setText(num_of_people);
-            etcHopeCont.setText(etc_info);
-            salaryTypeCode.setText(salary_type_name);
-            salary.setText(salary_);
-            workTime.setText(work_time);
-            workDay.setText(work_day);
-            retirepay.setText(retire_pay);
-            fourIns.setText(four_insurence);
-            etcWelfare.setText(etc_welfare);
-            receiptCloseDt.setText(close_date);
-            selMthd.setText(screening_process);
-            rcptMthd.setText(register_method);
-            submitDoc.setText(submission_doc);
-            pfCond.setText(preference_cond);
-            etcPfCond.setText(etc_preference_cond);
-            compAbl.setText(computer_able);
-            corpNm.setText(organization);
-            reperNm.setText(representative);
-            indTpCdNm.setText(industry);
-            corpAddr.setText(corp_address);
-            totPsncnt.setText(total_worker);
-            yrSalesAmt.setText(sales_amount);
+            address.get("addressDetail").setText(basic_address + " " + detail_address);
+            recruitCd.get("jobsNm").setText(job_name);
+            recruitCd.get("jobCont").setText(content);
+            recruitCd.get("enterTpNm").setText(careerMin);
+            recruitCd.get("eduNm").setText(education_scope);
+            recruitCd.get("empTpNm").setText(enrollment_name);
+            recruitCd.get("collectPsncnt").setText(num_of_people);
+            recruitCd.get("etcHopeCont").setText(etc_info);
+            workCd.get("salaryTypeCode").setText(salary_type_name);
+            workCd.get("salary").setText(salary_);
+            workCd.get("workTime").setText(work_time);
+            workCd.get("workDay").setText(work_day);
+            workCd.get("retirepay").setText(retire_pay);
+            workCd.get("fourIns").setText(four_insurence);
+            workCd.get("etcWelfare").setText(etc_welfare);
+            apply.get("receiptCloseDt").setText(close_date);
+            apply.get("selMthd").setText(screening_process);
+            apply.get("rcptMthd").setText(register_method);
+            apply.get("submitDoc").setText(submission_doc);
+            prefer.get("pfCond").setText(preference_cond);
+            prefer.get("etcPfCond").setText(etc_preference_cond);
+            prefer.get("compAbl").setText(computer_able);
+            corp.get("corpNm").setText(organization);
+            corp.get("reperNm").setText(representative);
+            corp.get("indTpCdNm").setText(industry);
+            corp.get("corpAddr").setText(corp_address);
+            corp.get("totPsncnt").setText(total_worker);
+            corp.get("yrSalesAmt").setText(sales_amount);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -435,7 +519,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 }
             }
 
-            certificate.setText(certificate_name);
+            prefer.get("certificate").setText(certificate_name);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -509,5 +593,42 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
+        textSize.setText(String.valueOf(progress));
+        for(String key : address.keySet()){
+            address.get(key).setTextSize(TypedValue.COMPLEX_UNIT_DIP,progress);
+        }
+        for(String key : recruitCd.keySet()){
+            recruitCd.get(key).setTextSize(TypedValue.COMPLEX_UNIT_DIP,progress);
+        }
+        for(String key : workCd.keySet()){
+            workCd.get(key).setTextSize(TypedValue.COMPLEX_UNIT_DIP,progress);
+        }
+        for(String key : apply.keySet()){
+            apply.get(key).setTextSize(TypedValue.COMPLEX_UNIT_DIP,progress);
+        }
+        for(int i = 0;i<attachFileUrl.size();i++){
+            attachFileUrl.get(i).setTextSize(TypedValue.COMPLEX_UNIT_DIP,progress);
+        }
+        for(String key : prefer.keySet()){
+            prefer.get(key).setTextSize(TypedValue.COMPLEX_UNIT_DIP,progress);
+        }
+        for(String key : corp.keySet()){
+            corp.get(key).setTextSize(TypedValue.COMPLEX_UNIT_DIP,progress);
+        }
+
+    }
+
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
+
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+
     }
 }
