@@ -81,8 +81,10 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
         }
         if(careerId == 0) { // 적용 안 함 선택한 상태
             noCareerButton.setChecked(true);
+            careerStatus = "0";
         } else { // 경력 적용 선택한 상태
             yesCareerButton.setChecked(true);
+            careerStatus = "1";
         }
 
         // 자격조건 상태값 불러오기
@@ -94,8 +96,10 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
         }
         if(licenseId == 0) { // 적용 안 함 선택한 상태
             noLicenseButton.setChecked(true);
+            licenseStatus = "0";
         } else { // 자격증 적용 선택한 상태
             yesLicenseButton.setChecked(true);
+            licenseStatus = "1";
         }
 
         // 근무형태 조건 상태값 불러오기
@@ -107,10 +111,13 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
         }
         if(workFormId == 0) { // 전체 선택한 상태
             allWorkFormButton.setChecked(true);
+            workFormStatus = "0";
         } else if (workFormId == 1) { // 정규직 선택한 상태
             workFormButton1.setChecked(true);
+            workFormStatus = "1";
         } else { // 계약직 선택한 상태
             workFormButton2.setChecked(true);
+            workFormStatus = "2";
         }
 
         careerGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -190,7 +197,14 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
             edit.commit();
             finish();
         } else if (v == resetButton) {
-            Toast.makeText(this, "초기화 버튼 눌림", Toast.LENGTH_LONG).show();
+            noCareerButton.setChecked(true);
+            careerStatus = "0";
+
+            noLicenseButton.setChecked(true);
+            licenseStatus = "0";
+
+            allWorkFormButton.setChecked(true);
+            workFormStatus = "0";
         } else if (v == regionButton) {
             Intent intent = new Intent(this, RegionActivity.class);
             startActivity(intent);
