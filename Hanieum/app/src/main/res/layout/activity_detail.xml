@@ -232,20 +232,10 @@
                     android:layout_weight="1"/>
 
                 <Button
-                    android:id="@+id/viewMap"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:backgroundTint="#E1E2E1"
-                    android:layout_gravity="right"
-                    android:text="위치보기"
-                    android:textSize="15dp" />
-
-                <Button
                     android:id="@+id/findWay"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="15dp"
-                    android:layout_marginRight="25dp"
+                    android:layout_marginRight="10dp"
                     android:layout_gravity="right"
                     android:backgroundTint="#E1E2E1"
                     android:text="길찾기"
@@ -1072,6 +1062,13 @@
                     android:textColor="@color/black"
                     android:textSize="17dp" />
             </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="13dp"
+                android:layout_gravity="center"
+                android:layout_marginVertical="15dp"
+                android:background="?android:attr/listDivider" />
 
             <Button
                 android:id="@+id/goWorknetBtn"

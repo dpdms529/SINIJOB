@@ -91,18 +91,18 @@ public class JobAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> im
                 public void onClick(View v) {
                     int position = getAdapterPosition();
                     if (listener != null) {
-                        if (getLayoutPosition() != lastSelectedPosition1) { // 이미 선택한 아이템이 아니면
+                        if (position != lastSelectedPosition1) { // 이미 선택한 아이템이 아니면
                             if (lastSelectedPosition1 >= 0) { // 이전에 선택한 아이템이 있으면
                                 items.get(lastSelectedPosition1).setSelected(false);
                                 notifyItemChanged(lastSelectedPosition1); // lastSelectedPosition 아이템 갱신
                             }
-                            items.get(getLayoutPosition()).setSelected(true);
+                            items.get(position).setSelected(true);
                             notifyItemChanged(position);
 
-                            lastSelectedPosition1 = getLayoutPosition();
+                            lastSelectedPosition1 = position;
                         }
 
-                        listener.OnItemClick(Job1ViewHolder.this, v, position);
+                        listener.OnItemClick(Job1ViewHolder.this, itemView, position);
                     }
                 }
             });
