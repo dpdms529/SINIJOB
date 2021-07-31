@@ -226,21 +226,35 @@
                 android:textSize="20dp"
                 android:textStyle="bold" />
 
-            <CheckBox
-                android:id="@+id/workFormCheck1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="25dp"
-                android:text="정규직"
-                android:textSize="15dp" />
 
-            <CheckBox
-                android:id="@+id/workFormCheck2"
+            <RadioGroup
+                android:id="@+id/workFormGroup"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="25dp"
-                android:text="계약직"
-                android:textSize="15dp" />
+                android:layout_height="match_parent"
+                android:layout_marginHorizontal="25dp" >
+
+                <RadioButton
+                    android:id="@+id/allWorkFrom"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="전체"
+                    android:textSize="15dp" />
+
+                <RadioButton
+                    android:id="@+id/workForm1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="정규직"
+                    android:textSize="15dp" />
+
+                <RadioButton
+                    android:id="@+id/workForm2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="계약직"
+                    android:textSize="15dp" />
+
+            </RadioGroup>
 
             <View
                 android:layout_width="match_parent"

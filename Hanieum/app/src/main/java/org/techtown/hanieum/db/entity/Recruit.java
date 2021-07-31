@@ -19,6 +19,14 @@ public class Recruit {
     @NonNull
     public String organization;
 
+    @ColumnInfo(name = "salary_type_code")
+    @NonNull
+    public String salary_type_code;
+
+    @ColumnInfo(name = "salary")
+    @NonNull
+    public String salary;
+
     @ColumnInfo(name = "x")
     @NonNull
     public String x_coordinate;

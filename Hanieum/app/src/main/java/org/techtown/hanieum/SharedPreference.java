@@ -18,7 +18,7 @@ import java.util.ArrayList;
 public class SharedPreference {
     public static final String JOB_LIST = "jobList";
     public static final String REGION_LIST = "regionList";
-    public static final String WORKFORM_LIST = "workForm";
+    public static final String WORKFORM_STATUS = "workForm";
     public static final String CAREER_STATUS = "careerStatus";
     public static final String LICENSE_STATUS = "licenseStatus";
 

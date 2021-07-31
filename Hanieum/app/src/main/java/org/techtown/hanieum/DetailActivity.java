@@ -3,16 +3,21 @@ package org.techtown.hanieum;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.util.Linkify;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import net.daum.mf.map.api.MapPOIItem;
@@ -23,10 +28,16 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class DetailActivity extends AppCompatActivity implements View.OnClickListener,
         MapView.POIItemEventListener, MapView.MapViewEventListener {
     Toolbar toolbar;
     MapView mapView;
+    Button applyButton;
+    Button findWay;
     Button goWorknetBtn;
     ImageView goWorknetImg;
     TextView companyNameDetail;
@@ -37,10 +48,14 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     TextView addressDetail;
     TextView jobsNm, jobCont, enterTpNm, eduNm, empTpNm, collectPsncnt, etcHopeCont; // 모집조건
     TextView salaryTypeCode, salary, workTime, workDay, retirepay, fourIns, etcWelfare; // 근무조건
-    TextView receiptCloseDt, selMthd, rcptMthd, submitDoc, attachFileUrl; // 접수방법
+    TextView receiptCloseDt, selMthd, rcptMthd, submitDoc; //접수방법
+    ArrayList<TextView> attachFileUrl = new ArrayList<>(); //접수방법_제출서류양식
     TextView pfCond, etcPfCond, certificate, compAbl; // 우대사항
     TextView corpNm, reperNm, indTpCdNm, corpAddr, totPsncnt, yrSalesAmt; // 기업정보
+    ScrollView scrollView;
 
+    String epX;
+    String epY;
     String url;
     Context context;
 
@@ -52,6 +67,8 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         context = this;
 
         toolbar = findViewById(R.id.toolbar0201);
+        applyButton = findViewById(R.id.applyButton);
+        findWay = findViewById(R.id.findWay);
         goWorknetBtn = findViewById(R.id.goWorknetBtn);
         goWorknetImg = findViewById(R.id.goWorknetImg);
         companyNameDetail = findViewById(R.id.companyNameDetail);
@@ -78,7 +95,13 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         selMthd = findViewById(R.id.selMthd);
         rcptMthd = findViewById(R.id.rcptMthd);
         submitDoc = findViewById(R.id.submitDoc);
-        attachFileUrl = findViewById(R.id.attachFileUrl);
+
+        for(int i = 1;i<=5;i++){    //동적으로 ID부여
+            String attachFileUrlId = "attachFileUrl" + i;
+            int resId = getResources().getIdentifier(attachFileUrlId,"id",getApplicationContext().getPackageName());
+            attachFileUrl.add(findViewById(resId));
+        }
+
         pfCond = findViewById(R.id.pfCond);
         etcPfCond = findViewById(R.id.etcPfCond);
         certificate = findViewById(R.id.certificate);
@@ -89,6 +112,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         corpAddr = findViewById(R.id.corpAddr);
         totPsncnt = findViewById(R.id.totPsncnt);
         yrSalesAmt = findViewById(R.id.yrSalesAmt);
+        scrollView = findViewById(R.id.detailScrollView);
 
         mapView = new MapView(this);
         ViewGroup mapViewContainer = (ViewGroup) findViewById(R.id.map);
@@ -104,6 +128,8 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         mapView.setMapViewEventListener(this);
         mapView.setPOIItemEventListener(this);
 
+        applyButton.setOnClickListener(this);
+        findWay.setOnClickListener(this);
         goWorknetBtn.setOnClickListener(this);
         goWorknetImg.setOnClickListener(this);
     }
@@ -120,7 +146,66 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onClick(View v) {
-        if (v == goWorknetBtn) {
+        if (v == applyButton) {
+            CharSequence[] items = {"전화", "문자", "이메일"};
+            AlertDialog.Builder dialog = new AlertDialog.Builder(this, android.R.style.Theme_Material_Light_Dialog_Alert);
+            dialog.setTitle("지원 유형을 선택하세요");
+            dialog.setItems(items, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (which == 0) {
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("tel:01012341234"));
+                        startActivity(intent);
+                    } else if (which == 1) {
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("tel:01012341234"));
+                        intent.setType("vnd.android-dir/mms-sms");
+                        intent.putExtra("address", "01012341234");
+                        intent.putExtra("sms_body", "message");
+                        startActivity(intent);
+                    } else {
+                        String uriText = "mailto:email@email.com" + "?subject=" +
+                                Uri.encode("subject") + "&body=" + Uri.encode("mail body");
+                        Uri uri = Uri.parse(uriText);
+
+                        Intent intent = new Intent(Intent.ACTION_SENDTO);
+                        intent.setData(uri);
+                        startActivity(Intent.createChooser(intent, "이메일 앱을 선택하세요"));
+                    }
+                }
+            });
+            dialog.show();
+        } else if (v == findWay) {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("kakaomap://route?sp=37.537229,127.005515&ep="+epY+","+epX+"&by=CAR"));
+            startActivity(intent);
+
+//            Intent launch = getPackageManager().getLaunchIntentForPackage("net.daum.android.map");
+//
+//            if (launch == null) {
+//                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=net.daum.android.map")));
+//            } else {
+//                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("kakaomap://route?sp=37.537229,127.005515&ep="+epY+","+epX+"&by=CAR"));
+//                startActivity(intent);
+//            }
+
+//            PackageManager manager = context.getPackageManager();
+//            PackageInfo pi;
+//            try {
+//                pi = manager.getPackageInfo("net.daum.android.map", PackageManager.GET_META_DATA);
+//                if(pi!=null){
+////                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=net.daum.android.map")));
+//                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("kakaomap://route?sp=37.537229,127.005515&ep="+epY+","+epX+"&by=CAR"));
+//                    startActivity(intent);
+////                    return;
+//                }
+//            } catch (PackageManager.NameNotFoundException e) {
+////                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("kakaomap://route?sp=37.537229,127.005515&ep="+epY+","+epX+"&by=CAR"));
+////                startActivity(intent);
+//                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=net.daum.android.map")));
+//            }
+
+
+
+        } else if (v == goWorknetBtn) {
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
             startActivity(intent);
         } else if (v == goWorknetImg) {
@@ -157,42 +242,42 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onMapViewCenterPointMoved(MapView mapView, MapPoint mapPoint) {
-
+        scrollView.requestDisallowInterceptTouchEvent(true);
     }
 
     @Override
     public void onMapViewZoomLevelChanged(MapView mapView, int i) {
-
+        scrollView.requestDisallowInterceptTouchEvent(true);
     }
 
     @Override
     public void onMapViewSingleTapped(MapView mapView, MapPoint mapPoint) {
-
+        scrollView.requestDisallowInterceptTouchEvent(true);
     }
 
     @Override
     public void onMapViewDoubleTapped(MapView mapView, MapPoint mapPoint) {
-
+        scrollView.requestDisallowInterceptTouchEvent(true);
     }
 
     @Override
     public void onMapViewLongPressed(MapView mapView, MapPoint mapPoint) {
-
+        scrollView.requestDisallowInterceptTouchEvent(true);
     }
 
     @Override
     public void onMapViewDragStarted(MapView mapView, MapPoint mapPoint) {
-
+        scrollView.requestDisallowInterceptTouchEvent(true);
     }
 
     @Override
     public void onMapViewDragEnded(MapView mapView, MapPoint mapPoint) {
-
+        scrollView.requestDisallowInterceptTouchEvent(true);
     }
 
     @Override
     public void onMapViewMoveFinished(MapView mapView, MapPoint mapPoint) {
-
+        scrollView.requestDisallowInterceptTouchEvent(true);
     }
 
     public void loadData(String id) {
@@ -396,19 +481,25 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             JSONObject jsonObject = new JSONObject(recruitFilesResult);
             JSONArray jsonArray = jsonObject.getJSONArray("result");
 
-            String file_url = "";
-
            for (int i=0; i<jsonArray.length(); i++) {
                 JSONObject jsonObject1 = jsonArray.getJSONObject(i);
-
-               if (i == 0) {
-                    file_url = jsonObject1.getString("file_url");
-               } else {
-                    file_url = file_url + "\n" + jsonObject1.getString("file_url");
-               }
+                TextView item = attachFileUrl.get(i);
+                item.setVisibility(View.VISIBLE);
+                Linkify.TransformFilter tf = new Linkify.TransformFilter(){
+                    @Override
+                    public String transformUrl(Matcher matcher, String s) {
+                        try {
+                            return jsonObject1.getString("file_url");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        return "";
+                    }
+                };
+                Pattern pattern = Pattern.compile(item.getText().toString());
+                Linkify.addLinks(item,pattern,"",null,tf);
            }
 
-           attachFileUrl.setText(file_url);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -427,10 +518,10 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             JSONArray jsonArray = jsonObject.getJSONArray("result");
             JSONObject jsonObject1 = jsonArray.getJSONObject(0);
 
-            String x = jsonObject1.getString("x");
-            String y = jsonObject1.getString("y");
+            epX = jsonObject1.getString("x");
+            epY = jsonObject1.getString("y");
 
-            MapPoint mapPoint = MapPoint.mapPointWithGeoCoord(Double.parseDouble(y), Double.parseDouble(x));
+            MapPoint mapPoint = MapPoint.mapPointWithGeoCoord(Double.parseDouble(epY), Double.parseDouble(epX));
 
             mapView.setMapCenterPoint(mapPoint, true);
 

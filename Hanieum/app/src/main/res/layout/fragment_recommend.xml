@@ -20,14 +20,25 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
+            android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="추천 일자리"
             android:textColor="@color/black"
             android:textSize="20dp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:visibility="visible"/>
 
+        <EditText
+            android:id="@+id/editSearch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="100dp"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:hint="검색어를 입력하세요"
+            android:visibility="gone"/>
     </androidx.appcompat.widget.Toolbar>
 
     <ImageButton
