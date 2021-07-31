@@ -120,27 +120,19 @@ public class SearchAdapter extends  RecyclerView.Adapter<RecyclerView.ViewHolder
             super(view);
 
             checkBox = view.findViewById(R.id.checkBox);
-            checkBox.setOnClickListener(new View.OnClickListener() {
+            checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
-                public void onClick(View v) {
-                    ArrayList<ChipList> chipList = getArrayPref(itemView.getContext(), SharedPreference.REGION_LIST);
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     int position = getLayoutPosition();
-
-                    if(items.get(position).isChecked()) {
-                        for (int i=0;i<chipList.size();i++) {
-                            if(chipList.get(i).getName().equals(items.get(position).getTitle())) {
-                                chipList.remove(i);
-                            }
-                        }
-
-                        items.get(position).setChecked(false);
-                    } else {
+                    if (isChecked) { // 체크 상태이면
                         items.get(position).setChecked(true);
-                        chipList.add(new ChipList(items.get(position).getTitle(), position));
+//                        chipList.add(new ChipList(items.get(position).getTitle(), position));
+                    } else { // 체크 상태가 아니면
+                        items.get(position).setChecked(false);
+
+                        // 아이템 삭제 코드
                     }
-                    setArrayPref(itemView.getContext(), chipList, SharedPreference.REGION_LIST);
-                    notifyItemChanged(position);
-                    RegionSearchActivity.loadChip(itemView.getContext(), RegionSearchActivity.chipGroup);
+//                    loadChip();
                 }
             });
         }
