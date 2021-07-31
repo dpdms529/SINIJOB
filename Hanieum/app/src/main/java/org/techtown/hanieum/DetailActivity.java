@@ -3,8 +3,12 @@ package org.techtown.hanieum;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -27,6 +31,8 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         MapView.POIItemEventListener, MapView.MapViewEventListener {
     Toolbar toolbar;
     MapView mapView;
+    Button applyButton;
+    Button findWay;
     Button goWorknetBtn;
     ImageView goWorknetImg;
     TextView companyNameDetail;
@@ -41,6 +47,8 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     TextView pfCond, etcPfCond, certificate, compAbl; // 우대사항
     TextView corpNm, reperNm, indTpCdNm, corpAddr, totPsncnt, yrSalesAmt; // 기업정보
 
+    String epX;
+    String epY;
     String url;
     Context context;
 
@@ -52,6 +60,8 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         context = this;
 
         toolbar = findViewById(R.id.toolbar0201);
+        applyButton = findViewById(R.id.applyButton);
+        findWay = findViewById(R.id.findWay);
         goWorknetBtn = findViewById(R.id.goWorknetBtn);
         goWorknetImg = findViewById(R.id.goWorknetImg);
         companyNameDetail = findViewById(R.id.companyNameDetail);
@@ -104,6 +114,8 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         mapView.setMapViewEventListener(this);
         mapView.setPOIItemEventListener(this);
 
+        applyButton.setOnClickListener(this);
+        findWay.setOnClickListener(this);
         goWorknetBtn.setOnClickListener(this);
         goWorknetImg.setOnClickListener(this);
     }
@@ -120,7 +132,66 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onClick(View v) {
-        if (v == goWorknetBtn) {
+        if (v == applyButton) {
+            CharSequence[] items = {"전화", "문자", "이메일"};
+            AlertDialog.Builder dialog = new AlertDialog.Builder(this, android.R.style.Theme_Material_Light_Dialog_Alert);
+            dialog.setTitle("지원 유형을 선택하세요");
+            dialog.setItems(items, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (which == 0) {
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("tel:01012341234"));
+                        startActivity(intent);
+                    } else if (which == 1) {
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("tel:01012341234"));
+                        intent.setType("vnd.android-dir/mms-sms");
+                        intent.putExtra("address", "01012341234");
+                        intent.putExtra("sms_body", "message");
+                        startActivity(intent);
+                    } else {
+                        String uriText = "mailto:email@email.com" + "?subject=" +
+                                Uri.encode("subject") + "&body=" + Uri.encode("mail body");
+                        Uri uri = Uri.parse(uriText);
+
+                        Intent intent = new Intent(Intent.ACTION_SENDTO);
+                        intent.setData(uri);
+                        startActivity(Intent.createChooser(intent, "이메일 앱을 선택하세요"));
+                    }
+                }
+            });
+            dialog.show();
+        } else if (v == findWay) {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("kakaomap://route?sp=37.537229,127.005515&ep="+epY+","+epX+"&by=CAR"));
+            startActivity(intent);
+
+//            Intent launch = getPackageManager().getLaunchIntentForPackage("net.daum.android.map");
+//
+//            if (launch == null) {
+//                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=net.daum.android.map")));
+//            } else {
+//                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("kakaomap://route?sp=37.537229,127.005515&ep="+epY+","+epX+"&by=CAR"));
+//                startActivity(intent);
+//            }
+
+//            PackageManager manager = context.getPackageManager();
+//            PackageInfo pi;
+//            try {
+//                pi = manager.getPackageInfo("net.daum.android.map", PackageManager.GET_META_DATA);
+//                if(pi!=null){
+////                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=net.daum.android.map")));
+//                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("kakaomap://route?sp=37.537229,127.005515&ep="+epY+","+epX+"&by=CAR"));
+//                    startActivity(intent);
+////                    return;
+//                }
+//            } catch (PackageManager.NameNotFoundException e) {
+////                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("kakaomap://route?sp=37.537229,127.005515&ep="+epY+","+epX+"&by=CAR"));
+////                startActivity(intent);
+//                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=net.daum.android.map")));
+//            }
+
+
+
+        } else if (v == goWorknetBtn) {
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
             startActivity(intent);
         } else if (v == goWorknetImg) {
@@ -427,10 +498,10 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             JSONArray jsonArray = jsonObject.getJSONArray("result");
             JSONObject jsonObject1 = jsonArray.getJSONObject(0);
 
-            String x = jsonObject1.getString("x");
-            String y = jsonObject1.getString("y");
+            epX = jsonObject1.getString("x");
+            epY = jsonObject1.getString("y");
 
-            MapPoint mapPoint = MapPoint.mapPointWithGeoCoord(Double.parseDouble(y), Double.parseDouble(x));
+            MapPoint mapPoint = MapPoint.mapPointWithGeoCoord(Double.parseDouble(epY), Double.parseDouble(epX));
 
             mapView.setMapCenterPoint(mapPoint, true);
 
