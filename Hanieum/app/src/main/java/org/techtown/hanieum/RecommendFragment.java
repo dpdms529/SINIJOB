@@ -161,8 +161,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
         // 항목 로드
         AppDatabase db = AppDatabase.getInstance(this.getContext());
         List<Recruit> rows = db.RecruitDao().getAll();
-        Log.d("dbdb", String.valueOf(rows.get(0).recruit_id));
-        
+
         items = new ArrayList<>();
 
         itemNum.setText(String.valueOf(rows.size()));

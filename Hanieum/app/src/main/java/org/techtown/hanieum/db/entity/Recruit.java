@@ -27,6 +27,30 @@ public class Recruit {
     @NonNull
     public String salary;
 
+    @ColumnInfo(name = "b_dong_code")
+    @NonNull
+    public String b_dong_code;
+
+    @ColumnInfo(name = "job_code")
+    @NonNull
+    public String job_code;
+
+    @ColumnInfo(name = "career_required")
+    @NonNull
+    public String career_required;
+
+    @ColumnInfo(name = "career_min")
+    @NonNull
+    public String career_min;
+
+    @ColumnInfo(name = "enrollment_code")
+    @NonNull
+    public String enrollment_code;
+
+    @ColumnInfo(name = "certificate_required")
+    @NonNull
+    public String certificate_required;
+
     @ColumnInfo(name = "x")
     @NonNull
     public String x_coordinate;
