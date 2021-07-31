@@ -1,12 +1,20 @@
 import sys
+<<<<<<< HEAD
+
+=======
 import html
+>>>>>>> 01b3ec9c8fdf77c7dc47173bc88a52ecd48026ac
 import re
 import requests, bs4
 import pandas as pd
 from urllib.parse import urlencode, quote_plus, unquote
 import pymysql
 
+<<<<<<< HEAD
+from keys import worknetKey, kakaoRESTAPI
+=======
 from keys import worknetKey, kakaoRESTAPI, dbpw, dbhost
+>>>>>>> 01b3ec9c8fdf77c7dc47173bc88a52ecd48026ac
 
 # api url and key
 url = 'http://openapi.work.go.kr/opi/opi/opia/wantedApi.do'
@@ -16,13 +24,21 @@ authKey = unquote(worknetKey)
 def db_connection():
     db = pymysql.connect(
         user='hanium',
+<<<<<<< HEAD
+        passwd='hanium235!',
+        host='haniumdb.caka4pfurzmq.ap-northeast-2.rds.amazonaws.com',
+=======
         passwd=dbpw,
         host=dbhost,
+>>>>>>> 01b3ec9c8fdf77c7dc47173bc88a52ecd48026ac
         port=3306,
         db='hanium',
         charset='utf8'
     )
+<<<<<<< HEAD
+=======
     print("db connected")
+>>>>>>> 01b3ec9c8fdf77c7dc47173bc88a52ecd48026ac
     return db
 
 
@@ -75,12 +91,18 @@ def recruit_list(pageNum):  # 공고 목록 불러와 리스트에 저장
                 'wantedMobileInfoUrl', 'strtnmCd', 'basicAddr', 'detailAddr', 'jobsCd'
             ]:
                 eachColumn = columns[j].text
+<<<<<<< HEAD
+                columnList.append(eachColumn)
+        rowList.append(columnList)
+        columnList = []  # 다음 row 값을 넣기 위해 비워준다.
+=======
                 # eachColumn_decoded = html.unescape(eachColumn)  # html 디코딩
                 # columnList.append(eachColumn_decoded)
                 columnList.append(eachColumn)
         rowList.append(columnList)
         columnList = []  # 다음 row 값을 넣기 위해 비워준다.
     print("recruit_list() done")
+>>>>>>> 01b3ec9c8fdf77c7dc47173bc88a52ecd48026ac
 
 
 def check_duplicates(flag):     # 중복 데이터의 유무 확인, 새로운 데이터만 가져오도록 범위 설정
@@ -161,8 +183,11 @@ def recruit_detail():   # 채용 상세 데이터 불러와 리스트에 저장
                 if name in nameList:   # 중복된 태그 무시(corpInfo 태그에 empchargeInfo 데이터가 들어가 있는 경우)
                     continue
                 else:
+<<<<<<< HEAD
+=======
                     # eachColumn_decoded = html.unescape(eachColumn)  # html 디코딩
                     # columnList.append(eachColumn_decoded)
+>>>>>>> 01b3ec9c8fdf77c7dc47173bc88a52ecd48026ac
                     columnList.append(eachColumn)
                     nameList.append(name)
             elif name == 'enterTpNm':
@@ -199,7 +224,10 @@ def recruit_detail():   # 채용 상세 데이터 불러와 리스트에 저장
             del rows[i-count]
             count += 1
 
+<<<<<<< HEAD
+=======
     print("recruit_detail() done")
+>>>>>>> 01b3ec9c8fdf77c7dc47173bc88a52ecd48026ac
 
 def find_id(certificateTxt, certifiInfo): # 자격증 ID를 찾는 함수
     for i in range(len(selectCertificate)):
@@ -212,7 +240,10 @@ def processing():   # 데이터 전처리
     delList = []
     rowsLen = len(rowList)
     for i in range(0, rowsLen):
+<<<<<<< HEAD
+=======
         print("processing-%s-, id:"%i, rowList[i][0])
+>>>>>>> 01b3ec9c8fdf77c7dc47173bc88a52ecd48026ac
         # 건물 본번, 부번
         tmp = re.findall(r'[로길] (.+)', rowList[i][8])
         if tmp:
@@ -330,12 +361,21 @@ def processing():   # 데이터 전처리
         count = 0
         for i in delList:
             certifi_count = 0
+<<<<<<< HEAD
+            for j in enumerate(certificateList):
+                if rowList[i-count][0] == certificateList[j][1]:
+                    del certificateList[j - certifi_count]
+                    certifi_count += 1
+            del rowList[i - count]
+            del rowList_detail[i - count]
+=======
             for j in range(0, len(certificateList)):     # 삭제 공고의 자격증 데이터 또한 삭제
                 if rowList[i-count][0] == certificateList[j-certifi_count][1]:
                     del certificateList[j-certifi_count]
                     certifi_count += 1
             del rowList[i-count]
             del rowList_detail[i-count]
+>>>>>>> 01b3ec9c8fdf77c7dc47173bc88a52ecd48026ac
             count += 1
 
 
@@ -404,14 +444,24 @@ def db_insert():
                                         certificate_required, career_required, career_min, enrollment_code) 
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 
                         %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
+<<<<<<< HEAD
+        # cursor.executemany(sql, recruit)
+        # db.commit()
+=======
         cursor.executemany(sql, recruit)
         db.commit()
+>>>>>>> 01b3ec9c8fdf77c7dc47173bc88a52ecd48026ac
 
         # certificate INSERT
         sql = """INSERT INTO `recruit_certificate`(certificate_no, recruit_id, certificate_id) 
                 VALUES (%s, %s, %s);"""
+<<<<<<< HEAD
+        # cursor.executemany(sql, certificateList)
+        # db.commit()
+=======
         cursor.executemany(sql, certificateList)
         db.commit()
+>>>>>>> 01b3ec9c8fdf77c7dc47173bc88a52ecd48026ac
 
         # recruit_files INSERT
         sql = """INSERT INTO `recruit_files`(recruit_id, file_no, file_url) 
@@ -430,10 +480,15 @@ def db_insert():
         code, msg = e.args
 
     finally:
+<<<<<<< HEAD
+        cursor.close()
+        db.close()
+=======
         print("db inserted")
         cursor.close()
         db.close()
         print("db closed")
+>>>>>>> 01b3ec9c8fdf77c7dc47173bc88a52ecd48026ac
 
 
 def db_select_certificate():

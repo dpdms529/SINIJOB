@@ -12,6 +12,7 @@ import java.util.ArrayList;
 
 public class SharedPreference {
     public static final String JOB_LIST = "jobList";
+    public static final String REGION_LIST = "regionList";
     // chipList를 저장
     public static void setArrayPref(Context context, ArrayList<ChipList> chipList, String key) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);

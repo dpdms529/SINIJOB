@@ -66,8 +66,11 @@ public class RecommendAdapter extends RecyclerView.Adapter<RecommendAdapter.View
     static class ViewHolder extends RecyclerView.ViewHolder {
         TextView companyName;
         TextView title;
-        TextView transportation;
-        TextView timeCost;
+        TextView salaryType;
+        TextView salary;
+        TextView won;
+        TextView distance;
+        TextView measure;
         ImageButton bookmark;
 
         public ViewHolder(View view, OnRecoItemClickListener listener) {
@@ -75,8 +78,11 @@ public class RecommendAdapter extends RecyclerView.Adapter<RecommendAdapter.View
 
             companyName = view.findViewById(R.id.companyName);
             title = view.findViewById(R.id.advertisementTitle);
-            transportation = view.findViewById(R.id.transportation);
-            timeCost = view.findViewById(R.id.timeCost);
+            salaryType = view.findViewById(R.id.salaryType);
+            salary = view.findViewById(R.id.salary);
+            won = view.findViewById(R.id.won);
+            distance = view.findViewById(R.id.distance);
+            measure = view.findViewById(R.id.measure);
             bookmark = view.findViewById(R.id.bookmark);
 
             bookmark.setOnClickListener(new View.OnClickListener() {
@@ -108,8 +114,25 @@ public class RecommendAdapter extends RecyclerView.Adapter<RecommendAdapter.View
         public void setItem(Recommendation item) {
             companyName.setText(item.getCompanyName());
             title.setText(item.getTitle());
-            transportation.setText(item.getTransportation());
-            timeCost.setText(item.getTimeCost());
+            String salType = item.getSalaryType();
+            salaryType.setText(salType);
+            salary.setText(item.getSalary());
+            String wonType = new String();
+            if (salType.equals("시") || salType.equals("일")) {
+                wonType = "원";
+            } else {
+                wonType = "만원";
+            }
+            won.setText(wonType);
+            Double dist = item.getDistance();
+            if (dist >= 1000) {
+                dist = dist / 1000;
+                distance.setText(String.format("%.1f", dist));
+                measure.setText("km");
+            } else {
+                distance.setText(String.format("%.0f", dist));
+                measure.setText("m");
+            }
             if (item.getBookmark()) {
                 bookmark.setImageResource(R.drawable.bookmark);
             } else {

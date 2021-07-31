@@ -2,21 +2,23 @@ package org.techtown.hanieum;
 
 import android.widget.ImageButton;
 
-public class Recommendation {
+public class Recommendation implements Comparable<Recommendation>{
     private String id;
     private String companyName;
     private String title;
-    private String transportation;
-    private String timeCost;
+    private String salaryType;
+    private String salary;
+    private Double distance;
     private boolean bookmark;
 
-    public Recommendation(String id, String companyName, String title, String transportation,
-                          String timeCost, boolean bookmark) {
+    public Recommendation(String id, String companyName, String title, String salaryType,
+                          String salary, Double distance, boolean bookmark) {
         this.id = id;
         this.companyName = companyName;
         this.title = title;
-        this.transportation = transportation;
-        this.timeCost = timeCost;
+        this.salaryType = salaryType;
+        this.salary = salary;
+        this.distance = distance;
         this.bookmark = bookmark;
     }
 
@@ -44,21 +46,25 @@ public class Recommendation {
         this.title = title;
     }
 
-    public String getTransportation() {
-        return transportation;
+    public String getSalaryType() {
+        return salaryType;
     }
 
-    public void setTransportation(String transportation) {
-        this.transportation = transportation;
+    public void setSalaryType(String salaryType) {
+        this.salaryType = salaryType;
     }
 
-    public String getTimeCost() {
-        return timeCost;
+    public String getSalary() {
+        return salary;
     }
 
-    public void setTimeCost(String timeCost) {
-        this.timeCost = timeCost;
+    public void setSalary(String salary) {
+        this.salary = salary;
     }
+
+    public Double getDistance() { return distance; }
+
+    public void setDistance(Double distance) { this.distance = distance; }
 
     public boolean getBookmark() {
         return bookmark;
@@ -66,5 +72,10 @@ public class Recommendation {
 
     public void setBookmark(boolean bookmark) {
         this.bookmark = bookmark;
+    }
+
+    @Override
+    public int compareTo(Recommendation o) {
+        return this.distance.compareTo(o.distance);
     }
 }
