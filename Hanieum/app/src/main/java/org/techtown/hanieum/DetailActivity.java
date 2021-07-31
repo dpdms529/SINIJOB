@@ -209,47 +209,6 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             } catch (ActivityNotFoundException e) {
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=net.daum.android.map")));
             }
-
-//            Intent launch = new Intent(Intent.ACTION_VIEW, Uri.parse("kakaomap://open"));
-
-
-//            launch.setType("text/plain");
-//            PackageInfo pi = null;
-//            try {
-//                pi = getPackageManager().getPackageInfo("net.daum.android.map", PackageManager.GET_META_DATA);
-//                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("kakaomap://route?sp=37.537229,127.005515&ep="+epY+","+epX+"&by=CAR"));
-//                startActivity(intent);
-//            } catch (PackageManager.NameNotFoundException e) {
-//                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=net.daum.android.map")));
-//            }
-
-//            Log.d("packageName", String.valueOf(launch.resolveActivity(getPackageManager())));
-
-//            if (launch.resolveActivity(getPackageManager()) == null) {
-//                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=net.daum.android.map")));
-//            } else {
-//                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("kakaomap://route?sp=37.537229,127.005515&ep="+epY+","+epX+"&by=CAR"));
-//                startActivity(intent);
-//            }
-
-//            PackageManager manager = context.getPackageManager();
-//            PackageInfo pi;
-//            try {
-//                pi = manager.getPackageInfo("net.daum.android.map", PackageManager.GET_META_DATA);
-//                if(pi!=null){
-////                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=net.daum.android.map")));
-//                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("kakaomap://route?sp=37.537229,127.005515&ep="+epY+","+epX+"&by=CAR"));
-//                    startActivity(intent);
-////                    return;
-//                }
-//            } catch (PackageManager.NameNotFoundException e) {
-////                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("kakaomap://route?sp=37.537229,127.005515&ep="+epY+","+epX+"&by=CAR"));
-////                startActivity(intent);
-//                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=net.daum.android.map")));
-//            }
-
-
-
         } else if (v == goWorknetBtn) {
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
             startActivity(intent);
