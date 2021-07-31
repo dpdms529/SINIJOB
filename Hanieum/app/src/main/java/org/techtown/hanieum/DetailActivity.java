@@ -221,11 +221,10 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             startActivity(intent);
         } else if(v == shareButton){
             Intent intent = new Intent(Intent.ACTION_SEND);
-            intent.putExtra(Intent.EXTRA_TEXT,"text");
+            String shareContent = "제목 : " + titleDetail.getText().toString() + "\n기업명 : " + corpNm.getText().toString() + "\n접수마감일 : " + receiptCloseDt.getText().toString() + "\n" + url;
+            intent.putExtra(Intent.EXTRA_TEXT,shareContent);
             intent.setType("text/plain");
-
-            Intent shareIntent = Intent.createChooser(intent,null);
-            startActivity(shareIntent);
+            startActivity(Intent.createChooser(intent,null));
 
         }
     }
