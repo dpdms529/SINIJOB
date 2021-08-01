@@ -17,7 +17,7 @@ import static org.techtown.hanieum.SharedPreference.setArrayPref;
 public class JobAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements OnJobItemClickListener {
     ArrayList<Job> items = new ArrayList<Job>();
     OnJobItemClickListener listener;
-    private int lastSelectedPosition1 = -1; // 전에 선택한 아이템(1차 직종)의 위치
+    public static int lastSelectedPosition1 = -1; // 전에 선택한 아이템(1차 직종)의 위치
 
     @NonNull
     @Override
@@ -100,9 +100,9 @@ public class JobAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> im
                             notifyItemChanged(position);
 
                             lastSelectedPosition1 = position;
-                        }
 
-                        listener.OnItemClick(Job1ViewHolder.this, itemView, position);
+                            listener.OnItemClick(Job1ViewHolder.this, itemView, position);
+                        }
                     }
                 }
             });
@@ -125,7 +125,7 @@ public class JobAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> im
             super(view);
             jobText = view.findViewById(R.id.regionJobText);
 
-            view.setOnClickListener(new View.OnClickListener() {
+            itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     ArrayList<ChipList> chipList = getArrayPref(itemView.getContext(), SharedPreference.JOB_LIST);
@@ -142,7 +142,7 @@ public class JobAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> im
                         items.get(position).setSelected(false);
                     } else {
                         items.get(position).setSelected(true);
-                        chipList.add(new ChipList(items.get(position).getJob2(), position));
+                        chipList.add(new ChipList(items.get(position).getJob2(), items.get(position).getCode(), position));
                     }
                     setArrayPref(itemView.getContext(), chipList, SharedPreference.JOB_LIST);
                     notifyItemChanged(position);

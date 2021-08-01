@@ -195,7 +195,8 @@ public class RegionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                         items.get(position).setSelected(false);
                     } else {
                         items.get(position).setSelected(true);
-                        chipList.add(new ChipList(items.get(position).getRegion1() + " " + items.get(position).getRegion2() + " " + items.get(position).getRegion3(), position));
+                        chipList.add(new ChipList(items.get(position).getRegion1() + " " + items.get(position).getRegion2()
+                                + " " + items.get(position).getRegion3(), items.get(position).getBDongCode(), position));
                     }
                     setArrayPref(itemView.getContext(), chipList, SharedPreference.REGION_LIST);
                     notifyItemChanged(position);
