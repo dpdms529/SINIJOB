@@ -111,7 +111,7 @@ public class RegionSearchActivity extends AppCompatActivity {
 
                 for(int i=0; i<bDong.size(); i++) {
                     if(bDong.get(i).sido_name.contains(newText) || bDong.get(i).sigungu_name.contains(newText) || bDong.get(i).eupmyeondong_name.contains(newText)) {
-                        items.add(new Search(bDong.get(i).sido_name + " " + bDong.get(i).sigungu_name + " " + bDong.get(i).eupmyeondong_name, Code.ViewType.REGION_SEARCH));
+                        items.add(new Search(bDong.get(i).sido_name + " " + bDong.get(i).sigungu_name + " " + bDong.get(i).eupmyeondong_name, bDong.get(i).b_dong_code, Code.ViewType.REGION_SEARCH));
                     }
                 }
 

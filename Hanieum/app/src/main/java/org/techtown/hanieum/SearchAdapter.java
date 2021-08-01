@@ -94,7 +94,7 @@ public class SearchAdapter extends  RecyclerView.Adapter<RecyclerView.ViewHolder
                         items.get(position).setChecked(false);
                     } else {
                         items.get(position).setChecked(true);
-                        chipList.add(new ChipList(items.get(position).getTitle(), position));
+                        chipList.add(new ChipList(items.get(position).getTitle(),items.get(position).getCode(), position));
                     }
                     setArrayPref(itemView.getContext(), chipList, SharedPreference.JOB_LIST);
                     notifyItemChanged(position);

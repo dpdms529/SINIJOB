@@ -58,4 +58,27 @@ public class Recruit {
     @ColumnInfo(name = "y")
     @NonNull
     public String y_coordinate;
+
+    @ColumnInfo(name = "update_dt")
+    @NonNull
+    public String update_dt;
+
+    public Recruit(String recruit_id, String recruit_title, String organization, String salary_type_code, String salary, String b_dong_code,
+                   String job_code, String career_required, String career_min, String enrollment_code, String certificate_required,
+                   String x_coordinate, String y_coordinate, String update_dt){
+        this.recruit_id = recruit_id;
+        this.recruit_title = recruit_title;
+        this.organization = organization;
+        this.salary_type_code = salary_type_code;
+        this.salary = salary;
+        this.b_dong_code = b_dong_code;
+        this.job_code = job_code;
+        this.career_required = career_required;
+        this.career_min = career_min;
+        this.enrollment_code = enrollment_code;
+        this.certificate_required = certificate_required;
+        this.x_coordinate = x_coordinate;
+        this.y_coordinate = y_coordinate;
+        this.update_dt = update_dt;
+    }
 }
