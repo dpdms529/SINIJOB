@@ -1,11 +1,16 @@
 package org.techtown.hanieum;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -21,7 +26,13 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
+
 import java.util.ArrayList;
+
+import static org.techtown.hanieum.SharedPreference.getArrayPref;
+import static org.techtown.hanieum.SharedPreference.setArrayPref;
 
 public class FilteringActivity extends AppCompatActivity implements View.OnClickListener {
     Toolbar toolbar;
@@ -39,6 +50,7 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
     RadioButton allWorkFormButton; // 근무형태 전체 라디오버튼
     RadioButton workFormButton1; // 정규직 라디오버튼
     RadioButton workFormButton2; // 계약직 라디오버튼
+    ChipGroup jobChipGroup; // 선택한 직종 ChipGroup
     static SharedPreferences pref;
     SharedPreferences.Editor edit;
     String careerStatus;
@@ -69,6 +81,7 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
         allWorkFormButton = findViewById(R.id.allWorkFrom);
         workFormButton1 = findViewById(R.id.workForm1);
         workFormButton2 = findViewById(R.id.workForm2);
+        jobChipGroup = findViewById(R.id.jobFinalChipGroup);
         context = this;
 
         // 경력 조건 상태값 불러오기
@@ -163,6 +176,8 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
         resetButton.setOnClickListener(this);
         regionButton.setOnClickListener(this);
         jobButton.setOnClickListener(this);
+
+        loadChip(context, jobChipGroup, SharedPreference.JOB_LIST);
     }
 
     @Override
@@ -210,7 +225,46 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
             startActivity(intent);
         } else if (v == jobButton) {
             Intent intent = new Intent(this, JobActivity.class);
-            startActivity(intent);
+            launcher.launch(intent);
+        }
+    }
+
+    ActivityResultLauncher<Intent> launcher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        loadChip(context, jobChipGroup, SharedPreference.JOB_LIST);
+                    }
+                }
+            });
+
+    private void loadChip(Context context, ChipGroup chipGroup, String key) { // 선택된 칩을 불러오는 함수
+        chipGroup.removeAllViews(); // 칩그룹 초기화
+        ArrayList<ChipList> chipList = getArrayPref(context, key);
+
+        for (int i=0;i<chipList.size();i++) { // chipList에 있는 것을 추가
+            String name = chipList.get(i).getName();
+
+            Chip chip = new Chip(context);
+            chip.setText(name);
+            chip.setCloseIconResource(R.drawable.close);
+            chip.setCloseIconVisible(true);
+            chipGroup.addView(chip);
+            chip.setOnCloseIconClickListener(new View.OnClickListener() { // 삭제 클릭 시
+                @Override
+                public void onClick(View v) {
+                    // 아이템 삭제 코드
+                    for (int i=0; i<chipList.size(); i++) {
+                        if (chipList.get(i).getName().equals(name)) {
+                            chipList.remove(i);
+                            setArrayPref(context, chipList, key);
+                        }
+                    }
+                    chipGroup.removeView(chip);
+                }
+            });
         }
     }
 }

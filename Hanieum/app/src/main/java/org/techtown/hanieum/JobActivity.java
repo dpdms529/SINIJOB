@@ -102,6 +102,8 @@ public class JobActivity extends AppCompatActivity implements View.OnClickListen
 
         loadListData();
         loadChip(context, chipGroup);
+
+        setResult(Activity.RESULT_OK);
     }
 
     @Override
@@ -134,13 +136,13 @@ public class JobActivity extends AppCompatActivity implements View.OnClickListen
                 }
             });
 
-
     private void loadListData() { // 항목을 로드하는 함수
         ArrayList<Job> items1 = new ArrayList<>();
         ArrayList<Job> items2 = new ArrayList<>();
         AppDatabase db = AppDatabase.getInstance(this);
         List<JobCategory> category = db.jobCategoryDao().getAll();
 
+        JobAdapter.lastSelectedPosition1 = -1;
         for (int i=0; i<category.size(); i++) {
             if (category.get(i).category_code.length() == 2) {
                 items1.add(new Job(category.get(i).category_name, category.get(i).category_code, Code.ViewType.JOB1));
@@ -149,7 +151,7 @@ public class JobActivity extends AppCompatActivity implements View.OnClickListen
 
         adapter1.setItems(items1);
         adapter1.notifyDataSetChanged();
-        adapter2.setItems(items2);
+        adapter2.setItems(items2); // 어댑터2를 빈 상태로 둠
     }
 
     public static void loadChip(Context context, ChipGroup chipGroup) { // 선택된 칩을 불러오는 함수

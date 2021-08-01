@@ -64,7 +64,6 @@ public class JobSearchActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-//        loadListData();
         loadChip(this, chipGroup);
 
         setResult(Activity.RESULT_OK);
@@ -95,17 +94,6 @@ public class JobSearchActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-//                ArrayList<Search> items = new ArrayList<>();
-//
-//                for (int i=0; i<category.size(); i++) {
-//                    if (category.get(i).category_code.length() != 2 && category.get(i).category_name.contains(query)) {
-//                        items.add(new Search(category.get(i).category_name, Code.ViewType.JOB_SEARCH));
-//                    }
-//                }
-//
-//                adapter.setItems(items);
-//                adapter.notifyDataSetChanged();
-
                 return false;
             }
 
@@ -127,8 +115,6 @@ public class JobSearchActivity extends AppCompatActivity {
                     for (int j=0; j<chipList.size(); j++) {
                         if (items.get(i).getTitle().equals(chipList.get(j).getName())) {
                             items.get(i).setChecked(true);
-//                            setArrayPref(context, chipList, SharedPreference.JOB_LIST);
-//                            adapter.notifyItemChanged(i);
                         }
                     }
                 }
@@ -156,7 +142,6 @@ public class JobSearchActivity extends AppCompatActivity {
 
         for (int i=0;i<chipList.size();i++) { // chipList에 있는 것을 추가
             String name = chipList.get(i).getName();
-            int position = chipList.get(i).getPosition();
 
             Chip chip = new Chip(context);
             chip.setText(name);
@@ -171,25 +156,18 @@ public class JobSearchActivity extends AppCompatActivity {
                         if (chipList.get(i).getName().equals(name)) {
                             chipList.remove(i);
 
-                            for (int j=0; j<adapter.getItemCount(); j++) {
-                                if (name.equals(adapter.getItem(i).getTitle())) {
-                                    Log.d("delete", String.valueOf(i));
-                                    adapter.getItem(i).setChecked(false);
+                            for (int j=0; j<adapter.getItemCount(); j++) {  // 검색된 항목이 있을 때
+                                if (name.equals(adapter.getItem(j).getTitle())) {   // 검색된 항목에 있을 때
+                                    adapter.getItem(j).setChecked(false);
                                     setArrayPref(context, chipList, SharedPreference.JOB_LIST);
-                                    adapter.notifyItemChanged(i);
-                                } else {
+                                    adapter.notifyItemChanged(j);
+                                } else {    // 검색된 항목에 없을 때
                                     setArrayPref(context, chipList, SharedPreference.JOB_LIST);
                                 }
                             }
-//                            if ((adapter.getItemCount()!=0) && name.equals(adapter.getItem(position).getTitle())) {
-//                                Log.d("delete", String.valueOf(position));
-//                                adapter.getItem(position).setChecked(false);
-//                                setArrayPref(context, chipList, SharedPreference.JOB_LIST);
-//                                adapter.notifyItemChanged(position);
-//                            } else {
-//                                setArrayPref(context, chipList, SharedPreference.JOB_LIST);
-//                            }
-
+                            if (adapter.getItemCount() == 0) {  // 검색된 항목이 없을 때
+                                setArrayPref(context, chipList, SharedPreference.JOB_LIST);
+                            }
                         }
                     }
                     chipGroup.removeView(chip);

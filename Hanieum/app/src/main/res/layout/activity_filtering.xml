@@ -125,6 +125,7 @@
                 app:backgroundTint="@null"/>
 
             <com.google.android.material.chip.ChipGroup
+                android:id="@+id/jobFinalChipGroup"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginHorizontal="25dp" >
