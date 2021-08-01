@@ -29,6 +29,7 @@ import android.widget.Toast;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import static org.techtown.hanieum.SharedPreference.getArrayPref;
@@ -177,7 +178,10 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
         regionButton.setOnClickListener(this);
         jobButton.setOnClickListener(this);
 
-        loadChip(context, jobChipGroup, SharedPreference.JOB_LIST);
+        ArrayList<ChipList> chipList = getArrayPref(context, SharedPreference.JOB_LIST);
+        setArrayPref(context, chipList, SharedPreference.JOB_TMP);
+
+        loadChip(context, jobChipGroup, SharedPreference.JOB_TMP);
     }
 
     @Override
@@ -210,6 +214,11 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
             edit = pref.edit();
             edit.putString(SharedPreference.WORKFORM_STATUS, workFormStatus);
             edit.commit();
+
+            // 직종 조건 저장
+            ArrayList<ChipList> chipList = getArrayPref(context, SharedPreference.JOB_TMP);
+            setArrayPref(context, chipList, SharedPreference.JOB_LIST);
+
             finish();
         } else if (v == resetButton) {
             noCareerButton.setChecked(true);
@@ -235,7 +244,7 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
                 @Override
                 public void onActivityResult(ActivityResult result) {
                     if (result.getResultCode() == Activity.RESULT_OK) {
-                        loadChip(context, jobChipGroup, SharedPreference.JOB_LIST);
+                        loadChip(context, jobChipGroup, SharedPreference.JOB_TMP);
                     }
                 }
             });

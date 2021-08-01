@@ -73,7 +73,7 @@ public class JobActivity extends AppCompatActivity implements View.OnClickListen
             public void OnItemClick(JobAdapter.Job1ViewHolder holder, View view, int position) {
                 Job job = adapter1.getItem(position);
                 ArrayList<Job> items = new ArrayList<>();
-                ArrayList<ChipList> chipList = getArrayPref(context, SharedPreference.JOB_LIST);
+                ArrayList<ChipList> chipList = getArrayPref(context, SharedPreference.JOB_TMP);
 
                 for (int i=0; i<category.size(); i++) {
                     if (job.getJob2().equals(category.get(i).primary_cate_code)) {
@@ -156,7 +156,7 @@ public class JobActivity extends AppCompatActivity implements View.OnClickListen
 
     public static void loadChip(Context context, ChipGroup chipGroup) { // 선택된 칩을 불러오는 함수
         chipGroup.removeAllViews(); // 칩그룹 초기화
-        ArrayList<ChipList> chipList = getArrayPref(context, SharedPreference.JOB_LIST);
+        ArrayList<ChipList> chipList = getArrayPref(context, SharedPreference.JOB_TMP);
 
         for (int i=0;i<chipList.size();i++) { // chipList에 있는 것을 추가
             String name = chipList.get(i).getName();
@@ -177,10 +177,10 @@ public class JobActivity extends AppCompatActivity implements View.OnClickListen
                             // 1차 직종이 선택된 상태이고 삭제되는 칩 이름과 현재 표시된 2차 직종(position)의 이름이 같으면
                             if ((adapter2.getItemCount()!=0) && name.equals(adapter2.getItem(position).getJob2())) {
                                 adapter2.getItem(position).setSelected(false);
-                                setArrayPref(context, chipList, SharedPreference.JOB_LIST);
+                                setArrayPref(context, chipList, SharedPreference.JOB_TMP);
                                 adapter2.notifyItemChanged(position);
                             } else {
-                                setArrayPref(context, chipList, SharedPreference.JOB_LIST);
+                                setArrayPref(context, chipList, SharedPreference.JOB_TMP);
                             }
                         }
                     }
