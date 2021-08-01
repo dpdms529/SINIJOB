@@ -41,6 +41,7 @@ def check_total():  # 가져올 데이터의 개수 확인
     response = requests.get(url + queryParams).text.encode('utf-8')
     xmlobj = bs4.BeautifulSoup(response, 'lxml-xml')
     total = xmlobj.find('total')
+    print("total data from api: " + total.text)
     return int(total.text)
 
 
@@ -80,33 +81,36 @@ def recruit_list(pageNum):  # 공고 목록 불러와 리스트에 저장
                 columnList.append(eachColumn)
         rowList.append(columnList)
         columnList = []  # 다음 row 값을 넣기 위해 비워준다.
-    print("recruit_list() done")
 
 
-def check_duplicates(flag):     # 중복 데이터의 유무 확인, 새로운 데이터만 가져오도록 범위 설정
+def check_duplicates():     # 중복 데이터의 유무 확인, 새로운 데이터만 가져오도록 범위 설정, 오래된 데이터는 id만 저장
     cursor = db.cursor()
     # DB의 데이터 중 가장 최근 날짜에 업로드 된 공고들의 id를 가져온다.
     try:
         sql = """select recruit_id from recruit 
-            where regDt = (select MAX(regDt) from recruit)"""
+            where register_date = (select MAX(register_date) from recruit)"""
         cursor.execute(sql)
-        result = cursor.fetchall()
-        for recent_id in result:
+        results = cursor.fetchall()
+        recent_id = []
+        for result in results:
+            recent_id.append(result[0])
+        for i in range(0, len(rowList)):
             # DB의 공고 id와 api에서 새로 받아온 공고 id를 비교. 같은 id를 발견하면 이후의 데이터는 중복 데이터로 간주.
-            # 해당 id 이후의 공고 목록을 list에서 삭제하고, 목록 가져오기를 멈춘다.
-            for i in range(0, len(rowList)):
-                if recent_id[0] == rowList[i][0]:
-                    for j in range(i, len(rowList)):
-                        del rowList[j]
-                    flag[0] = True
-                    break
-            if flag[0]:
+            # 해당 id 이후의 공고 목록(이미 저장된 데이터)은 id만 저장하고 rowList에 저장하지 않는다.
+            if rowList[i][0] in recent_id:
+                count = 0
+                for j in range(i, len(rowList)):
+                    oldWantedAuthNo.append(rowList[j-count][0])
+                    del rowList[j-count]
+                    count += 1
+                print("old data: " + str(len(oldWantedAuthNo)))  # log
                 break
 
     except pymysql.err.InternalError as e:
         code, msg = e.args
 
     finally:
+        print("check_duplicates() done")
         cursor.close()
 
 
@@ -114,6 +118,7 @@ def recruit_id():   # 공고 id만 추출 -> 각 공고의 채용 상세 데이�
     rowsLen = len(rowList)
     for i in range(0, rowsLen):
         wantedAuthNo.append(rowList[i][0])
+    print("new data: " + str(len(wantedAuthNo)))    # log
 
 
 def recruit_detail():   # 채용 상세 데이터 불러와 리스트에 저장
@@ -213,7 +218,7 @@ def processing():   # 데이터 전처리
     delList = []
     rowsLen = len(rowList)
     for i in range(0, rowsLen):
-        print("processing-%s-, id:"%i, rowList[i][0])
+        print("processing%s, id:"%i, rowList[i][0])
         # 건물 본번, 부번
         tmp = re.findall(r'[로길] (.+)', rowList[i][8])
         if tmp:
@@ -328,6 +333,8 @@ def processing():   # 데이터 전처리
 
     # 무효 데이터 삭제
     if delList:
+        printlen = len(delList)
+        print("delete " + str(printlen) + " data: no x, y")  # log
         count = 0
         for i in delList:
             certifi_count = 0
@@ -335,6 +342,7 @@ def processing():   # 데이터 전처리
                 if rowList[i-count][0] == certificateList[j-certifi_count][1]:
                     del certificateList[j-certifi_count]
                     certifi_count += 1
+            print(rowList[i-count][0])  # log
             del rowList[i-count]
             del rowList_detail[i-count]
             count += 1
@@ -389,6 +397,46 @@ def db_checknull(pk):
         cursor.close()
 
 
+def db_check_constraint():
+    # job_code 존재여부 확인
+    cursor = db.cursor(pymysql.cursors.DictCursor)
+
+    try:
+        # job SELECT
+        sql = """SELECT job_code from `job`;"""
+        cursor.execute(sql)
+        results = cursor.fetchall()
+        result = []
+        delList = []
+        for tmp in results:
+            result.append(tmp['job_code'])
+        for i in range(len(rowList)):
+            if rowList[i][10] not in result:
+                delList.append(i)
+
+        # 무효 데이터 삭제
+        if delList:
+            printdel = len(delList)  # log
+            print("delete " + str(printdel) + " data: no job_code")  # log
+            count = 0
+            for i in delList:
+                certifi_count = 0
+                for j in range(0, len(certificateList)):  # 삭제 공고의 자격증 데이터 또한 삭제
+                    if rowList[i - count][0] == certificateList[j - certifi_count][1]:
+                        del certificateList[j - certifi_count]
+                        certifi_count += 1
+                print(rowList[i - count][0])  # log
+                del rowList[i - count]
+                del rowList_detail[i - count]
+                count += 1
+
+    except pymysql.err.InternalError as e:
+        code, msg = e.args
+
+    finally:
+        cursor.close()
+
+
 def db_insert():
     cursor = db.cursor(pymysql.cursors.DictCursor)
 
@@ -402,9 +450,10 @@ def db_insert():
                                         etc_info, work_time, four_insurence, retire_pay, etc_welfare, 
                                         disable_conv, min_education_code, salary_type_code, contact, 
                                         representative, total_worker, sales_amount, industry, corp_address,
-                                        certificate_required, career_required, career_min, enrollment_code) 
+                                        certificate_required, career_required, career_min, 
+                                        enrollment_code, update_dt) 
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 
-                        %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
+                        %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, now());"""
         cursor.executemany(sql, recruit)
         db.commit()
 
@@ -433,8 +482,6 @@ def db_insert():
     finally:
         print("db inserted")
         cursor.close()
-        db.close()
-        print("db closed")
 
 
 def db_select_certificate():
@@ -449,9 +496,49 @@ def db_select_certificate():
     db.commit()
 
 
+def db_check_deleted():
+    cursor = db.cursor(pymysql.cursors.DictCursor)
+
+    try:
+        # 기존 저장되어있던 데이터 중 사라진 공고 id 확인
+        sql = """select recruit_id from recruit;"""
+        cursor.execute(sql)
+        results = cursor.fetchall()
+        result = []
+        for tmp in results:
+            result.append(tmp['recruit_id'])
+        # tmpdelList = list(set(result)-set(oldWantedAuthNo))
+        # delList = []
+        # for i in tmpdelList:
+        #     tmp = [i]
+        #     delList.append(tmp)
+        delList = tuple(set(result)-set(oldWantedAuthNo))
+        print("update " + str(len(delList)) + " data from recruit(deleted = 1) which has id below...")  # log
+        print(delList)  # log
+
+        # API에서 지워진 공고에 삭제 표시 업데이트
+        # sql = """UPDATE `recruit`
+        #         SET deleted = '1'
+        #         WHERE recruit_id = %s;"""
+        # cursor.executemany(sql, delList)
+        sql = f"""UPDATE `recruit`
+                SET deleted = '1'
+                WHERE recruit_id in {delList};"""
+        cursor.execute(sql)
+        db.commit()
+
+    except pymysql.err.InternalError as e:
+        code, msg = e.args
+
+    finally:
+        print("deleted recruits checked")
+        cursor.close()
+
+
 if __name__ == '__main__':
     # init lists
     rowList = []
+    oldWantedAuthNo = []
     wantedAuthNo = []
     rowList_detail = []
     certificateList = []
@@ -465,19 +552,21 @@ if __name__ == '__main__':
     xy = []
 
     db = db_connection()
-    flag = [False]
     for i in range(0, int(check_total() / 100) + 1):
         recruit_list(i+1)
-        # check_duplicates(flag) # 첫 수집 이후 반복 시 주석 제거 후 사용(새로 업데이트 된 데이터만 받아오도록 함)
-        if flag[0]:
-            break
+    print("recruit_list() done")
+    check_duplicates()  # 새로 업데이트 된 데이터만 받아오도록 함
     recruit_id()
     recruit_detail()
     db_select_certificate()  # db에서 자격증 테이블 읽어오기
     processing()
+    db_check_constraint()
     # 리스트 합치기
     rowsLen = len(rowList)
     for i in range(0, rowsLen):
         recruit.append(rowList[i] + rowList_detail[i])
+    db_check_deleted()
     db_insert()
+    db.close()
+    print("db closed")
 
