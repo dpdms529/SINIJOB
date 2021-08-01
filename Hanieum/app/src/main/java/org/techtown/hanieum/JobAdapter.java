@@ -138,14 +138,32 @@ public class JobAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> im
                                 chipList.remove(i);
                             }
                         }
-
                         items.get(position).setSelected(false);
                     } else {
+                        for (int i=0; i<items.size(); i++) {
+                            if (items.get(i).getJob2().contains("전체") && items.get(i).isSelected()) { // 전체가 선택되어 있으면
+                                for (int j=0; j<chipList.size(); j++) {
+                                    if (chipList.get(j).getName().equals(items.get(i).getJob2())) {
+                                        chipList.remove(j);
+                                    }
+                                }
+                                items.get(i).setSelected(false);
+                                break;
+                            } else if (items.get(position).getJob2().contains("전체") && items.get(i).isSelected()) {
+                                // 현재 선택한 항목이 전체이고 다른 항목이 선택되어 있으면
+                                for (int j=0; j<chipList.size(); j++) {
+                                    if (chipList.get(j).getName().equals(items.get(i).getJob2())) {
+                                        chipList.remove(j);
+                                    }
+                                }
+                                items.get(i).setSelected(false);
+                            }
+                        }
                         items.get(position).setSelected(true);
                         chipList.add(new ChipList(items.get(position).getJob2(), items.get(position).getCode(), position));
                     }
                     setArrayPref(itemView.getContext(), chipList, SharedPreference.JOB_TMP);
-                    notifyItemChanged(position);
+                    notifyDataSetChanged();
                     JobActivity.loadChip(itemView.getContext(), JobActivity.chipGroup);
                 }
             });
