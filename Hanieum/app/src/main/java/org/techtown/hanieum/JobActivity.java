@@ -75,6 +75,7 @@ public class JobActivity extends AppCompatActivity implements View.OnClickListen
                 ArrayList<Job> items = new ArrayList<>();
                 ArrayList<ChipList> chipList = pref.getArrayPref(SharedPreference.JOB_TMP);
 
+                items.add(new Job(job.getCode(), job.getJob1()+" 전체", job.getCode(), Code.ViewType.JOB2));
                 for (int i=0; i<category.size(); i++) {
                     if (job.getJob2().equals(category.get(i).primary_cate_code)) {
                         items.add(new Job(category.get(i).primary_cate_code, category.get(i).category_name, category.get(i).category_code, Code.ViewType.JOB2));
@@ -158,7 +159,7 @@ public class JobActivity extends AppCompatActivity implements View.OnClickListen
         chipGroup.removeAllViews(); // 칩그룹 초기화
         ArrayList<ChipList> chipList = pref.getArrayPref(SharedPreference.JOB_TMP);
 
-        for (int i=0;i<chipList.size();i++) { // chipList에 있는 것을 추가
+        for (int i=chipList.size()-1;i>=0;i--) { // chipList에 있는 것을 추가
             String name = chipList.get(i).getName();
             int position = chipList.get(i).getPosition();
 

@@ -90,6 +90,14 @@ public class SearchAdapter extends  RecyclerView.Adapter<RecyclerView.ViewHolder
 
                         items.get(position).setChecked(false);
                     } else {
+                        for (int i=0; i<chipList.size(); i++) {
+                            // 선택한 아이템이 1차 직종 전체에 해당하면
+                            if (items.get(position).getCode().contains(chipList.get(i).getCode())) {
+                                chipList.remove(i);
+                                break;
+                            }
+                        }
+
                         items.get(position).setChecked(true);
                         chipList.add(new ChipList(items.get(position).getTitle(),items.get(position).getCode(), position));
                     }

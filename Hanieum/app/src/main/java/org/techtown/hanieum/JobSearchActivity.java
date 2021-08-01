@@ -139,7 +139,7 @@ public class JobSearchActivity extends AppCompatActivity {
         chipGroup.removeAllViews(); // 칩그룹 초기화
         ArrayList<ChipList> chipList = pref.getArrayPref(SharedPreference.JOB_TMP);
 
-        for (int i=0;i<chipList.size();i++) { // chipList에 있는 것을 추가
+        for (int i=chipList.size()-1;i>=0;i--) { // chipList에 있는 것을 추가
             String name = chipList.get(i).getName();
 
             Chip chip = new Chip(context);
