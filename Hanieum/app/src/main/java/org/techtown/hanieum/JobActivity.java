@@ -77,7 +77,7 @@ public class JobActivity extends AppCompatActivity implements View.OnClickListen
 
                 for (int i=0; i<category.size(); i++) {
                     if (job.getJob2().equals(category.get(i).primary_cate_code)) {
-                        items.add(new Job(category.get(i).primary_cate_code, category.get(i).category_name, Code.ViewType.JOB2));
+                        items.add(new Job(category.get(i).primary_cate_code, category.get(i).category_name, category.get(i).category_code, Code.ViewType.JOB2));
                     }
                 }
 
@@ -145,7 +145,7 @@ public class JobActivity extends AppCompatActivity implements View.OnClickListen
         JobAdapter.lastSelectedPosition1 = -1;
         for (int i=0; i<category.size(); i++) {
             if (category.get(i).category_code.length() == 2) {
-                items1.add(new Job(category.get(i).category_name, category.get(i).category_code, Code.ViewType.JOB1));
+                items1.add(new Job(category.get(i).category_name, category.get(i).category_code, category.get(i).category_code, Code.ViewType.JOB1));
             }
         }
 

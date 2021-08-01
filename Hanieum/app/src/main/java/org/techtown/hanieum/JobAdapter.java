@@ -142,7 +142,7 @@ public class JobAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> im
                         items.get(position).setSelected(false);
                     } else {
                         items.get(position).setSelected(true);
-                        chipList.add(new ChipList(items.get(position).getJob2(), position));
+                        chipList.add(new ChipList(items.get(position).getJob2(), items.get(position).getCode(), position));
                     }
                     setArrayPref(itemView.getContext(), chipList, SharedPreference.JOB_LIST);
                     notifyItemChanged(position);
