@@ -7,18 +7,13 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.view.menu.MenuView;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.google.android.material.chip.Chip;
 
 import java.util.ArrayList;
 
-import static org.techtown.hanieum.SharedPreference.getArrayPref;
-import static org.techtown.hanieum.SharedPreference.setArrayPref;
-
 public class SearchAdapter extends  RecyclerView.Adapter<RecyclerView.ViewHolder> {
     ArrayList<Search> items = new ArrayList<Search>();
+    SharedPreference pref;
 
     @NonNull
     @Override
@@ -27,8 +22,10 @@ public class SearchAdapter extends  RecyclerView.Adapter<RecyclerView.ViewHolder
         View view = inflater.inflate(R.layout.search_item, viewGroup, false);
 
         if (viewType == Code.ViewType.JOB_SEARCH) { // 직업 검색이면
+            pref = JobSearchActivity.pref;
             return new JobViewHolder(view);
         } else { // 지역 검색이면
+            pref = RegionSearchActivity.pref;
             return new RegionViewHolder(view);
         }
     }
@@ -80,7 +77,7 @@ public class SearchAdapter extends  RecyclerView.Adapter<RecyclerView.ViewHolder
             checkBox.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    ArrayList<ChipList> chipList = getArrayPref(itemView.getContext(), SharedPreference.JOB_TMP);
+                    ArrayList<ChipList> chipList = pref.getArrayPref(SharedPreference.JOB_TMP);
                     int position = getLayoutPosition();
 
                     if (items.get(position).isChecked()) { // 이미 클릭된 상태이면
@@ -96,7 +93,7 @@ public class SearchAdapter extends  RecyclerView.Adapter<RecyclerView.ViewHolder
                         items.get(position).setChecked(true);
                         chipList.add(new ChipList(items.get(position).getTitle(),items.get(position).getCode(), position));
                     }
-                    setArrayPref(itemView.getContext(), chipList, SharedPreference.JOB_TMP);
+                    pref.setArrayPref(chipList, SharedPreference.JOB_TMP);
                     notifyItemChanged(position);
                     JobSearchActivity.loadChip(itemView.getContext(), JobSearchActivity.chipGroup);
                 }

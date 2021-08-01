@@ -23,13 +23,8 @@ import com.google.android.material.chip.ChipGroup;
 
 import org.techtown.hanieum.db.AppDatabase;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-
-import static org.techtown.hanieum.SharedPreference.getArrayPref;
-import static org.techtown.hanieum.SharedPreference.setArrayPref;
 
 public class RegionActivity extends AppCompatActivity implements View.OnClickListener {
     Toolbar toolbar;
@@ -42,12 +37,15 @@ public class RegionActivity extends AppCompatActivity implements View.OnClickLis
     static RegionAdapter adapter3; // 지역 분류(동/읍/면) 어댑터
     static ChipGroup chipGroup; // 선택한 지역을 나타내기 위한 ChipGroup
     Context context;
+    static SharedPreference pref;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_region);
+
+        pref = new SharedPreference(getApplicationContext());
 
         AppDatabase db = AppDatabase.getInstance(this);
 
@@ -81,7 +79,7 @@ public class RegionActivity extends AppCompatActivity implements View.OnClickLis
             public void OnRegion1Click(RegionAdapter.Region1ViewHolder holder, View view, int position) {
                 Region region1 = adapter1.getItem(position);
                 ArrayList<Region> items2 = new ArrayList<>();
-                ArrayList<ChipList> chipList = getArrayPref(context, SharedPreference.REGION_LIST);
+                ArrayList<ChipList> chipList = pref.getArrayPref(SharedPreference.REGION_LIST);
 
                 items2.add(new Region(region1.getRegion1(), "전체",null, "0",Code.ViewType.REGION2));
                 List<String> item2 = db.BdongDao().getsigungu(region1.getRegion1());
@@ -106,7 +104,7 @@ public class RegionActivity extends AppCompatActivity implements View.OnClickLis
             public void OnRegion2Click(RegionAdapter.Region2ViewHolder holder, View view, int position) {
                 Region item = adapter2.getItem(position);
                 ArrayList<Region> items3 = new ArrayList<>();
-                ArrayList<ChipList> chipList = getArrayPref(context, SharedPreference.REGION_LIST);
+                ArrayList<ChipList> chipList = pref.getArrayPref(SharedPreference.REGION_LIST);
 
                 List<String> item3 = db.BdongDao().geteupmyeondong(item.getRegion1(), item.getRegion2());
                 String bDongCode = db.BdongDao().getBDongCode(item.getRegion1(), item.getRegion2(), item.getRegion3());
@@ -182,7 +180,7 @@ public class RegionActivity extends AppCompatActivity implements View.OnClickLis
 
     public static void loadChip(Context context, ChipGroup chipGroup) {
         chipGroup.removeAllViews(); //칩그룹 초기화
-        ArrayList<ChipList> chipList = getArrayPref(context, SharedPreference.REGION_LIST);
+        ArrayList<ChipList> chipList = pref.getArrayPref(SharedPreference.REGION_LIST);
 
         for(int i=0;i<chipList.size();i++) {
             String name = chipList.get(i).getName();
@@ -202,10 +200,10 @@ public class RegionActivity extends AppCompatActivity implements View.OnClickLis
                             chipList.remove(i);
                             if((adapter3.getItemCount() != 0) && name.equals(adapter3.getItem(position).getRegion3())) {
                                 adapter3.getItem(position).setSelected(false);
-                                setArrayPref(context, chipList, SharedPreference.REGION_LIST);
+                                pref.setArrayPref(chipList, SharedPreference.REGION_LIST);
                                 adapter3.notifyItemChanged(position);
                             } else {
-                                setArrayPref(context, chipList, SharedPreference.REGION_LIST);
+                                pref.setArrayPref(chipList, SharedPreference.REGION_LIST);
                             }
                         }
                     }

@@ -2,6 +2,7 @@ package org.techtown.hanieum;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
@@ -55,6 +56,9 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
 
     InputMethodManager imm;
     AppDatabase db;
+
+    SharedPreferences pref;
+    SharedPreferences.Editor edit;
 
     public RecommendFragment() {
         // Required empty public constructor
@@ -145,6 +149,13 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
 
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+
     }
 
     @Override
