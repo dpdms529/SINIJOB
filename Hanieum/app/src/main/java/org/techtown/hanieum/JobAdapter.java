@@ -128,7 +128,7 @@ public class JobAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> im
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    ArrayList<ChipList> chipList = getArrayPref(itemView.getContext(), SharedPreference.JOB_LIST);
+                    ArrayList<ChipList> chipList = getArrayPref(itemView.getContext(), SharedPreference.JOB_TMP);
                     int position = getLayoutPosition();
 
                     if (items.get(position).isSelected()) { // 이미 클릭된 상태이면
@@ -144,7 +144,7 @@ public class JobAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> im
                         items.get(position).setSelected(true);
                         chipList.add(new ChipList(items.get(position).getJob2(), items.get(position).getCode(), position));
                     }
-                    setArrayPref(itemView.getContext(), chipList, SharedPreference.JOB_LIST);
+                    setArrayPref(itemView.getContext(), chipList, SharedPreference.JOB_TMP);
                     notifyItemChanged(position);
                     JobActivity.loadChip(itemView.getContext(), JobActivity.chipGroup);
                 }

@@ -80,7 +80,7 @@ public class SearchAdapter extends  RecyclerView.Adapter<RecyclerView.ViewHolder
             checkBox.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    ArrayList<ChipList> chipList = getArrayPref(itemView.getContext(), SharedPreference.JOB_LIST);
+                    ArrayList<ChipList> chipList = getArrayPref(itemView.getContext(), SharedPreference.JOB_TMP);
                     int position = getLayoutPosition();
 
                     if (items.get(position).isChecked()) { // 이미 클릭된 상태이면
@@ -96,7 +96,7 @@ public class SearchAdapter extends  RecyclerView.Adapter<RecyclerView.ViewHolder
                         items.get(position).setChecked(true);
                         chipList.add(new ChipList(items.get(position).getTitle(),items.get(position).getCode(), position));
                     }
-                    setArrayPref(itemView.getContext(), chipList, SharedPreference.JOB_LIST);
+                    setArrayPref(itemView.getContext(), chipList, SharedPreference.JOB_TMP);
                     notifyItemChanged(position);
                     JobSearchActivity.loadChip(itemView.getContext(), JobSearchActivity.chipGroup);
                 }
