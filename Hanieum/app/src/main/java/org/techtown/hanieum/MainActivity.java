@@ -20,14 +20,14 @@ public class MainActivity extends AppCompatActivity {
 
         getSupportFragmentManager().beginTransaction().add(R.id.mainFrame,
                 new HomeFragment()).commit(); // 처음 화면 설정
-        bottomNavigationView.setSelectedItemId(R.id.homeItem); // 처음 아이템 설정
+        bottomNavigationView.setSelectedItemId(R.id.recommendItem); // 처음 아이템 설정
 
         bottomNavigationView.setOnNavigationItemSelectedListener( // 아이템 선택시 실행
                 new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
-                    case R.id.recommendItem :
+                    case R.id.listItem :
                         getSupportFragmentManager().beginTransaction().replace(R.id.mainFrame,
                                 new RecommendFragment()).commit();
                         break;
@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
                         getSupportFragmentManager().beginTransaction().replace(R.id.mainFrame,
                                 new ResumeFragment()).commit();
                         break;
-                    case R.id.homeItem :
+                    case R.id.recommendItem :
                         getSupportFragmentManager().beginTransaction().replace(R.id.mainFrame,
                                 new HomeFragment()).commit();
                         break;

@@ -2,9 +2,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/recommendItem"
-        android:icon="@drawable/recommend"
-        android:title="추천"
+        android:id="@+id/listItem"
+        android:icon="@drawable/list"
+        android:title="목록"
         android:enabled="true"
         />
     <item
@@ -14,9 +14,9 @@
         android:enabled="true"
         />
     <item
-        android:id="@+id/homeItem"
-        android:icon="@drawable/home"
-        android:title="처음화면"
+        android:id="@+id/recommendItem"
+        android:icon="@drawable/recommend"
+        android:title="추천"
         android:enabled="true"
         />
     <item
