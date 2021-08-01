@@ -11,15 +11,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-import static org.techtown.hanieum.SharedPreference.getArrayPref;
-import static org.techtown.hanieum.SharedPreference.setArrayPref;
-
 public class RegionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements OnRegion1ItemClickListener, OnRegion2ItemClickListener {
     ArrayList<Region> items = new ArrayList<Region>();
     OnRegion1ItemClickListener listener1;
     OnRegion2ItemClickListener listener2;
     private int lastSelectedPosition1 = -1; // 전에 선택한 아이템의 위치
     private int lastSelectedPosition2 = -1; // 전에 선택한 아이템의 위치
+    SharedPreference pref = RegionActivity.pref;
 
     @NonNull
     @Override
@@ -182,7 +180,7 @@ public class RegionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    ArrayList<ChipList> chipList = getArrayPref(itemView.getContext(), SharedPreference.REGION_LIST);
+                    ArrayList<ChipList> chipList = pref.getArrayPref(SharedPreference.REGION_LIST);
                     int position = getLayoutPosition();
 
                     if (items.get(position).isSelected()) { // 이미 클릭된 상태이면
@@ -198,7 +196,7 @@ public class RegionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                         chipList.add(new ChipList(items.get(position).getRegion1() + " " + items.get(position).getRegion2()
                                 + " " + items.get(position).getRegion3(), items.get(position).getBDongCode(), position));
                     }
-                    setArrayPref(itemView.getContext(), chipList, SharedPreference.REGION_LIST);
+                    pref.setArrayPref(chipList, SharedPreference.REGION_LIST);
                     notifyItemChanged(position);
                     RegionActivity.loadChip(itemView.getContext(), RegionActivity.chipGroup);
                 }
