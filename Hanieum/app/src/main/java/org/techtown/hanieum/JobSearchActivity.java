@@ -106,7 +106,7 @@ public class JobSearchActivity extends AppCompatActivity {
                     if (newText.equals("")) {
                         break;
                     } else if (category.get(i).category_code.length() != 2 && category.get(i).category_name.contains(newText)) {
-                        items.add(new Search(category.get(i).category_name, Code.ViewType.JOB_SEARCH));
+                        items.add(new Search(category.get(i).category_name, category.get(i).category_code, Code.ViewType.JOB_SEARCH));
                     }
                 }
 
