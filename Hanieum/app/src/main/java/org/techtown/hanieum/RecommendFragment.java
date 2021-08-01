@@ -2,10 +2,13 @@ package org.techtown.hanieum;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.collection.ArraySet;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -29,6 +32,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.techtown.hanieum.db.AppDatabase;
+import org.techtown.hanieum.db.dao.RecruitDao;
 import org.techtown.hanieum.db.entity.Recruit;
 
 import java.util.ArrayList;
@@ -50,6 +54,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
     ArrayList<Recommendation> allItems = new ArrayList<>(); //전체 공고 아이템을 저장하고있는 ArrayList
 
     InputMethodManager imm;
+    AppDatabase db;
 
     public RecommendFragment() {
         // Required empty public constructor
@@ -74,6 +79,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
         editSearch = view.findViewById(R.id.editSearch);
 
         imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        db = AppDatabase.getInstance(this.getContext());
 
         // 리사이클러뷰와 어댑터 연결
         LinearLayoutManager layoutManager = new LinearLayoutManager(view.getContext(),
@@ -97,9 +103,15 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
         searchButton.setOnClickListener(this);
         menuButton.setOnClickListener(this);
 
-        loadListData();
+        checkLastUpdated();     // 최신 업데이트 일시 확인(일치 -> 유지, 불일치 -> 데이터 가져오기)
+        db.RecruitDao().getAll().observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
+            @Override
+            public void onChanged(List<Recruit> recruits) {
+                loadListData(recruits);     // LiveData - 데이터 변경을 감지하면 UI 갱신
+            }
+        });
 
-        editSearch.addTextChangedListener(new TextWatcher() {
+        editSearch.addTextChangedListener(new TextWatcher() {   // 공고 검색
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -117,7 +129,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
             }
         });
 
-        editSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        editSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {   // 공고 검색
             @Override
             public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
                 if(i == EditorInfo.IME_ACTION_DONE){
@@ -157,10 +169,106 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
         }
     }
 
-    private void loadListData() { // 항목을 로드하는 함수
-        // 항목 로드
+    private void checkLastUpdated() { // 기기의 업데이트 일시와 DB의 업데이트 일시를 확인
         AppDatabase db = AppDatabase.getInstance(this.getContext());
-        List<Recruit> rows = db.RecruitDao().getAll();
+        List<String> rows = db.RecruitDao().getLastUpdated();
+        String lastUpdated = rows.get(0);
+        String dbLastUpdated = "";
+
+        String php = getResources().getString(R.string.serverIP)+"recruit_lastupdated.php";
+        URLConnector urlConnector = new URLConnector(php);
+
+        urlConnector.start();
+        try {
+            urlConnector.join();
+        } catch (InterruptedException e) {
+        }
+        String result = urlConnector.getResult();
+
+        try {
+            JSONObject jsonObject = new JSONObject(result);
+            JSONArray jsonArray = jsonObject.getJSONArray("result");
+            dbLastUpdated = jsonArray.getJSONObject(0).getString("last_updated");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        if (!lastUpdated.equals(dbLastUpdated)) {   // 최신 업데이트 일시 확인(불일치 -> 데이터 가져오기)
+            String recruitPhp = getResources().getString(R.string.serverIP)+"recruit_update.php?last_updated=" + lastUpdated;
+            URLConnector urlConnectorRecruit = new URLConnector(recruitPhp);
+
+            urlConnectorRecruit.start();
+            try {
+                urlConnectorRecruit.join();
+            } catch (InterruptedException e) {
+            }
+            String recruitResult = urlConnectorRecruit.getResult();
+
+            try {
+                JSONObject jsonObject = new JSONObject(recruitResult);
+                JSONArray jsonArray = jsonObject.getJSONArray("result");
+                for(int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject jsonObject1 = jsonArray.getJSONObject(i);
+                    if (jsonObject1.getString("deleted").equals("0")) {     // 새로 생긴 데이터
+                        String recruit_id = jsonObject1.getString("recruit_id");
+                        String title = jsonObject1.getString("title");
+                        String organization = jsonObject1.getString("organization");
+                        String salary_type_code = jsonObject1.getString("salary_type_code");
+                        String salary = jsonObject1.getString("salary");
+                        String b_dong_code = jsonObject1.getString("b_dong_code");
+                        String job_code = jsonObject1.getString("job_code");
+                        String career_required = jsonObject1.getString("career_required");
+                        String career_min = jsonObject1.getString("career_min");
+                        String enrollment_code = jsonObject1.getString("enrollment_code");
+                        String certificate_required = jsonObject1.getString("certificate_required");
+                        String x = jsonObject1.getString("x");
+                        String y = jsonObject1.getString("y");
+                        String update_dt = jsonObject1.getString("update_dt");
+                        Recruit newRecruit = new Recruit(recruit_id, title, organization, salary_type_code, salary, b_dong_code, job_code, career_required, career_min, enrollment_code, certificate_required, x, y, update_dt);
+                        new InsertAsyncTask(db.RecruitDao()).execute(newRecruit);   // 백그라운드 INSERT 실행
+                    } else {    // 지워진 기존 데이터
+                        new DeleteAsyncTask(db.RecruitDao()).execute(jsonObject1.getString("recruit_id"));   // 백그라운드 DELETE 실행
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    // 메인스레드에서 데이터베이스에 접근할 수 없으므로 AsyncTask 사용 - INSERT
+    public static class InsertAsyncTask extends AsyncTask<Recruit, Void, Void> {
+        private RecruitDao mRecruitDao;
+
+        public  InsertAsyncTask(RecruitDao recruitDao){
+            this.mRecruitDao = recruitDao;
+        }
+
+        @Override // 백그라운드작업(메인스레드 X)
+        protected Void doInBackground(Recruit... recruits) {
+            mRecruitDao.insertNewRecruit(recruits[0]);
+            return null;
+        }
+    }
+
+    // 메인스레드에서 데이터베이스에 접근할 수 없으므로 AsyncTask 사용 - DELETE
+    public static class DeleteAsyncTask extends AsyncTask<String, Void, Void> {
+        private RecruitDao mRecruitDao;
+
+        public  DeleteAsyncTask(RecruitDao recruitDao){
+            this.mRecruitDao = recruitDao;
+        }
+
+        @Override // 백그라운드작업(메인스레드 X)
+        protected Void doInBackground(String... strings) {
+            mRecruitDao.deleteGoneRecruit(strings[0]);
+            return null;
+        }
+    }
+
+    private void loadListData(List<Recruit> result) { // 항목을 로드하는 함수
+        AppDatabase db = AppDatabase.getInstance(this.getContext());
+        List<Recruit> rows = result;
 
         items = new ArrayList<>();
 
@@ -200,6 +308,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
         Collections.sort(items);    // 거리순으로 정렬
         adapter.setItems(items);
         allItems.addAll(items);
+        recyclerView.setAdapter(adapter);
     }
 
     public void search(String text){    //공고 제목 또는 회사명으로 검색하는 함수
