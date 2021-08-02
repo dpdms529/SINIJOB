@@ -403,13 +403,13 @@ def db_check_constraint():
 
     try:
         # job SELECT
-        sql = """SELECT job_code from `job`;"""
+        sql = """SELECT category_code from `job_category_t`;"""
         cursor.execute(sql)
         results = cursor.fetchall()
         result = []
         delList = []
         for tmp in results:
-            result.append(tmp['job_code'])
+            result.append(tmp['category_code'])
         for i in range(len(rowList)):
             if rowList[i][10] not in result:
                 delList.append(i)
@@ -501,26 +501,18 @@ def db_check_deleted():
 
     try:
         # 기존 저장되어있던 데이터 중 사라진 공고 id 확인
-        sql = """select recruit_id from recruit;"""
+        sql = """select recruit_id from recruit
+                where deleted = '0';"""
         cursor.execute(sql)
         results = cursor.fetchall()
         result = []
         for tmp in results:
             result.append(tmp['recruit_id'])
-        # tmpdelList = list(set(result)-set(oldWantedAuthNo))
-        # delList = []
-        # for i in tmpdelList:
-        #     tmp = [i]
-        #     delList.append(tmp)
         delList = tuple(set(result)-set(oldWantedAuthNo))
         print("update " + str(len(delList)) + " data from recruit(deleted = 1) which has id below...")  # log
         print(delList)  # log
 
         # API에서 지워진 공고에 삭제 표시 업데이트
-        # sql = """UPDATE `recruit`
-        #         SET deleted = '1'
-        #         WHERE recruit_id = %s;"""
-        # cursor.executemany(sql, delList)
         sql = f"""UPDATE `recruit`
                 SET deleted = '1'
                 WHERE recruit_id in {delList};"""
