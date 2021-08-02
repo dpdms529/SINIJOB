@@ -170,7 +170,6 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
     }
 
     private void checkLastUpdated() { // 기기의 업데이트 일시와 DB의 업데이트 일시를 확인
-        AppDatabase db = AppDatabase.getInstance(this.getContext());
         List<String> rows = db.RecruitDao().getLastUpdated();
         String lastUpdated = rows.get(0);
         String dbLastUpdated = "";
@@ -267,7 +266,6 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
     }
 
     private void loadListData(List<Recruit> result) { // 항목을 로드하는 함수
-        AppDatabase db = AppDatabase.getInstance(this.getContext());
         List<Recruit> rows = result;
 
         items = new ArrayList<>();
