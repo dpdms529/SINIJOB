@@ -99,21 +99,25 @@ public class RegionSearchActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextChange(String newText) {
                 ArrayList<Search> items = new ArrayList<>();
-                ArrayList<ChipList> chipList = pref.getArrayPref(SharedPreference.REGION_LIST);
+                ArrayList<ChipList> chipList = pref.getArrayPref(SharedPreference.REGION_TMP);
 
                 for(int i=0; i<bDong.size(); i++) {
-                    if(bDong.get(i).sido_name.contains(newText) || bDong.get(i).sigungu_name.contains(newText) || bDong.get(i).eupmyeondong_name.contains(newText)) {
+                    if(newText.equals("")) {
+                        break;
+                    } else if(bDong.get(i).sido_name.contains(newText) || bDong.get(i).sigungu_name.contains(newText) || bDong.get(i).eupmyeondong_name.contains(newText)) {
                         items.add(new Search(bDong.get(i).sido_name + " " + bDong.get(i).sigungu_name + " " + bDong.get(i).eupmyeondong_name, bDong.get(i).b_dong_code, Code.ViewType.REGION_SEARCH));
                     }
                 }
 
-                for(int i=0; i<items.size(); i++) {
-                    for(int j=0; j<chipList.size(); j++) {
-                        if(items.get(i).getTitle().equals(chipList.get(j).getName())) {
+                // 아이템과 선택된 칩의 이름이 같으면 아이템의 setChecked true로 설정
+                for (int i=0; i<items.size(); i++) {
+                    for (int j=0; j<chipList.size(); j++) {
+                        if (items.get(i).getTitle().equals(chipList.get(j).getName())) {
                             items.get(i).setChecked(true);
                         }
                     }
                 }
+
                 adapter.setItems(items);
                 adapter.notifyDataSetChanged();
 
@@ -133,11 +137,10 @@ public class RegionSearchActivity extends AppCompatActivity {
 
     public static void loadChip(Context context, ChipGroup chipGroup) {
         chipGroup.removeAllViews();
-        ArrayList<ChipList> chipList = pref.getArrayPref(SharedPreference.REGION_LIST);
+        ArrayList<ChipList> chipList = pref.getArrayPref(SharedPreference.REGION_TMP);
 
-        for(int i=0;i<chipList.size();i++) {
+        for(int i=chipList.size()-1;i>=0;i--) {
             String name = chipList.get(i).getName();
-            int position = chipList.get(i).getPosition();
 
             Chip chip = new Chip(context);
             chip.setText(name);
@@ -151,12 +154,17 @@ public class RegionSearchActivity extends AppCompatActivity {
                         if(chipList.get(i).getName().equals(name)) {
                             chipList.remove(i);
 
-                            if((adapter.getItemCount() != 0) && name.equals(adapter.getItem(position).getTitle())) {
-                                adapter.getItem(position).setChecked(false);
-                                pref.setArrayPref(chipList, SharedPreference.REGION_LIST);
-                                adapter.notifyItemChanged(position);
-                            } else {
-                                pref.setArrayPref(chipList, SharedPreference.REGION_LIST);
+                            for(int j=0; j<adapter.getItemCount(); j++) {
+                                if(name.equals(adapter.getItem(j).getTitle())) {
+                                    adapter.getItem(j).setChecked(false);
+                                    pref.setArrayPref(chipList, SharedPreference.REGION_TMP);
+                                    adapter.notifyItemChanged(j);
+                                } else {
+                                    pref.setArrayPref(chipList, SharedPreference.REGION_TMP);
+                                }
+                            }
+                            if(adapter.getItemCount() == 0) {
+                                pref.setArrayPref(chipList, SharedPreference.REGION_TMP);
                             }
                         }
                     }
