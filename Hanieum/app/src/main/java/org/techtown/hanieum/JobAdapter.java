@@ -11,13 +11,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-import static org.techtown.hanieum.SharedPreference.getArrayPref;
-import static org.techtown.hanieum.SharedPreference.setArrayPref;
-
 public class JobAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements OnJobItemClickListener {
     ArrayList<Job> items = new ArrayList<Job>();
     OnJobItemClickListener listener;
     public static int lastSelectedPosition1 = -1; // 전에 선택한 아이템(1차 직종)의 위치
+    SharedPreference pref = JobActivity.pref;
 
     @NonNull
     @Override
@@ -128,7 +126,7 @@ public class JobAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> im
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    ArrayList<ChipList> chipList = getArrayPref(itemView.getContext(), SharedPreference.JOB_TMP);
+                    ArrayList<ChipList> chipList = pref.getArrayPref(SharedPreference.JOB_TMP);
                     int position = getLayoutPosition();
 
                     if (items.get(position).isSelected()) { // 이미 클릭된 상태이면
@@ -162,7 +160,7 @@ public class JobAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> im
                         items.get(position).setSelected(true);
                         chipList.add(new ChipList(items.get(position).getJob2(), items.get(position).getCode(), position));
                     }
-                    setArrayPref(itemView.getContext(), chipList, SharedPreference.JOB_TMP);
+                    pref.setArrayPref(chipList, SharedPreference.JOB_TMP);
                     notifyDataSetChanged();
                     JobActivity.loadChip(itemView.getContext(), JobActivity.chipGroup);
                 }

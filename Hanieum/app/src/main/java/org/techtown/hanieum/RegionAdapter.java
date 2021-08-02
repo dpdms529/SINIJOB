@@ -1,6 +1,7 @@
 package org.techtown.hanieum;
 
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,15 +12,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-import static org.techtown.hanieum.SharedPreference.getArrayPref;
-import static org.techtown.hanieum.SharedPreference.setArrayPref;
-
 public class RegionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements OnRegion1ItemClickListener, OnRegion2ItemClickListener {
     ArrayList<Region> items = new ArrayList<Region>();
     OnRegion1ItemClickListener listener1;
     OnRegion2ItemClickListener listener2;
     public static int lastSelectedPosition1 = -1; // 전에 선택한 아이템의 위치
     public static int lastSelectedPosition2 = -1; // 전에 선택한 아이템의 위치
+    SharedPreference pref = RegionActivity.pref;
 
     @NonNull
     @Override
@@ -141,7 +140,7 @@ public class RegionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    ArrayList<ChipList> chipList = getArrayPref(itemView.getContext(), SharedPreference.REGION_TMP);
+                    ArrayList<ChipList> chipList = pref.getArrayPref(SharedPreference.REGION_TMP);
                     int position = getAdapterPosition();
                     if(listener != null) {
                         if (getLayoutPosition() != lastSelectedPosition2) { // 이미 선택한 아이템이 아니면
@@ -159,7 +158,7 @@ public class RegionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                                     items.get(i).setSelected(false);
                                 }
                                 chipList.add(new ChipList(items.get(position).getRegion1() + " " + items.get(position).getRegion2(), items.get(position).getBDongCode(), position));
-                                setArrayPref(itemView.getContext(), chipList, SharedPreference.REGION_TMP);
+                                pref.setArrayPref(chipList, SharedPreference.REGION_TMP);
                             }
 
                             items.get(position).setSelected(true);
@@ -195,7 +194,7 @@ public class RegionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    ArrayList<ChipList> chipList = getArrayPref(itemView.getContext(), SharedPreference.REGION_TMP);
+                    ArrayList<ChipList> chipList = pref.getArrayPref(SharedPreference.REGION_TMP);
                     int position = getLayoutPosition();
 
                     if (items.get(position).isSelected()) { // 이미 클릭된 상태이면
@@ -206,15 +205,21 @@ public class RegionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                             }
                         }
                         items.get(position).setSelected(false);
-                    } else { // 선택이 안 된 항목을 클릭하면
+                    } else { // 선택이 안 된 읍/면/동 항목을 클릭하면
                         for (int i=0; i<items.size(); i++) {
                             for(int j=0;j<chipList.size();j++) {
                                 if(chipList.get(j).getName().contains("전체") && chipList.get(j).getName().contains(items.get(i).getRegion1())) {
-                                    chipList.remove(j);
-                                    items.get(i).setSelected(false);
-                                    break;
+                                    // '전체'가 포함되어 있고 시/도가 같은 아이템 중에서
+                                    if(chipList.get(j).getName().contains(items.get(i).getRegion2()) || chipList.get(j).getCode().length() == 2) {
+                                        // 클릭한 아이템과 시/군/구가 같거나 시/도 전체 항목을 삭제
+                                        chipList.remove(j);
+                                        items.get(i).setSelected(false);
+                                        break;
+                                    }
+
                                 }
                             }
+
                             if (items.get(i).getRegion3().contains("전체") && items.get(i).isSelected()) { // 현재 다른 항목을 선택했고 전체가 선택되어 있으면
                                 for (int j=0; j<chipList.size(); j++) {
                                     if (chipList.get(j).getName().contains(items.get(i).getRegion3())) { // 전체 항목 삭제
@@ -238,7 +243,7 @@ public class RegionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                         chipList.add(new ChipList(items.get(position).getRegion1() + " " + items.get(position).getRegion2() + " " +
                                 items.get(position).getRegion3(), items.get(position).getBDongCode(), position));
                     }
-                    setArrayPref(itemView.getContext(), chipList, SharedPreference.REGION_TMP);
+                    pref.setArrayPref(chipList, SharedPreference.REGION_TMP);
                     notifyDataSetChanged();
                     RegionActivity.loadChip(itemView.getContext(), RegionActivity.chipGroup);
                 }

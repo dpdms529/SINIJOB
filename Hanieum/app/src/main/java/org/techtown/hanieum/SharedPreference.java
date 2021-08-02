@@ -7,11 +7,6 @@ import android.preference.PreferenceManager;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-
-import java.lang.ref.PhantomReference;
-import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
@@ -24,10 +19,16 @@ public class SharedPreference {
     public static final String CAREER_STATUS = "careerStatus";
     public static final String LICENSE_STATUS = "licenseStatus";
 
+    SharedPreferences preferences;
+    SharedPreferences.Editor editor;
+
+    SharedPreference(Context context){
+        preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        editor = preferences.edit();
+    }
+
     // chipList를 저장
-    public static void setArrayPref(Context context, ArrayList<ChipList> chipList, String key) {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        SharedPreferences.Editor editor = preferences.edit();
+    public void setArrayPref(ArrayList<ChipList> chipList, String key) {
         Gson gson = new Gson();
         String json = gson.toJson(chipList);
         editor.putString(key, json);
@@ -35,13 +36,12 @@ public class SharedPreference {
     }
 
     // chipList를 불러옴
-    public static ArrayList<ChipList> getArrayPref(Context context, String key) {
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+    public ArrayList<ChipList> getArrayPref(String key) {
         Gson gson = new Gson();
-        String json = sharedPrefs.getString(key, null);
+        String json = preferences.getString(key, null);
         if(json == null){
-            setArrayPref(context,new ArrayList<ChipList>(),key);
-            json = sharedPrefs.getString(key,null);
+            setArrayPref(new ArrayList<ChipList>(),key);
+            json = preferences.getString(key,null);
         }
         Type type = new TypeToken<ArrayList<ChipList>>() {
         }.getType();
@@ -49,40 +49,4 @@ public class SharedPreference {
         return arrayList;
     }
 
-    // 근무 형태 저장
-    public static void setWorkFormPref(Context context, ArrayList<String> arrayList, String key) {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        SharedPreferences.Editor editor = preferences.edit();
-        JSONArray jsonArray = new JSONArray();
-
-        for(int i=0;i<arrayList.size();i++) {
-            jsonArray.put(arrayList.get(i));
-        }
-        if(!arrayList.isEmpty()) {
-            editor.putString(key, jsonArray.toString());
-        } else {
-            editor.putString(key, null);
-        }
-        editor.apply();
-    }
-
-    // 근무 형태를 불러옴
-    public static ArrayList<String> getWorkFormPref(Context context, String key) {
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
-        String json = sharedPrefs.getString(key, null);
-        ArrayList<String> arrayList = new ArrayList<String>();
-
-        if(json != null) {
-            try {
-                JSONArray jsonArray = new JSONArray(json);
-                for(int i=0;i<jsonArray.length(); i++) {
-                    String workForm = jsonArray.optString(i);
-                    arrayList.add(workForm);
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-        return arrayList;
-    }
 }

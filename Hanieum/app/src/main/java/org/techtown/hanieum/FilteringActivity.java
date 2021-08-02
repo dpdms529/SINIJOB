@@ -6,22 +6,14 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
@@ -29,11 +21,7 @@ import android.widget.Toast;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-
-import static org.techtown.hanieum.SharedPreference.getArrayPref;
-import static org.techtown.hanieum.SharedPreference.setArrayPref;
 
 public class FilteringActivity extends AppCompatActivity implements View.OnClickListener {
     Toolbar toolbar;
@@ -52,16 +40,13 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
     RadioButton workFormButton1; // 정규직 라디오버튼
     RadioButton workFormButton2; // 계약직 라디오버튼
     ChipGroup jobChipGroup; // 선택한 직종 ChipGroup
-    ChipGroup regionChipGroup;
-    static SharedPreferences pref;
-    SharedPreferences.Editor edit;
-    String careerStatus;
-    String licenseStatus;
-    String workFormStatus;
+    ChipGroup regionChipGroup; // 선택한 지역 ChipGroup
+
     Context context;
     int careerId;
     int licenseId;
     int workFormId;
+    SharedPreference pref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,63 +72,43 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
         regionChipGroup = findViewById(R.id.regionFinalChipGroup);
         context = this;
 
+        pref = new SharedPreference(getApplicationContext());
+
         // 경력 조건 상태값 불러오기
-        try {
-            pref = getSharedPreferences(SharedPreference.CAREER_STATUS, MODE_PRIVATE);
-            careerId = Integer.parseInt(pref.getString(SharedPreference.CAREER_STATUS, "0"));
-            System.out.println(careerId);
-        } catch (NullPointerException e) {
-            Log.e("carerId","NullException");
-        }
+        careerId = pref.preferences.getInt(SharedPreference.CAREER_STATUS,0);
         if(careerId == 0) { // 적용 안 함 선택한 상태
             noCareerButton.setChecked(true);
-            careerStatus = "0";
         } else { // 경력 적용 선택한 상태
             yesCareerButton.setChecked(true);
-            careerStatus = "1";
         }
 
+
         // 자격조건 상태값 불러오기
-        try {
-            pref = getSharedPreferences(SharedPreference.LICENSE_STATUS, MODE_PRIVATE);
-            licenseId = Integer.parseInt(pref.getString(SharedPreference.LICENSE_STATUS, "0"));
-        } catch (NullPointerException e) {
-            Log.e("license","NullException");
-        }
+        licenseId = pref.preferences.getInt(SharedPreference.LICENSE_STATUS,0);
         if(licenseId == 0) { // 적용 안 함 선택한 상태
             noLicenseButton.setChecked(true);
-            licenseStatus = "0";
         } else { // 자격증 적용 선택한 상태
             yesLicenseButton.setChecked(true);
-            licenseStatus = "1";
         }
 
         // 근무형태 조건 상태값 불러오기
-        try {
-            pref = getSharedPreferences(SharedPreference.WORKFORM_STATUS, MODE_PRIVATE);
-            workFormId = Integer.parseInt(pref.getString(SharedPreference.WORKFORM_STATUS, "0"));
-        } catch (NullPointerException e) {
-            Log.e("workForm","NullException");
-        }
+        workFormId = pref.preferences.getInt(SharedPreference.WORKFORM_STATUS,0);
         if(workFormId == 0) { // 전체 선택한 상태
             allWorkFormButton.setChecked(true);
-            workFormStatus = "0";
         } else if (workFormId == 1) { // 정규직 선택한 상태
             workFormButton1.setChecked(true);
-            workFormStatus = "1";
         } else { // 계약직 선택한 상태
             workFormButton2.setChecked(true);
-            workFormStatus = "2";
         }
 
         careerGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
                 if(i == R.id.noCareer) { // 적용 안 함을 선택하면
-                    careerStatus = "0";
+                    careerId = 0;
                     Toast.makeText(FilteringActivity.this, "noCareer",Toast.LENGTH_SHORT).show();
                 } else if(i == R.id.yesCareer) { // 나의 경력 적용(이력서)를 선택하면
-                    careerStatus = "1";
+                    careerId = 1;
                 }
             }
         });
@@ -152,9 +117,9 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
                 if(i == R.id.noLicense) { // 적용 안 함을 선택하면
-                    licenseStatus = "0";
+                    licenseId = 0;
                 } else if(i == R.id.yesLicense) { // 나의 자격증 적용(이력서)를 선택하면
-                    licenseStatus = "1";
+                    licenseId = 1;
                 }
             }
         });
@@ -163,11 +128,11 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
                 if(i == R.id.allWorkFrom) { // 전체를 선택하면
-                    workFormStatus = "0";
+                    workFormId = 0;
                 } else if(i == R.id.workForm1) { // 정규직을 선택하면
-                    workFormStatus = "1";
+                    workFormId = 1;
                 } else if (i == R.id.workForm2) { // 계약직을 선택하면
-                    workFormStatus = "2";
+                    workFormId = 2;
                 }
             }
         });
@@ -180,11 +145,11 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
         regionButton.setOnClickListener(this);
         jobButton.setOnClickListener(this);
 
-        ArrayList<ChipList> jobChipList = getArrayPref(context, SharedPreference.JOB_LIST);
-        setArrayPref(context, jobChipList, SharedPreference.JOB_TMP);
+        ArrayList<ChipList> jobChipList = pref.getArrayPref(SharedPreference.JOB_LIST);
+        pref.setArrayPref(jobChipList, SharedPreference.JOB_TMP);
 
-        ArrayList<ChipList> regionChipList = getArrayPref(context, SharedPreference.REGION_LIST);
-        setArrayPref(context, regionChipList, SharedPreference.REGION_TMP);
+        ArrayList<ChipList> regionChipList = pref.getArrayPref(SharedPreference.REGION_LIST);
+        pref.setArrayPref(regionChipList, SharedPreference.REGION_TMP);
 
         loadChip(context, jobChipGroup, SharedPreference.JOB_TMP);
         loadChip(context, regionChipGroup, SharedPreference.REGION_TMP);
@@ -204,41 +169,33 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
     public void onClick(View v) {
         if (v == saveButton) { //저장 버튼 누른 경우
             // 경력 조건 저장
-            pref = getSharedPreferences(SharedPreference.CAREER_STATUS, MODE_PRIVATE);
-            edit = pref.edit();
-            edit.putString(SharedPreference.CAREER_STATUS, careerStatus);
-            edit.commit();
+            pref.editor.putInt(SharedPreference.CAREER_STATUS,careerId);
 
             // 자격증 조건 저장
-            pref = getSharedPreferences(SharedPreference.LICENSE_STATUS, MODE_PRIVATE);
-            edit = pref.edit();
-            edit.putString(SharedPreference.LICENSE_STATUS, licenseStatus);
-            edit.commit();
+            pref.editor.putInt(SharedPreference.LICENSE_STATUS,licenseId);
 
             // 근무형태 조건 저장
-            pref = getSharedPreferences(SharedPreference.WORKFORM_STATUS, MODE_PRIVATE);
-            edit = pref.edit();
-            edit.putString(SharedPreference.WORKFORM_STATUS, workFormStatus);
-            edit.commit();
+            pref.editor.putInt(SharedPreference.WORKFORM_STATUS,workFormId);
+            pref.editor.commit();
 
             // 직종 조건 저장
-            ArrayList<ChipList> jobChipList = getArrayPref(context, SharedPreference.JOB_TMP);
-            setArrayPref(context, jobChipList, SharedPreference.JOB_LIST);
+            ArrayList<ChipList> chipList = pref.getArrayPref(SharedPreference.JOB_TMP);
+            pref.setArrayPref(chipList, SharedPreference.JOB_LIST);
 
             // 지역 조건 저장
-            ArrayList<ChipList> regionChipList = getArrayPref(context, SharedPreference.REGION_TMP);
-            setArrayPref(context, regionChipList, SharedPreference.REGION_LIST);
+            ArrayList<ChipList> regionChipList = pref.getArrayPref(SharedPreference.REGION_TMP);
+            pref.setArrayPref(regionChipList, SharedPreference.REGION_LIST);
 
             finish();
         } else if (v == resetButton) {
             noCareerButton.setChecked(true);
-            careerStatus = "0";
+            careerId = 0;
 
             noLicenseButton.setChecked(true);
-            licenseStatus = "0";
+            licenseId = 0;
 
             allWorkFormButton.setChecked(true);
-            workFormStatus = "0";
+            workFormId = 0;
         } else if (v == regionButton) {
             Intent intent = new Intent(this, RegionActivity.class);
             regionLauncher.launch(intent);
@@ -273,7 +230,7 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
 
     private void loadChip(Context context, ChipGroup chipGroup, String key) { // 선택된 칩을 불러오는 함수
         chipGroup.removeAllViews(); // 칩그룹 초기화
-        ArrayList<ChipList> chipList = getArrayPref(context, key);
+        ArrayList<ChipList> chipList = pref.getArrayPref(key);
 
         for (int i=0;i<chipList.size();i++) { // chipList에 있는 것을 추가
             String name = chipList.get(i).getName();
@@ -290,7 +247,7 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
                     for (int i=0; i<chipList.size(); i++) {
                         if (chipList.get(i).getName().equals(name)) {
                             chipList.remove(i);
-                            setArrayPref(context, chipList, key);
+                            pref.setArrayPref(chipList, key);
                         }
                     }
                     chipGroup.removeView(chip);

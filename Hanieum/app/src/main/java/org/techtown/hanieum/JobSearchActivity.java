@@ -27,15 +27,13 @@ import org.techtown.hanieum.db.entity.JobCategory;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.techtown.hanieum.SharedPreference.getArrayPref;
-import static org.techtown.hanieum.SharedPreference.setArrayPref;
-
 public class JobSearchActivity extends AppCompatActivity {
     Toolbar toolbar;
     RecyclerView recyclerView; // 검색 항목 리사이클러뷰
     static SearchAdapter adapter; // 검색 항목 어댑터
     static ChipGroup chipGroup; // 선택 항목을 나타내는 ChipGroup
     Context context;
+    static SharedPreference pref;
 
     List<JobCategory> category;
 
@@ -44,6 +42,7 @@ public class JobSearchActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
+        pref = new SharedPreference(getApplicationContext());
 
         AppDatabase db = AppDatabase.getInstance(this);
         Log.e("JobDatabase","job data 조회");
@@ -100,7 +99,7 @@ public class JobSearchActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextChange(String newText) {
                 ArrayList<Search> items = new ArrayList<>();
-                ArrayList<ChipList> chipList = getArrayPref(context, SharedPreference.JOB_TMP);
+                ArrayList<ChipList> chipList = pref.getArrayPref(SharedPreference.JOB_TMP);
 
                 for (int i=0; i<category.size(); i++) {
                     if (newText.equals("")) {
@@ -138,7 +137,7 @@ public class JobSearchActivity extends AppCompatActivity {
 
     public static void loadChip(Context context, ChipGroup chipGroup) { // 선택된 칩을 불러오는 함수
         chipGroup.removeAllViews(); // 칩그룹 초기화
-        ArrayList<ChipList> chipList = getArrayPref(context, SharedPreference.JOB_TMP);
+        ArrayList<ChipList> chipList = pref.getArrayPref(SharedPreference.JOB_TMP);
 
         for (int i=chipList.size()-1;i>=0;i--) { // chipList에 있는 것을 추가
             String name = chipList.get(i).getName();
@@ -159,14 +158,14 @@ public class JobSearchActivity extends AppCompatActivity {
                             for (int j=0; j<adapter.getItemCount(); j++) {  // 검색된 항목이 있을 때
                                 if (name.equals(adapter.getItem(j).getTitle())) {   // 검색된 항목에 있을 때
                                     adapter.getItem(j).setChecked(false);
-                                    setArrayPref(context, chipList, SharedPreference.JOB_TMP);
+                                    pref.setArrayPref(chipList, SharedPreference.JOB_TMP);
                                     adapter.notifyItemChanged(j);
                                 } else {    // 검색된 항목에 없을 때
-                                    setArrayPref(context, chipList, SharedPreference.JOB_TMP);
+                                    pref.setArrayPref(chipList, SharedPreference.JOB_TMP);
                                 }
                             }
                             if (adapter.getItemCount() == 0) {  // 검색된 항목이 없을 때
-                                setArrayPref(context, chipList, SharedPreference.JOB_TMP);
+                                pref.setArrayPref(chipList, SharedPreference.JOB_TMP);
                             }
                         }
                     }
