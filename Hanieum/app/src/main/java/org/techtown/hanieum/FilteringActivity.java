@@ -136,6 +136,8 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true); // 뒤로가기
+        getSupportActionBar().setDisplayShowCustomEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         saveButton.setOnClickListener(this);
         resetButton.setOnClickListener(this);
