@@ -1,5 +1,6 @@
 package org.techtown.hanieum;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -128,19 +129,37 @@ public class SearchAdapter extends  RecyclerView.Adapter<RecyclerView.ViewHolder
             super(view);
 
             checkBox = view.findViewById(R.id.checkBox);
-            checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            checkBox.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                public void onClick(View v) {
+                    ArrayList<ChipList> chipList = getArrayPref(itemView.getContext(), SharedPreference.REGION_TMP);
                     int position = getLayoutPosition();
-                    if (isChecked) { // 체크 상태이면
-                        items.get(position).setChecked(true);
-//                        chipList.add(new ChipList(items.get(position).getTitle(), position));
-                    } else { // 체크 상태가 아니면
-                        items.get(position).setChecked(false);
 
+                    if (items.get(position).isChecked()) { // 이미 클릭된 상태이면
                         // 아이템 삭제 코드
+                        for (int i=0; i<chipList.size(); i++) {
+                            if (chipList.get(i).getName().equals(items.get(position).getTitle())) {
+                                chipList.remove(i);
+                            }
+                        }
+
+                        items.get(position).setChecked(false);
+                    } else { // 선택되지 않은 아이템을 선택하면
+                        for (int i=0; i<chipList.size(); i++) {
+                            // 선택한 아이템이 1차 직종 전체에 해당하면
+                            if (chipList.get(i).getName().contains("전체") && items.get(position).getCode().contains(chipList.get(i).getCode())) {
+                                chipList.remove(i);
+                                break;
+                            }
+                            Log.e("Search", chipList.get(i).getCode());
+                        }
+
+                        items.get(position).setChecked(true);
+                        chipList.add(new ChipList(items.get(position).getTitle(),items.get(position).getCode(), position));
                     }
-//                    loadChip();
+                    setArrayPref(itemView.getContext(), chipList, SharedPreference.REGION_TMP);
+                    notifyItemChanged(position);
+                    RegionSearchActivity.loadChip(itemView.getContext(), RegionSearchActivity.chipGroup);
                 }
             });
         }

@@ -52,6 +52,7 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
     RadioButton workFormButton1; // 정규직 라디오버튼
     RadioButton workFormButton2; // 계약직 라디오버튼
     ChipGroup jobChipGroup; // 선택한 직종 ChipGroup
+    ChipGroup regionChipGroup;
     static SharedPreferences pref;
     SharedPreferences.Editor edit;
     String careerStatus;
@@ -83,6 +84,7 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
         workFormButton1 = findViewById(R.id.workForm1);
         workFormButton2 = findViewById(R.id.workForm2);
         jobChipGroup = findViewById(R.id.jobFinalChipGroup);
+        regionChipGroup = findViewById(R.id.regionFinalChipGroup);
         context = this;
 
         // 경력 조건 상태값 불러오기
@@ -178,10 +180,14 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
         regionButton.setOnClickListener(this);
         jobButton.setOnClickListener(this);
 
-        ArrayList<ChipList> chipList = getArrayPref(context, SharedPreference.JOB_LIST);
-        setArrayPref(context, chipList, SharedPreference.JOB_TMP);
+        ArrayList<ChipList> jobChipList = getArrayPref(context, SharedPreference.JOB_LIST);
+        setArrayPref(context, jobChipList, SharedPreference.JOB_TMP);
+
+        ArrayList<ChipList> regionChipList = getArrayPref(context, SharedPreference.REGION_LIST);
+        setArrayPref(context, regionChipList, SharedPreference.REGION_TMP);
 
         loadChip(context, jobChipGroup, SharedPreference.JOB_TMP);
+        loadChip(context, regionChipGroup, SharedPreference.REGION_TMP);
     }
 
     @Override
@@ -216,8 +222,12 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
             edit.commit();
 
             // 직종 조건 저장
-            ArrayList<ChipList> chipList = getArrayPref(context, SharedPreference.JOB_TMP);
-            setArrayPref(context, chipList, SharedPreference.JOB_LIST);
+            ArrayList<ChipList> jobChipList = getArrayPref(context, SharedPreference.JOB_TMP);
+            setArrayPref(context, jobChipList, SharedPreference.JOB_LIST);
+
+            // 지역 조건 저장
+            ArrayList<ChipList> regionChipList = getArrayPref(context, SharedPreference.REGION_TMP);
+            setArrayPref(context, regionChipList, SharedPreference.REGION_LIST);
 
             finish();
         } else if (v == resetButton) {
@@ -231,7 +241,7 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
             workFormStatus = "0";
         } else if (v == regionButton) {
             Intent intent = new Intent(this, RegionActivity.class);
-            startActivity(intent);
+            regionLauncher.launch(intent);
         } else if (v == jobButton) {
             Intent intent = new Intent(this, JobActivity.class);
             launcher.launch(intent);
@@ -248,6 +258,18 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
                     }
                 }
             });
+
+    ActivityResultLauncher<Intent> regionLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        loadChip(context, regionChipGroup, SharedPreference.REGION_TMP);
+                    }
+                }
+            }
+    );
 
     private void loadChip(Context context, ChipGroup chipGroup, String key) { // 선택된 칩을 불러오는 함수
         chipGroup.removeAllViews(); // 칩그룹 초기화
