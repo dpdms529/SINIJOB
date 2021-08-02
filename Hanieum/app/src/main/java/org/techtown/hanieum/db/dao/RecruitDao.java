@@ -24,4 +24,12 @@ public interface RecruitDao {
 
     @Query("DElETE FROM recruit WHERE recruit_id = :goneId")
     void deleteGoneRecruit(String goneId);
+
+    @Query("select * from recruit as r \n" +
+            "where 1 = 1 \n" +
+            "and (r.b_dong_code in (:bDongCode)) \n" +
+            "and ((r.career_required = 2 and r.career_min < :career) or r.career_required<2)\n" +
+            "and (r.certificate_required = 0 or exists (select 'x' from recruit_certificate as c where c.recruit_id  = r.recruit_id and c.certificate_id in (:certificateId)))\n" +
+            "and (r.enrollment_code = :enrollmentCode);")
+    List<Recruit> getFilteredList(List<String> bDongCode, String career, List<String> certificateId, String enrollmentCode);
 }

@@ -29,6 +29,8 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.chip.Chip;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,6 +39,7 @@ import org.techtown.hanieum.db.dao.RecruitDao;
 import org.techtown.hanieum.db.entity.Recruit;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -57,8 +60,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
     InputMethodManager imm;
     AppDatabase db;
 
-    SharedPreferences pref;
-    SharedPreferences.Editor edit;
+    SharedPreference pref;
 
     public RecommendFragment() {
         // Required empty public constructor
@@ -84,6 +86,8 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
 
         imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         db = AppDatabase.getInstance(this.getContext());
+
+        pref = new SharedPreference(getContext());
 
         // 리사이클러뷰와 어댑터 연결
         LinearLayoutManager layoutManager = new LinearLayoutManager(view.getContext(),
@@ -154,8 +158,27 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
     @Override
     public void onResume() {
         super.onResume();
+        ArrayList<ChipList> regions = pref.getArrayPref(SharedPreference.REGION_LIST);
+        ArrayList<ChipList> jobs = pref.getArrayPref(SharedPreference.JOB_LIST);
+        Log.d("recruit", "onResume: jobs : " + jobs.toString());
+        int careerStatus = pref.preferences.getInt(SharedPreference.CAREER_STATUS,0);
+        Log.d("recruit", "onResume: careerStatus : " + careerStatus);
+        String workform =  pref.preferences.getString(SharedPreference.WORKFORM_STATUS,"A");
+        Log.d("recruit", "onResume: workform :" + workform);
+        int licenseStatus = pref.preferences.getInt(SharedPreference.LICENSE_STATUS,0);
+        Log.d("recruit", "onResume: licenseStatus : " + licenseStatus);
 
-
+        String career = "36";
+        ArrayList<String> bDongCode = new ArrayList<>();
+        for(ChipList i : regions){
+            bDongCode.add(i.getCode());
+            Log.d("recruit", "onResume: bDongCode : " + bDongCode.get(0));
+        }
+        ArrayList<String> certificate = new ArrayList<>(Arrays.asList(new String[]{"5000390", "5001150"}));
+        Log.d("recruit", "onResume: " + certificate.get(0) + " " + certificate.get(1));
+        List<Recruit> result = db.RecruitDao().getFilteredList(bDongCode,career,certificate,workform);
+        Log.d("recruit", "onResume: " + result.toString());
+        loadListData(result);
     }
 
     @Override
@@ -281,6 +304,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
         AppDatabase db = AppDatabase.getInstance(this.getContext());
         List<Recruit> rows = result;
 
+        allItems.clear();
         items = new ArrayList<>();
 
         itemNum.setText(String.valueOf(rows.size()));

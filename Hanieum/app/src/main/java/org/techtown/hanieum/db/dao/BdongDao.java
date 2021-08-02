@@ -16,12 +16,12 @@ public interface BdongDao {
     @Query("SELECT distinct(sido_name) FROM b_dong")
     List<String> getsido() ;
 
-    @Query("select distinct(sigungu_name) from b_dong where sido_name like :sido_name")
+    @Query("select distinct(sigungu_name) from b_dong where sido_name = :sido_name")
     List<String> getsigungu(String sido_name);
 
-    @Query("select distinct(eupmyeondong_name) from b_dong where sido_name like :sido_name and sigungu_name like :sigungu_name")
+    @Query("select distinct(eupmyeondong_name) from b_dong where sido_name = :sido_name and sigungu_name = :sigungu_name")
     List<String> geteupmyeondong(String sido_name, String sigungu_name);
 
-    @Query("select b_dong_code from b_dong where sido_name like :sido_name and sigungu_name like :sigungu_name like :eupmyeondong_name")
+    @Query("select b_dong_code from b_dong where sido_name = :sido_name and sigungu_name = :sigungu_name and eupmyeondong_name = :eupmyeondong_name")
     String getBDongCode(String sido_name, String sigungu_name, String eupmyeondong_name);
 }
