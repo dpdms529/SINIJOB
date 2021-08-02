@@ -11,13 +11,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-import static org.techtown.hanieum.SharedPreference.getArrayPref;
-import static org.techtown.hanieum.SharedPreference.setArrayPref;
-
 public class JobAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements OnJobItemClickListener {
     ArrayList<Job> items = new ArrayList<Job>();
     OnJobItemClickListener listener;
-    private int lastSelectedPosition1 = -1; // 전에 선택한 아이템(1차 직종)의 위치
+    public static int lastSelectedPosition1 = -1; // 전에 선택한 아이템(1차 직종)의 위치
+    SharedPreference pref = JobActivity.pref;
 
     @NonNull
     @Override
@@ -91,18 +89,18 @@ public class JobAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> im
                 public void onClick(View v) {
                     int position = getAdapterPosition();
                     if (listener != null) {
-                        if (getLayoutPosition() != lastSelectedPosition1) { // 이미 선택한 아이템이 아니면
+                        if (position != lastSelectedPosition1) { // 이미 선택한 아이템이 아니면
                             if (lastSelectedPosition1 >= 0) { // 이전에 선택한 아이템이 있으면
                                 items.get(lastSelectedPosition1).setSelected(false);
                                 notifyItemChanged(lastSelectedPosition1); // lastSelectedPosition 아이템 갱신
                             }
-                            items.get(getLayoutPosition()).setSelected(true);
+                            items.get(position).setSelected(true);
                             notifyItemChanged(position);
 
-                            lastSelectedPosition1 = getLayoutPosition();
-                        }
+                            lastSelectedPosition1 = position;
 
-                        listener.OnItemClick(Job1ViewHolder.this, v, position);
+                            listener.OnItemClick(Job1ViewHolder.this, itemView, position);
+                        }
                     }
                 }
             });
@@ -125,10 +123,10 @@ public class JobAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> im
             super(view);
             jobText = view.findViewById(R.id.regionJobText);
 
-            view.setOnClickListener(new View.OnClickListener() {
+            itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    ArrayList<ChipList> chipList = getArrayPref(itemView.getContext(), SharedPreference.JOB_LIST);
+                    ArrayList<ChipList> chipList = pref.getArrayPref(SharedPreference.JOB_TMP);
                     int position = getLayoutPosition();
 
                     if (items.get(position).isSelected()) { // 이미 클릭된 상태이면
@@ -138,14 +136,32 @@ public class JobAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> im
                                 chipList.remove(i);
                             }
                         }
-
                         items.get(position).setSelected(false);
                     } else {
+                        for (int i=0; i<items.size(); i++) {
+                            if (items.get(i).getJob2().contains("전체") && items.get(i).isSelected()) { // 전체가 선택되어 있으면
+                                for (int j=0; j<chipList.size(); j++) {
+                                    if (chipList.get(j).getName().equals(items.get(i).getJob2())) {
+                                        chipList.remove(j);
+                                    }
+                                }
+                                items.get(i).setSelected(false);
+                                break;
+                            } else if (items.get(position).getJob2().contains("전체") && items.get(i).isSelected()) {
+                                // 현재 선택한 항목이 전체이고 다른 항목이 선택되어 있으면
+                                for (int j=0; j<chipList.size(); j++) {
+                                    if (chipList.get(j).getName().equals(items.get(i).getJob2())) {
+                                        chipList.remove(j);
+                                    }
+                                }
+                                items.get(i).setSelected(false);
+                            }
+                        }
                         items.get(position).setSelected(true);
-                        chipList.add(new ChipList(items.get(position).getJob2(), position));
+                        chipList.add(new ChipList(items.get(position).getJob2(), items.get(position).getCode(), position));
                     }
-                    setArrayPref(itemView.getContext(), chipList, SharedPreference.JOB_LIST);
-                    notifyItemChanged(position);
+                    pref.setArrayPref(chipList, SharedPreference.JOB_TMP);
+                    notifyDataSetChanged();
                     JobActivity.loadChip(itemView.getContext(), JobActivity.chipGroup);
                 }
             });

@@ -1,9 +1,5 @@
 package org.techtown.hanieum;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
@@ -12,8 +8,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,7 +15,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -31,19 +24,16 @@ import com.google.android.material.chip.ChipGroup;
 import org.techtown.hanieum.db.AppDatabase;
 import org.techtown.hanieum.db.entity.Bdong;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.techtown.hanieum.SharedPreference.getArrayPref;
-import static org.techtown.hanieum.SharedPreference.setArrayPref;
 
 public class RegionSearchActivity extends AppCompatActivity {
     Toolbar toolbar;
     RecyclerView recyclerView; // 검색 항목 리사이클러뷰
     static ChipGroup chipGroup; // 선택 항목을 나타내는 ChipGroup
-    static SearchAdapter adapter; // 지역 분류(동/읍/면) 어댑터
+    static SearchAdapter adapter; // 검색 항목 어댑터
     Context context;
+    static SharedPreference pref;
 
     List<Bdong> bDong;
 
@@ -51,6 +41,8 @@ public class RegionSearchActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
+
+        pref = new SharedPreference(getApplicationContext());
 
         AppDatabase db = AppDatabase.getInstance(this);
         Log.e("BdongDatabase", "region data 조회");
@@ -107,14 +99,16 @@ public class RegionSearchActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextChange(String newText) {
                 ArrayList<Search> items = new ArrayList<>();
-                ArrayList<ChipList> chipList = getArrayPref(context, SharedPreference.REGION_LIST);
+                ArrayList<ChipList> chipList = pref.getArrayPref(SharedPreference.REGION_LIST);
 
-                for(int i=0;i<bDong.size();i++) {
-                    items.add(new Search(bDong.get(i).sido_name + " " + bDong.get(i).sigungu_name + " " + bDong.get(i).eupmyeondong_name, Code.ViewType.REGION_SEARCH));
+                for(int i=0; i<bDong.size(); i++) {
+                    if(bDong.get(i).sido_name.contains(newText) || bDong.get(i).sigungu_name.contains(newText) || bDong.get(i).eupmyeondong_name.contains(newText)) {
+                        items.add(new Search(bDong.get(i).sido_name + " " + bDong.get(i).sigungu_name + " " + bDong.get(i).eupmyeondong_name, bDong.get(i).b_dong_code, Code.ViewType.REGION_SEARCH));
+                    }
                 }
 
-                for(int i=0;i<items.size();i++) {
-                    for(int j=0;j<chipList.size();j++) {
+                for(int i=0; i<items.size(); i++) {
+                    for(int j=0; j<chipList.size(); j++) {
                         if(items.get(i).getTitle().equals(chipList.get(j).getName())) {
                             items.get(i).setChecked(true);
                         }
@@ -137,9 +131,9 @@ public class RegionSearchActivity extends AppCompatActivity {
     }
 
 
-    public static void loadChip(Context context, ChipGroup chipgroup) {
-        chipgroup.removeAllViews();
-        ArrayList<ChipList> chipList = getArrayPref(context, SharedPreference.REGION_LIST);
+    public static void loadChip(Context context, ChipGroup chipGroup) {
+        chipGroup.removeAllViews();
+        ArrayList<ChipList> chipList = pref.getArrayPref(SharedPreference.REGION_LIST);
 
         for(int i=0;i<chipList.size();i++) {
             String name = chipList.get(i).getName();
@@ -159,14 +153,14 @@ public class RegionSearchActivity extends AppCompatActivity {
 
                             if((adapter.getItemCount() != 0) && name.equals(adapter.getItem(position).getTitle())) {
                                 adapter.getItem(position).setChecked(false);
-                                setArrayPref(context, chipList, SharedPreference.REGION_LIST);
+                                pref.setArrayPref(chipList, SharedPreference.REGION_LIST);
                                 adapter.notifyItemChanged(position);
                             } else {
-                                setArrayPref(context, chipList, SharedPreference.REGION_LIST);
+                                pref.setArrayPref(chipList, SharedPreference.REGION_LIST);
                             }
                         }
                     }
-                    chipgroup.removeView(chip);
+                    chipGroup.removeView(chip);
                 }
             });
         }

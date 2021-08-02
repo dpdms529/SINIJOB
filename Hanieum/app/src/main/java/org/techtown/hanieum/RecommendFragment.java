@@ -2,6 +2,7 @@ package org.techtown.hanieum;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
@@ -55,6 +56,9 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
 
     InputMethodManager imm;
     AppDatabase db;
+
+    SharedPreferences pref;
+    SharedPreferences.Editor edit;
 
     public RecommendFragment() {
         // Required empty public constructor
@@ -145,6 +149,13 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
 
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+
     }
 
     @Override
@@ -301,11 +312,11 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
             }
             DistanceCalculator distance =  new DistanceCalculator("127.12934", "35.84688", row.x_coordinate, row.y_coordinate);
             Double dist = distance.getStraightDist();   // 직선거리 구하는 함수
-            items.add(new Recommendation(row.recruit_id, row.organization, row.recruit_title, salaryType, sal, dist, false));
+            allItems.add(new Recommendation(row.recruit_id, row.organization, row.recruit_title, salaryType, sal, dist, false));
         }
-        Collections.sort(items);    // 거리순으로 정렬
+        Collections.sort(allItems);    // 거리순으로 정렬
+        items.addAll(allItems);
         adapter.setItems(items);
-        allItems.addAll(items);
         recyclerView.setAdapter(adapter);
     }
 

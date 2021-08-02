@@ -7,18 +7,13 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.view.menu.MenuView;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.google.android.material.chip.Chip;
 
 import java.util.ArrayList;
 
-import static org.techtown.hanieum.SharedPreference.getArrayPref;
-import static org.techtown.hanieum.SharedPreference.setArrayPref;
-
 public class SearchAdapter extends  RecyclerView.Adapter<RecyclerView.ViewHolder> {
     ArrayList<Search> items = new ArrayList<Search>();
+    SharedPreference pref;
 
     @NonNull
     @Override
@@ -27,8 +22,10 @@ public class SearchAdapter extends  RecyclerView.Adapter<RecyclerView.ViewHolder
         View view = inflater.inflate(R.layout.search_item, viewGroup, false);
 
         if (viewType == Code.ViewType.JOB_SEARCH) { // 직업 검색이면
+            pref = JobSearchActivity.pref;
             return new JobViewHolder(view);
         } else { // 지역 검색이면
+            pref = RegionSearchActivity.pref;
             return new RegionViewHolder(view);
         }
     }
@@ -80,7 +77,7 @@ public class SearchAdapter extends  RecyclerView.Adapter<RecyclerView.ViewHolder
             checkBox.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    ArrayList<ChipList> chipList = getArrayPref(itemView.getContext(), SharedPreference.JOB_LIST);
+                    ArrayList<ChipList> chipList = pref.getArrayPref(SharedPreference.JOB_TMP);
                     int position = getLayoutPosition();
 
                     if (items.get(position).isChecked()) { // 이미 클릭된 상태이면
@@ -93,10 +90,18 @@ public class SearchAdapter extends  RecyclerView.Adapter<RecyclerView.ViewHolder
 
                         items.get(position).setChecked(false);
                     } else {
+                        for (int i=0; i<chipList.size(); i++) {
+                            // 선택한 아이템이 1차 직종 전체에 해당하면
+                            if (items.get(position).getCode().contains(chipList.get(i).getCode())) {
+                                chipList.remove(i);
+                                break;
+                            }
+                        }
+
                         items.get(position).setChecked(true);
-                        chipList.add(new ChipList(items.get(position).getTitle(), position));
+                        chipList.add(new ChipList(items.get(position).getTitle(),items.get(position).getCode(), position));
                     }
-                    setArrayPref(itemView.getContext(), chipList, SharedPreference.JOB_LIST);
+                    pref.setArrayPref(chipList, SharedPreference.JOB_TMP);
                     notifyItemChanged(position);
                     JobSearchActivity.loadChip(itemView.getContext(), JobSearchActivity.chipGroup);
                 }

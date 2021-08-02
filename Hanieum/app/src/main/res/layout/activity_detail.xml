@@ -173,14 +173,57 @@
                 android:textSize="15dp" />
         </LinearLayout>
 
-            <View
+<!--            <View-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="13dp"-->
+<!--                android:layout_gravity="center"-->
+<!--                android:layout_marginVertical="15dp"-->
+<!--                android:background="?android:attr/listDivider">-->
+<!--                -->
+<!--            </View>-->
+
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="13dp"
-                android:layout_gravity="center"
+                android:layout_height="50dp"
                 android:layout_marginVertical="15dp"
-                android:background="?android:attr/listDivider" />
+                android:layout_gravity="center"
+                android:background="?android:attr/listDivider">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="25dp"
+                    android:text="글씨 크기"
+                    android:textColor="@color/black"
+                    android:textSize="17dp"
+                    android:textStyle="bold" />
+
+                <SeekBar
+                    android:id="@+id/textSizeChangeBar"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:layout_gravity="center"
+                    android:max="30"
+                    android:min="17" />
+
+                <TextView
+                    android:id="@+id/textSize"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginRight="25dp"
+                    android:text="17"
+                    android:textColor="@color/black"
+                    android:textSize="17dp" />
+
+            </LinearLayout>
+
+
 
             <TextView
+                android:id="@+id/addressT"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="25dp"
@@ -197,6 +240,7 @@
                 android:layout_marginVertical="10dp">
 
                 <TextView
+                    android:id="@+id/addressDetailT"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -232,20 +276,10 @@
                     android:layout_weight="1"/>
 
                 <Button
-                    android:id="@+id/viewMap"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:backgroundTint="#E1E2E1"
-                    android:layout_gravity="right"
-                    android:text="위치보기"
-                    android:textSize="15dp" />
-
-                <Button
                     android:id="@+id/findWay"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="15dp"
-                    android:layout_marginRight="25dp"
+                    android:layout_marginRight="10dp"
                     android:layout_gravity="right"
                     android:backgroundTint="#E1E2E1"
                     android:text="길찾기"
@@ -260,6 +294,7 @@
                 android:background="?android:attr/listDivider" />
 
             <TextView
+                android:id="@+id/recruitCdT"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="25dp"
@@ -276,6 +311,7 @@
                 android:layout_marginTop="10dp">
 
                 <TextView
+                    android:id="@+id/jobsNmT"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -300,6 +336,7 @@
                 android:layout_marginTop="10dp">
 
                 <TextView
+                    android:id="@+id/jobsContT"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -324,6 +361,7 @@
                 android:layout_marginTop="10dp">
 
                 <TextView
+                    android:id="@+id/enterTpNmT"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -348,6 +386,7 @@
                 android:layout_marginTop="10dp">
 
                 <TextView
+                    android:id="@+id/eduNmT"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -372,6 +411,7 @@
                 android:layout_marginTop="10dp">
 
                 <TextView
+                    android:id="@+id/empTpNmT"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -396,6 +436,7 @@
                 android:layout_marginTop="10dp">
 
                 <TextView
+                    android:id="@+id/collectPsncntT"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1.1"
@@ -411,6 +452,7 @@
                     android:textSize="17dp" />
 
                 <TextView
+                    android:id="@+id/collectPsncntM"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="2.1"
@@ -428,6 +470,7 @@
                 android:layout_marginVertical="10dp">
 
                 <TextView
+                    android:id="@+id/etcHopeContT"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -452,6 +495,7 @@
                 android:background="?android:attr/listDivider" />
 
             <TextView
+                android:id="@+id/workCdT"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="25dp"
@@ -468,6 +512,7 @@
                 android:layout_marginTop="10dp">
 
                 <TextView
+                    android:id="@+id/salaryT"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1.5"
@@ -501,6 +546,7 @@
                 android:layout_marginTop="10dp">
 
                 <TextView
+                    android:id="@+id/workTimeT"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -525,6 +571,7 @@
                 android:layout_marginTop="10dp">
 
                 <TextView
+                    android:id="@+id/workDayT"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -549,6 +596,7 @@
                 android:layout_marginTop="10dp">
 
                 <TextView
+                    android:id="@+id/retirepayT"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -573,6 +621,7 @@
                 android:layout_marginTop="10dp">
 
                 <TextView
+                    android:id="@+id/fourInsT"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -597,6 +646,7 @@
                 android:layout_marginVertical="10dp">
 
                 <TextView
+                    android:id="@+id/etcWelfareT"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -622,6 +672,7 @@
                 android:background="?android:attr/listDivider" />
 
             <TextView
+                android:id="@+id/applyT"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="25dp"
@@ -638,6 +689,7 @@
                 android:layout_marginTop="10dp">
 
                 <TextView
+                    android:id="@+id/receiptCloseDtT"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -662,6 +714,7 @@
                 android:layout_marginTop="10dp">
 
                 <TextView
+                    android:id="@+id/selMthdT"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -686,6 +739,7 @@
                 android:layout_marginTop="10dp">
 
                 <TextView
+                    android:id="@+id/rcptMthdT"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -710,6 +764,7 @@
                 android:layout_marginTop="10dp">
 
                 <TextView
+                    android:id="@+id/submitDocT"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -734,6 +789,7 @@
                 android:layout_marginVertical="10dp">
 
                 <TextView
+                    android:id="@+id/attachFileUrlT"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -808,6 +864,7 @@
                 android:background="?android:attr/listDivider" />
 
             <TextView
+                android:id="@+id/preferT"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="25dp"
@@ -824,6 +881,7 @@
                 android:layout_marginTop="10dp">
 
                 <TextView
+                    android:id="@+id/pfCondT"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -848,6 +906,7 @@
                 android:layout_marginTop="10dp">
 
                 <TextView
+                    android:id="@+id/etcPfCondT"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -872,6 +931,7 @@
                 android:layout_marginTop="10dp">
 
                 <TextView
+                    android:id="@+id/certificateT"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -896,6 +956,7 @@
                 android:layout_marginVertical="10dp">
 
                 <TextView
+                    android:id="@+id/compAblT"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -921,6 +982,7 @@
                 android:background="?android:attr/listDivider" />
 
             <TextView
+                android:id="@+id/corpT"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="25dp"
@@ -937,6 +999,7 @@
                 android:layout_marginTop="10dp">
 
                 <TextView
+                    android:id="@+id/corpNmT"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -961,6 +1024,7 @@
                 android:layout_marginTop="10dp">
 
                 <TextView
+                    android:id="@+id/reperNmT"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -985,6 +1049,7 @@
                 android:layout_marginTop="10dp">
 
                 <TextView
+                    android:id="@+id/indTpCdNmT"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -1009,6 +1074,7 @@
                 android:layout_marginTop="10dp">
 
                 <TextView
+                    android:id="@+id/corpAddrT"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -1033,6 +1099,7 @@
                 android:layout_marginTop="10dp">
 
                 <TextView
+                    android:id="@+id/totPsncntT"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -1057,6 +1124,7 @@
                 android:layout_marginVertical="10dp">
 
                 <TextView
+                    android:id="@+id/yrSalesAmtT"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -1072,6 +1140,13 @@
                     android:textColor="@color/black"
                     android:textSize="17dp" />
             </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="13dp"
+                android:layout_gravity="center"
+                android:layout_marginVertical="15dp"
+                android:background="?android:attr/listDivider" />
 
             <Button
                 android:id="@+id/goWorknetBtn"

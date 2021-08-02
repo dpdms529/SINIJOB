@@ -13,10 +13,22 @@ import java.util.ArrayList;
 public class SharedPreference {
     public static final String JOB_LIST = "jobList";
     public static final String REGION_LIST = "regionList";
+    public static final String JOB_TMP = "jobTmp";
+    public static final String REGION_TMP = "regionTmp";
+    public static final String WORKFORM_STATUS = "workForm";
+    public static final String CAREER_STATUS = "careerStatus";
+    public static final String LICENSE_STATUS = "licenseStatus";
+
+    SharedPreferences preferences;
+    SharedPreferences.Editor editor;
+
+    SharedPreference(Context context){
+        preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        editor = preferences.edit();
+    }
+
     // chipList를 저장
-    public static void setArrayPref(Context context, ArrayList<ChipList> chipList, String key) {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        SharedPreferences.Editor editor = preferences.edit();
+    public void setArrayPref(ArrayList<ChipList> chipList, String key) {
         Gson gson = new Gson();
         String json = gson.toJson(chipList);
         editor.putString(key, json);
@@ -24,17 +36,17 @@ public class SharedPreference {
     }
 
     // chipList를 불러옴
-    public static ArrayList<ChipList> getArrayPref(Context context, String key) {
-        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+    public ArrayList<ChipList> getArrayPref(String key) {
         Gson gson = new Gson();
-        String json = sharedPrefs.getString(key, null);
+        String json = preferences.getString(key, null);
         if(json == null){
-            setArrayPref(context,new ArrayList<ChipList>(),key);
-            json = sharedPrefs.getString(key,null);
+            setArrayPref(new ArrayList<ChipList>(),key);
+            json = preferences.getString(key,null);
         }
         Type type = new TypeToken<ArrayList<ChipList>>() {
         }.getType();
         ArrayList<ChipList> arrayList = gson.fromJson(json, type);
         return arrayList;
     }
+
 }

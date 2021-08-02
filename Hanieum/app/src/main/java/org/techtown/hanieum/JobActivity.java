@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Movie;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -28,9 +27,6 @@ import org.techtown.hanieum.db.entity.JobCategory;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.techtown.hanieum.SharedPreference.getArrayPref;
-import static org.techtown.hanieum.SharedPreference.setArrayPref;
-
 public class JobActivity extends AppCompatActivity implements View.OnClickListener {
     Toolbar toolbar;
     Button jobSearchButton; // 직종 검색 화면으로 이동하는 버튼
@@ -40,11 +36,14 @@ public class JobActivity extends AppCompatActivity implements View.OnClickListen
     JobAdapter adapter1; // 직종 분류(1차) 어댑터
     static JobAdapter adapter2; // 직종 분류(2차) 어댑터
     Context context;
+    static SharedPreference pref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_job);
+
+        pref = new SharedPreference(getApplicationContext());
 
         AppDatabase db = AppDatabase.getInstance(this);
         Log.e("JobDatabase","job data 조회");
@@ -74,11 +73,12 @@ public class JobActivity extends AppCompatActivity implements View.OnClickListen
             public void OnItemClick(JobAdapter.Job1ViewHolder holder, View view, int position) {
                 Job job = adapter1.getItem(position);
                 ArrayList<Job> items = new ArrayList<>();
-                ArrayList<ChipList> chipList = getArrayPref(context, SharedPreference.JOB_LIST);
+                ArrayList<ChipList> chipList = pref.getArrayPref(SharedPreference.JOB_TMP);
 
+                items.add(new Job(job.getCode(), job.getJob1()+" 전체", job.getCode(), Code.ViewType.JOB2));
                 for (int i=0; i<category.size(); i++) {
                     if (job.getJob2().equals(category.get(i).primary_cate_code)) {
-                        items.add(new Job(category.get(i).primary_cate_code, category.get(i).category_name, Code.ViewType.JOB2));
+                        items.add(new Job(category.get(i).primary_cate_code, category.get(i).category_name, category.get(i).category_code, Code.ViewType.JOB2));
                     }
                 }
 
@@ -103,6 +103,8 @@ public class JobActivity extends AppCompatActivity implements View.OnClickListen
 
         loadListData();
         loadChip(context, chipGroup);
+
+        setResult(Activity.RESULT_OK);
     }
 
     @Override
@@ -130,30 +132,34 @@ public class JobActivity extends AppCompatActivity implements View.OnClickListen
                 public void onActivityResult(ActivityResult result) {
                     if (result.getResultCode() == Activity.RESULT_OK) {
                         loadChip(context, chipGroup);
+                        loadListData();
                     }
                 }
             });
 
-
     private void loadListData() { // 항목을 로드하는 함수
-        ArrayList<Job> items = new ArrayList<>();
+        ArrayList<Job> items1 = new ArrayList<>();
+        ArrayList<Job> items2 = new ArrayList<>();
         AppDatabase db = AppDatabase.getInstance(this);
         List<JobCategory> category = db.jobCategoryDao().getAll();
 
+        JobAdapter.lastSelectedPosition1 = -1;
         for (int i=0; i<category.size(); i++) {
             if (category.get(i).category_code.length() == 2) {
-                items.add(new Job(category.get(i).category_name, category.get(i).category_code, Code.ViewType.JOB1));
+                items1.add(new Job(category.get(i).category_name, category.get(i).category_code, category.get(i).category_code, Code.ViewType.JOB1));
             }
         }
 
-        adapter1.setItems(items);
+        adapter1.setItems(items1);
+        adapter1.notifyDataSetChanged();
+        adapter2.setItems(items2); // 어댑터2를 빈 상태로 둠
     }
 
     public static void loadChip(Context context, ChipGroup chipGroup) { // 선택된 칩을 불러오는 함수
         chipGroup.removeAllViews(); // 칩그룹 초기화
-        ArrayList<ChipList> chipList = getArrayPref(context, SharedPreference.JOB_LIST);
+        ArrayList<ChipList> chipList = pref.getArrayPref(SharedPreference.JOB_TMP);
 
-        for (int i=0;i<chipList.size();i++) { // chipList에 있는 것을 추가
+        for (int i=chipList.size()-1;i>=0;i--) { // chipList에 있는 것을 추가
             String name = chipList.get(i).getName();
             int position = chipList.get(i).getPosition();
 
@@ -172,10 +178,10 @@ public class JobActivity extends AppCompatActivity implements View.OnClickListen
                             // 1차 직종이 선택된 상태이고 삭제되는 칩 이름과 현재 표시된 2차 직종(position)의 이름이 같으면
                             if ((adapter2.getItemCount()!=0) && name.equals(adapter2.getItem(position).getJob2())) {
                                 adapter2.getItem(position).setSelected(false);
-                                setArrayPref(context, chipList, SharedPreference.JOB_LIST);
+                                pref.setArrayPref(chipList, SharedPreference.JOB_TMP);
                                 adapter2.notifyItemChanged(position);
                             } else {
-                                setArrayPref(context, chipList, SharedPreference.JOB_LIST);
+                                pref.setArrayPref(chipList, SharedPreference.JOB_TMP);
                             }
                         }
                     }

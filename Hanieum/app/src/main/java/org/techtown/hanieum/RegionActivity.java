@@ -13,6 +13,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -22,12 +23,8 @@ import com.google.android.material.chip.ChipGroup;
 
 import org.techtown.hanieum.db.AppDatabase;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.techtown.hanieum.SharedPreference.getArrayPref;
-import static org.techtown.hanieum.SharedPreference.setArrayPref;
 
 public class RegionActivity extends AppCompatActivity implements View.OnClickListener {
     Toolbar toolbar;
@@ -40,12 +37,15 @@ public class RegionActivity extends AppCompatActivity implements View.OnClickLis
     static RegionAdapter adapter3; // 지역 분류(동/읍/면) 어댑터
     static ChipGroup chipGroup; // 선택한 지역을 나타내기 위한 ChipGroup
     Context context;
+    static SharedPreference pref;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_region);
+
+        pref = new SharedPreference(getApplicationContext());
 
         AppDatabase db = AppDatabase.getInstance(this);
 
@@ -79,16 +79,17 @@ public class RegionActivity extends AppCompatActivity implements View.OnClickLis
             public void OnRegion1Click(RegionAdapter.Region1ViewHolder holder, View view, int position) {
                 Region region1 = adapter1.getItem(position);
                 ArrayList<Region> items2 = new ArrayList<>();
-                ArrayList<ChipList> chipList = getArrayPref(context, SharedPreference.REGION_LIST);
+                ArrayList<ChipList> chipList = pref.getArrayPref(SharedPreference.REGION_LIST);
 
+                items2.add(new Region(region1.getRegion1(), "전체",null, "0",Code.ViewType.REGION2));
                 List<String> item2 = db.BdongDao().getsigungu(region1.getRegion1());
                 for(int i=0;i<item2.size();i++) {
-                    items2.add(new Region(region1.getRegion1(), item2.get(i), null, Code.ViewType.REGION2));
+                    items2.add(new Region(region1.getRegion1(), item2.get(i), null, "0" , Code.ViewType.REGION2));
                 }
 
                 for(int i=0;i<items2.size();i++) {
                     for(int j=0;j<chipList.size();j++) {
-                        if(items2.get(i).getRegion2().equals(chipList.get(j).getName())) {
+                        if(items2.get(i).equals(chipList.get(j).getName())) {
                             items2.get(i).setSelected(true);
                         }
                     }
@@ -103,17 +104,20 @@ public class RegionActivity extends AppCompatActivity implements View.OnClickLis
             public void OnRegion2Click(RegionAdapter.Region2ViewHolder holder, View view, int position) {
                 Region item = adapter2.getItem(position);
                 ArrayList<Region> items3 = new ArrayList<>();
-                ArrayList<ChipList> chipList = getArrayPref(context, SharedPreference.REGION_LIST);
+                ArrayList<ChipList> chipList = pref.getArrayPref(SharedPreference.REGION_LIST);
 
                 List<String> item3 = db.BdongDao().geteupmyeondong(item.getRegion1(), item.getRegion2());
+                String bDongCode = db.BdongDao().getBDongCode(item.getRegion1(), item.getRegion2(), item.getRegion3());
+                Log.e("RegionDatabase", item3.get(0));
+                items3.add(new Region(item.getRegion1(), item.getRegion2(), "전체", "0", Code.ViewType.REGION3));
                 for(int i=0;i<item3.size();i++)
                 {
-                    items3.add(new Region(item.getRegion1(), item.getRegion2(), item3.get(i), Code.ViewType.REGION3));
+                    items3.add(new Region(item.getRegion1(), item.getRegion2(), item3.get(i), bDongCode, Code.ViewType.REGION3));
                 }
 
                 for(int i=0;i< items3.size();i++) {
                     for(int j=0;j<chipList.size();j++) {
-                        if(items3.get(i).getRegion3().equals(chipList.get(j).getName())) {
+                        if(items3.get(i).equals(chipList.get(j).getName())) {
                             items3.get(i).setSelected(true);
                         }
                     }
@@ -168,7 +172,7 @@ public class RegionActivity extends AppCompatActivity implements View.OnClickLis
         List<String> item1 = db.BdongDao().getsido();
 
         for(int i=0;i<item1.size();i++) {
-            items1.add(new Region(item1.get(i), null, null, Code.ViewType.REGION1));
+            items1.add(new Region(item1.get(i), null, null, "0" , Code.ViewType.REGION1));
         }
 
         adapter1.setItems(items1);
@@ -176,7 +180,7 @@ public class RegionActivity extends AppCompatActivity implements View.OnClickLis
 
     public static void loadChip(Context context, ChipGroup chipGroup) {
         chipGroup.removeAllViews(); //칩그룹 초기화
-        ArrayList<ChipList> chipList = getArrayPref(context, SharedPreference.REGION_LIST);
+        ArrayList<ChipList> chipList = pref.getArrayPref(SharedPreference.REGION_LIST);
 
         for(int i=0;i<chipList.size();i++) {
             String name = chipList.get(i).getName();
@@ -196,10 +200,10 @@ public class RegionActivity extends AppCompatActivity implements View.OnClickLis
                             chipList.remove(i);
                             if((adapter3.getItemCount() != 0) && name.equals(adapter3.getItem(position).getRegion3())) {
                                 adapter3.getItem(position).setSelected(false);
-                                setArrayPref(context, chipList, SharedPreference.REGION_LIST);
+                                pref.setArrayPref(chipList, SharedPreference.REGION_LIST);
                                 adapter3.notifyItemChanged(position);
                             } else {
-                                setArrayPref(context, chipList, SharedPreference.REGION_LIST);
+                                pref.setArrayPref(chipList, SharedPreference.REGION_LIST);
                             }
                         }
                     }

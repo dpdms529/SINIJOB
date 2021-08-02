@@ -17,15 +17,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" >
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="조건변경"
-        android:textColor="@color/black"
-        android:textSize="20dp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/toolbar2" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="조건변경"
+            android:textColor="@color/black"
+            android:textSize="20dp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/toolbar2" />
 
     </androidx.appcompat.widget.Toolbar>
 
@@ -70,47 +70,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="25dp"
                 android:layout_marginTop="15dp"
-                android:text="우선순위"
-                android:textColor="@color/black"
-                android:textSize="20dp"
-                android:textStyle="bold"/>
-
-            <TextView
-                android:id="@+id/textView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="25dp"
-                android:text="길게 눌러 상하로 이동시키세요" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginHorizontal="25dp">
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/priorityNumView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/priorityContentsView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_gravity="center"
-                android:layout_margin="15dp"
-                android:background="?android:attr/listDivider" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="25dp"
                 android:text="지역"
                 android:textColor="@color/black"
                 android:textSize="20dp"
@@ -166,6 +125,7 @@
                 app:backgroundTint="@null"/>
 
             <com.google.android.material.chip.ChipGroup
+                android:id="@+id/jobFinalChipGroup"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginHorizontal="25dp" >
@@ -189,6 +149,7 @@
                 android:textStyle="bold" />
 
             <RadioGroup
+                android:id="@+id/careerGroup"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginHorizontal="25dp" >
@@ -225,21 +186,35 @@
                 android:textSize="20dp"
                 android:textStyle="bold" />
 
-            <CheckBox
-                android:id="@+id/workFormCheck1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="25dp"
-                android:text="정규직"
-                android:textSize="15dp" />
 
-            <CheckBox
-                android:id="@+id/workFormCheck2"
+            <RadioGroup
+                android:id="@+id/workFormGroup"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="25dp"
-                android:text="계약직"
-                android:textSize="15dp" />
+                android:layout_height="match_parent"
+                android:layout_marginHorizontal="25dp" >
+
+                <RadioButton
+                    android:id="@+id/allWorkFrom"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="전체"
+                    android:textSize="15dp" />
+
+                <RadioButton
+                    android:id="@+id/workForm1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="정규직"
+                    android:textSize="15dp" />
+
+                <RadioButton
+                    android:id="@+id/workForm2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="계약직"
+                    android:textSize="15dp" />
+
+            </RadioGroup>
 
             <View
                 android:layout_width="match_parent"
@@ -258,6 +233,7 @@
                 android:textStyle="bold" />
 
             <RadioGroup
+                android:id="@+id/licenseGroup"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginHorizontal="25dp" >
