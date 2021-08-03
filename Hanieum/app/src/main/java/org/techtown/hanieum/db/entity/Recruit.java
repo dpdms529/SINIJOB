@@ -41,7 +41,7 @@ public class Recruit {
 
     @ColumnInfo(name = "career_min")
     @NonNull
-    public String career_min;
+    public int career_min;
 
     @ColumnInfo(name = "enrollment_code")
     @NonNull
@@ -64,7 +64,7 @@ public class Recruit {
     public String update_dt;
 
     public Recruit(String recruit_id, String recruit_title, String organization, String salary_type_code, String salary, String b_dong_code,
-                   String job_code, String career_required, String career_min, String enrollment_code, String certificate_required,
+                   String job_code, String career_required, int career_min, String enrollment_code, String certificate_required,
                    String x_coordinate, String y_coordinate, String update_dt){
         this.recruit_id = recruit_id;
         this.recruit_title = recruit_title;

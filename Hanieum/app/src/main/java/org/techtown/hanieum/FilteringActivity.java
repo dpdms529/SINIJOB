@@ -45,7 +45,7 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
     Context context;
     int careerId;
     int licenseId;
-    int workFormId;
+    String workFormId;
     SharedPreference pref;
 
     @Override
@@ -92,12 +92,12 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
         }
 
         // 근무형태 조건 상태값 불러오기
-        workFormId = pref.preferences.getInt(SharedPreference.WORKFORM_STATUS,0);
-        if(workFormId == 0) { // 전체 선택한 상태
+        workFormId = pref.preferences.getString(SharedPreference.WORKFORM_STATUS,"A");
+        if(workFormId.equals("A")) { // 전체 선택한 상태
             allWorkFormButton.setChecked(true);
-        } else if (workFormId == 1) { // 정규직 선택한 상태
+        } else if (workFormId.equals("F")) { // 정규직 선택한 상태
             workFormButton1.setChecked(true);
-        } else { // 계약직 선택한 상태
+        } else if (workFormId.equals("P")) { // 계약직 선택한 상태
             workFormButton2.setChecked(true);
         }
 
@@ -128,11 +128,11 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
                 if(i == R.id.allWorkFrom) { // 전체를 선택하면
-                    workFormId = 0;
+                    workFormId = "A";
                 } else if(i == R.id.workForm1) { // 정규직을 선택하면
-                    workFormId = 1;
+                    workFormId = "F";
                 } else if (i == R.id.workForm2) { // 계약직을 선택하면
-                    workFormId = 2;
+                    workFormId = "P";
                 }
             }
         });
@@ -177,7 +177,7 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
             pref.editor.putInt(SharedPreference.LICENSE_STATUS,licenseId);
 
             // 근무형태 조건 저장
-            pref.editor.putInt(SharedPreference.WORKFORM_STATUS,workFormId);
+            pref.editor.putString(SharedPreference.WORKFORM_STATUS,workFormId);
             pref.editor.commit();
 
             // 직종 조건 저장
@@ -189,7 +189,7 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
             pref.setArrayPref(regionChipList, SharedPreference.REGION_LIST);
 
             finish();
-        } else if (v == resetButton) {
+        } else if (v == resetButton) { // 초기화 버튼 누른 경우
             noCareerButton.setChecked(true);
             careerId = 0;
 
@@ -197,7 +197,14 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
             licenseId = 0;
 
             allWorkFormButton.setChecked(true);
-            workFormId = 0;
+            workFormId = "A";
+
+            ArrayList<ChipList> chipList = new ArrayList<>();
+            pref.setArrayPref(chipList, SharedPreference.JOB_TMP);
+            loadChip(context, jobChipGroup, SharedPreference.JOB_TMP);
+
+            pref.setArrayPref(chipList, SharedPreference.REGION_TMP);
+            loadChip(context, regionChipGroup, SharedPreference.REGION_TMP);
         } else if (v == regionButton) {
             Intent intent = new Intent(this, RegionActivity.class);
             regionLauncher.launch(intent);

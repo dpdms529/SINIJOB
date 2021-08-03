@@ -114,13 +114,13 @@ public class RegionActivity extends AppCompatActivity implements View.OnClickLis
                 ArrayList<ChipList> chipList = pref.getArrayPref(SharedPreference.REGION_TMP);
 
                 List<String> item3 = db.BdongDao().geteupmyeondong(item.getRegion1(), item.getRegion2());
-                String bDongCode = db.BdongDao().getBDongCode(item.getRegion1(), item.getRegion2(), item.getRegion3());
                 String totalSigunguCode = db.BdongDao().getTotalSigunguCode(item.getRegion1(), item.getRegion2());
                 if(item3.size() == 0) { // 전체를 선택했을 때
                     adapter3.setItems(new ArrayList<Region>()); // 어댑터 3을 빈 상태로 둠
                 } else {
                     items3.add(new Region(item.getRegion1(), item.getRegion2(), "전체", totalSigunguCode, Code.ViewType.REGION3));
                     for (int i = 0; i < item3.size(); i++) {
+                        String bDongCode = db.BdongDao().getBDongCode(item.getRegion1(), item.getRegion2(), item3.get(i));
                         items3.add(new Region(item.getRegion1(), item.getRegion2(), item3.get(i), bDongCode, Code.ViewType.REGION3));
                     }
                 }
