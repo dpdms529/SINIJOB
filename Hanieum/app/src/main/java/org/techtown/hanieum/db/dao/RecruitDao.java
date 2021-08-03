@@ -42,7 +42,7 @@ public interface RecruitDao {
     //지역만 선택
     @Query("select * from recruit as r \n" +
             "where r.b_dong_code in (:b_dong_code)")
-    List<Recruit> getFilteredList4(String b_dong_code);
+    List<Recruit> getFilteredList4(List<String> b_dong_code);
 
     //지역, 근무형태만 선택
     @Query("select * from recruit as r \n" +
@@ -72,7 +72,7 @@ public interface RecruitDao {
     @Query("select * from recruit as r\n" +
             "where (r.career_required = 2 and r.career_min < :career) or r.career_required<2\n" +
             "and (r.enrollment_code = :enrollment_code)")
-    List<Recruit> getFilteredList9(int career, List<String> enrollment_code);
+    List<Recruit> getFilteredList9(int career, String enrollment_code);
 
     //경력, 직종만 선택
     @Query("select * from recruit as r\n" +
