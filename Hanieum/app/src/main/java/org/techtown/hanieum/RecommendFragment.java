@@ -112,12 +112,12 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
         menuButton.setOnClickListener(this);
 
         checkLastUpdated();     // 최신 업데이트 일시 확인(일치 -> 유지, 불일치 -> 데이터 가져오기)
-        db.RecruitDao().getAll().observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
-            @Override
-            public void onChanged(List<Recruit> recruits) {
-                loadListData(recruits);     // LiveData - 데이터 변경을 감지하면 UI 갱신
-            }
-        });
+//        db.RecruitDao().getAll().observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
+//            @Override
+//            public void onChanged(List<Recruit> recruits) {
+//                loadListData(recruits);     // LiveData - 데이터 변경을 감지하면 UI 갱신
+//            }
+//        });
 
         editSearch.addTextChangedListener(new TextWatcher() {   // 공고 검색
             @Override
@@ -172,13 +172,13 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
         List<String> bDongCode = new ArrayList<>(); //지역
         for(ChipList i : regions){
             bDongCode.add(i.getCode());
-            Log.d("recruit", "onResume: bDongCode : " + bDongCode.get(i.getPosition()));
+//            Log.d("recruit", "onResume: bDongCode : " + bDongCode.get(i.getPosition()));
         }
 
         List<String> jobCode = new ArrayList<>();   //직종
         for(ChipList i : jobs){
             jobCode.add(i.getCode());
-            Log.d("recruit", "onResume: jobCode : " + jobCode.get(i.getPosition()));
+//            Log.d("recruit", "onResume: jobCode : " + jobCode.get(i.getPosition()));
 
         }
         int career = 36;   //경력
