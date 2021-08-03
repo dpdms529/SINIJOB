@@ -172,7 +172,14 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
         List<String> bDongCode = new ArrayList<>();
         for(ChipList i : regions){
             bDongCode.add(i.getCode());
-            Log.d("recruit", "onResume: bDongCode : " + bDongCode.get(0));
+            Log.d("recruit", "onResume: bDongCode : " + bDongCode.get(i.getPosition()));
+        }
+
+        List<String> jobCode = new ArrayList<>();
+        for(ChipList i : jobs){
+            jobCode.add(i.getCode());
+            Log.d("recruit", "onResume: jobCode : " + jobCode.get(i.getPosition()));
+
         }
         String career = "36";
         List<String> certificate = new ArrayList<>(Arrays.asList(new String[]{"5000390", "5001150","6000731"}));
