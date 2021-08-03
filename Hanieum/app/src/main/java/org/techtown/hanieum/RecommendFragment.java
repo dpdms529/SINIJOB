@@ -164,7 +164,6 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
             Intent intent = new Intent(this.getContext(), FilteringActivity.class);
             startActivity(intent);
         } else if (v == searchButton) {
-            Toast.makeText(v.getContext(), "검색 버튼 눌림", Toast.LENGTH_LONG).show();
             if(title.getVisibility()==View.VISIBLE){
                 title.setVisibility(View.GONE);
                 editSearch.setVisibility(View.VISIBLE);
