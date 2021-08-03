@@ -189,7 +189,7 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
             pref.setArrayPref(regionChipList, SharedPreference.REGION_LIST);
 
             finish();
-        } else if (v == resetButton) {
+        } else if (v == resetButton) { // 초기화 버튼 누른 경우
             noCareerButton.setChecked(true);
             careerId = 0;
 
@@ -198,6 +198,13 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
 
             allWorkFormButton.setChecked(true);
             workFormId = "A";
+
+            ArrayList<ChipList> chipList = new ArrayList<>();
+            pref.setArrayPref(chipList, SharedPreference.JOB_TMP);
+            loadChip(context, jobChipGroup, SharedPreference.JOB_TMP);
+
+            pref.setArrayPref(chipList, SharedPreference.REGION_TMP);
+            loadChip(context, regionChipGroup, SharedPreference.REGION_TMP);
         } else if (v == regionButton) {
             Intent intent = new Intent(this, RegionActivity.class);
             regionLauncher.launch(intent);
