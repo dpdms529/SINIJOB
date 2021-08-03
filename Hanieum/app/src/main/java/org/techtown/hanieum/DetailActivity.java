@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.util.Linkify;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
@@ -397,6 +398,8 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         } catch (InterruptedException e) {
         }
         String detailResult = urlConnectorDetail.getResult();
+        Log.d("detailResult", detailResult);
+        Log.d("idid", id);
 
         try {
             JSONObject jsonObject = new JSONObject(detailResult);
@@ -414,7 +417,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             String career_min = jsonObject1.getString("career_min");
             String basic_address = jsonObject1.getString("basic_address");
             String detail_address = jsonObject1.getString("detail_address");
-            String job_name = jsonObject1.getString("job_name");
+            String category_name = jsonObject1.getString("category_name");
             String content = jsonObject1.getString("content");
             String num_of_people = jsonObject1.getString("num_of_people");
             String etc_info = jsonObject1.getString("etc_info");
@@ -465,7 +468,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             schoolDetail.setText(education_scope);
             careerDetail.setText(careerRequired);
             address.get("addressDetail").setText(basic_address + " " + detail_address);
-            recruitCd.get("jobsNm").setText(job_name);
+            recruitCd.get("jobsNm").setText(category_name);
             recruitCd.get("jobCont").setText(content);
             recruitCd.get("enterTpNm").setText(careerMin);
             recruitCd.get("eduNm").setText(education_scope);
