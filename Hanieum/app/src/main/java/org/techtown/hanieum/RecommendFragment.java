@@ -464,7 +464,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
                         String b_dong_code = jsonObject1.getString("b_dong_code");
                         String job_code = jsonObject1.getString("job_code");
                         String career_required = jsonObject1.getString("career_required");
-                        String career_min = jsonObject1.getString("career_min");
+                        int career_min = jsonObject1.getInt("career_min");
                         String enrollment_code = jsonObject1.getString("enrollment_code");
                         String certificate_required = jsonObject1.getString("certificate_required");
                         String x = jsonObject1.getString("x");
