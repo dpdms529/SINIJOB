@@ -46,7 +46,7 @@ public class JobSearchActivity extends AppCompatActivity {
 
         AppDatabase db = AppDatabase.getInstance(this);
         Log.e("JobDatabase","job data 조회");
-        category = db.jobCategoryDao().getAll();
+        category = db.jobCategoryDao().getCategory();
 
         toolbar = findViewById(R.id.toolbar4);
         recyclerView = findViewById(R.id.searchView);

@@ -15,7 +15,7 @@
         android:theme="?attr/actionBarTheme"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" >
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:layout_width="wrap_content"
@@ -48,8 +48,8 @@
         android:layout_height="wrap_content"
         android:background="#80cbc4"
         android:text="지원하기"
-        android:textStyle="bold"
         android:textSize="17dp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -67,53 +67,72 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/companyNameDetail"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="25dp"
-                    android:layout_marginTop="15dp"
-                    android:text="㈜에이피티에스"
-                    android:textColor="@color/black"
-                    android:textSize="15dp" />
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="5dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
 
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"/>
+                    <TextView
+                        android:id="@+id/companyNameDetail"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="25dp"
+                        android:layout_marginBottom="2dp"
+                        android:layout_weight="1"
+                        android:layout_gravity="bottom"
+                        android:text="㈜에이피티에스"
+                        android:textColor="@color/black"
+                        android:textSize="15dp" />
 
-                <ImageButton
-                    android:id="@+id/bookmarkDetail"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:background="#00ff0000"
-                    android:layout_gravity="right"
-                    app:srcCompat="@drawable/star" />
+                    <TextView
+                        android:id="@+id/titleDetail"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="25dp"
+                        android:text="공사현장 경비원 모집"
+                        android:textColor="@color/black"
+                        android:textSize="20dp"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <ImageButton
+                        android:id="@+id/bookmarkDetail"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginEnd="8dp"
+                        android:background="#00ff0000"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/star" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/titleDetail"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="25dp"
-                android:text="공사현장 경비원 모집"
-                android:textColor="@color/black"
-                android:textSize="20dp"
-                android:textStyle="bold" />
+
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
+                android:layout_marginHorizontal="25dp"
                 android:layout_marginTop="15dp"
-                android:layout_marginHorizontal="25dp">
+                android:orientation="horizontal">
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -135,59 +154,64 @@
             </LinearLayout>
 
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:layout_marginHorizontal="25dp"
-            android:layout_marginBottom="10dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginHorizontal="25dp"
+                android:layout_marginBottom="10dp"
+                android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/workFormDetail"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="비정규직"
-                android:textColor="@color/black"
-                android:textAlignment="center"
-                android:textSize="15dp"/>
+                <TextView
+                    android:id="@+id/workFormDetail"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="비정규직"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textSize="15dp" />
 
-            <TextView
-                android:id="@+id/schoolDetail"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="학력무관"
-                android:textColor="@color/black"
-                android:textAlignment="center"
-                android:textSize="15dp" />
+                <TextView
+                    android:id="@+id/schoolDetail"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="학력무관"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textSize="15dp" />
 
-            <TextView
-                android:id="@+id/careerDetail"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="경력무관"
-                android:textColor="@color/black"
-                android:textAlignment="center"
-                android:textSize="15dp" />
-        </LinearLayout>
+                <TextView
+                    android:id="@+id/careerDetail"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="경력무관"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textSize="15dp" />
+            </LinearLayout>
 
-<!--            <View-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="13dp"-->
-<!--                android:layout_gravity="center"-->
-<!--                android:layout_marginVertical="15dp"-->
-<!--                android:background="?android:attr/listDivider">-->
-<!--                -->
-<!--            </View>-->
+            <!--            <View-->
+            <!--                android:layout_width="match_parent"-->
+            <!--                android:layout_height="13dp"-->
+            <!--                android:layout_gravity="center"-->
+            <!--                android:layout_marginVertical="15dp"-->
+            <!--                android:background="?android:attr/listDivider">-->
+            <!--                -->
+            <!--            </View>-->
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_gravity="center"
+                android:layout_marginVertical="15dp"
+                android:background="?android:attr/listDivider" />
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginVertical="15dp"
-                android:layout_gravity="center"
-                android:background="?android:attr/listDivider">
+                android:layout_height="40dp"
+                android:layout_gravity="center">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -203,10 +227,12 @@
                     android:id="@+id/textSizeChangeBar"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="3"
+                    android:layout_marginLeft="5dp"
                     android:layout_gravity="center"
+                    android:layout_weight="3"
+                    android:progress="17"
                     android:max="30"
-                    android:min="17" />
+                    android:min="15" />
 
                 <TextView
                     android:id="@+id/textSize"
@@ -220,24 +246,30 @@
 
             </LinearLayout>
 
-
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_gravity="center"
+                android:layout_marginVertical="15dp"
+                android:background="?android:attr/listDivider" />
 
             <TextView
                 android:id="@+id/addressT"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:layout_marginLeft="25dp"
                 android:text="근무예정지"
                 android:textColor="@color/black"
                 android:textSize="17dp"
-                android:textStyle="bold"/>
+                android:textStyle="bold" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
                 android:layout_marginHorizontal="25dp"
-                android:layout_marginVertical="10dp">
+                android:layout_marginVertical="10dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/addressDetailT"
@@ -245,7 +277,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="주소"
-                    android:textSize="17dp"/>
+                    android:textSize="17dp" />
 
                 <TextView
                     android:id="@+id/addressDetail"
@@ -260,27 +292,28 @@
             <RelativeLayout
                 android:id="@+id/map"
                 android:layout_width="match_parent"
-                android:layout_height="270dp">
+                android:layout_height="270dp"
+                android:layout_marginVertical="4dp">
 
             </RelativeLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:layout_marginVertical="10dp">
+                android:layout_marginVertical="10dp"
+                android:orientation="horizontal">
 
                 <View
                     android:layout_width="0dp"
                     android:layout_height="0dp"
-                    android:layout_weight="1"/>
+                    android:layout_weight="1" />
 
                 <Button
                     android:id="@+id/findWay"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="10dp"
                     android:layout_gravity="right"
+                    android:layout_marginRight="10dp"
                     android:backgroundTint="#E1E2E1"
                     android:text="길찾기"
                     android:textSize="15dp" />
@@ -288,7 +321,7 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="13dp"
+                android:layout_height="2dp"
                 android:layout_gravity="center"
                 android:layout_marginVertical="15dp"
                 android:background="?android:attr/listDivider" />
@@ -297,18 +330,19 @@
                 android:id="@+id/recruitCdT"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:layout_marginLeft="25dp"
                 android:text="모집조건"
                 android:textColor="@color/black"
                 android:textSize="17dp"
-                android:textStyle="bold"/>
+                android:textStyle="bold" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
                 android:layout_marginHorizontal="25dp"
-                android:layout_marginTop="10dp">
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/jobsNmT"
@@ -316,7 +350,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="모집직종"
-                    android:textSize="17dp"/>
+                    android:textSize="17dp" />
 
                 <TextView
                     android:id="@+id/jobsNm"
@@ -331,9 +365,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
                 android:layout_marginHorizontal="25dp"
-                android:layout_marginTop="10dp">
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/jobsContT"
@@ -341,7 +375,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="직무내용"
-                    android:textSize="17dp"/>
+                    android:textSize="17dp" />
 
                 <TextView
                     android:id="@+id/jobCont"
@@ -356,9 +390,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
                 android:layout_marginHorizontal="25dp"
-                android:layout_marginTop="10dp">
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/enterTpNmT"
@@ -366,7 +400,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="경력조건"
-                    android:textSize="17dp"/>
+                    android:textSize="17dp" />
 
                 <TextView
                     android:id="@+id/enterTpNm"
@@ -381,9 +415,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
                 android:layout_marginHorizontal="25dp"
-                android:layout_marginTop="10dp">
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/eduNmT"
@@ -391,7 +425,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="학력조건"
-                    android:textSize="17dp"/>
+                    android:textSize="17dp" />
 
                 <TextView
                     android:id="@+id/eduNm"
@@ -406,9 +440,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
                 android:layout_marginHorizontal="25dp"
-                android:layout_marginTop="10dp">
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/empTpNmT"
@@ -416,7 +450,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="고용형태"
-                    android:textSize="17dp"/>
+                    android:textSize="17dp" />
 
                 <TextView
                     android:id="@+id/empTpNm"
@@ -431,9 +465,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
                 android:layout_marginHorizontal="25dp"
-                android:layout_marginTop="10dp">
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/collectPsncntT"
@@ -441,7 +475,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1.1"
                     android:text="모집인원"
-                    android:textSize="17dp"/>
+                    android:textSize="17dp" />
 
                 <TextView
                     android:id="@+id/collectPsncnt"
@@ -465,9 +499,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
                 android:layout_marginHorizontal="25dp"
-                android:layout_marginVertical="10dp">
+                android:layout_marginVertical="10dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/etcHopeContT"
@@ -475,7 +509,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="기타안내"
-                    android:textSize="17dp"/>
+                    android:textSize="17dp" />
 
                 <TextView
                     android:id="@+id/etcHopeCont"
@@ -489,7 +523,7 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="13dp"
+                android:layout_height="2dp"
                 android:layout_gravity="center"
                 android:layout_marginVertical="15dp"
                 android:background="?android:attr/listDivider" />
@@ -498,18 +532,19 @@
                 android:id="@+id/workCdT"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:layout_marginLeft="25dp"
                 android:text="근무조건"
                 android:textColor="@color/black"
                 android:textSize="17dp"
-                android:textStyle="bold"/>
+                android:textStyle="bold" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
                 android:layout_marginHorizontal="25dp"
-                android:layout_marginTop="10dp">
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/salaryT"
@@ -517,7 +552,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1.5"
                     android:text="임금조건"
-                    android:textSize="17dp"/>
+                    android:textSize="17dp" />
 
                 <TextView
                     android:id="@+id/salaryTypeCode"
@@ -541,9 +576,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
                 android:layout_marginHorizontal="25dp"
-                android:layout_marginTop="10dp">
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/workTimeT"
@@ -551,7 +586,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="근무시간"
-                    android:textSize="17dp"/>
+                    android:textSize="17dp" />
 
                 <TextView
                     android:id="@+id/workTime"
@@ -566,9 +601,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
                 android:layout_marginHorizontal="25dp"
-                android:layout_marginTop="10dp">
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/workDayT"
@@ -576,7 +611,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="근무형태"
-                    android:textSize="17dp"/>
+                    android:textSize="17dp" />
 
                 <TextView
                     android:id="@+id/workDay"
@@ -591,9 +626,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
                 android:layout_marginHorizontal="25dp"
-                android:layout_marginTop="10dp">
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/retirepayT"
@@ -601,7 +636,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="퇴직급여"
-                    android:textSize="17dp"/>
+                    android:textSize="17dp" />
 
                 <TextView
                     android:id="@+id/retirepay"
@@ -616,9 +651,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
                 android:layout_marginHorizontal="25dp"
-                android:layout_marginTop="10dp">
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/fourInsT"
@@ -626,7 +661,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="연금4대보혐"
-                    android:textSize="17dp"/>
+                    android:textSize="17dp" />
 
                 <TextView
                     android:id="@+id/fourIns"
@@ -641,9 +676,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
                 android:layout_marginHorizontal="25dp"
-                android:layout_marginVertical="10dp">
+                android:layout_marginVertical="10dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/etcWelfareT"
@@ -651,7 +686,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="기타복리후생"
-                    android:textSize="17dp"/>
+                    android:textSize="17dp" />
 
                 <TextView
                     android:id="@+id/etcWelfare"
@@ -666,7 +701,7 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="13dp"
+                android:layout_height="2dp"
                 android:layout_gravity="center"
                 android:layout_marginVertical="15dp"
                 android:background="?android:attr/listDivider" />
@@ -675,18 +710,19 @@
                 android:id="@+id/applyT"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:layout_marginLeft="25dp"
                 android:text="접수방법"
                 android:textColor="@color/black"
                 android:textSize="17dp"
-                android:textStyle="bold"/>
+                android:textStyle="bold" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
                 android:layout_marginHorizontal="25dp"
-                android:layout_marginTop="10dp">
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/receiptCloseDtT"
@@ -694,7 +730,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="접수마감일"
-                    android:textSize="17dp"/>
+                    android:textSize="17dp" />
 
                 <TextView
                     android:id="@+id/receiptCloseDt"
@@ -709,9 +745,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
                 android:layout_marginHorizontal="25dp"
-                android:layout_marginTop="10dp">
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/selMthdT"
@@ -719,7 +755,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="전형방법"
-                    android:textSize="17dp"/>
+                    android:textSize="17dp" />
 
                 <TextView
                     android:id="@+id/selMthd"
@@ -734,9 +770,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
                 android:layout_marginHorizontal="25dp"
-                android:layout_marginTop="10dp">
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/rcptMthdT"
@@ -744,7 +780,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="접수방법"
-                    android:textSize="17dp"/>
+                    android:textSize="17dp" />
 
                 <TextView
                     android:id="@+id/rcptMthd"
@@ -759,9 +795,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
                 android:layout_marginHorizontal="25dp"
-                android:layout_marginTop="10dp">
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/submitDocT"
@@ -769,7 +805,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="제출서류\n준비물"
-                    android:textSize="17dp"/>
+                    android:textSize="17dp" />
 
                 <TextView
                     android:id="@+id/submitDoc"
@@ -784,9 +820,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
                 android:layout_marginHorizontal="25dp"
-                android:layout_marginVertical="10dp">
+                android:layout_marginVertical="10dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/attachFileUrlT"
@@ -794,13 +830,16 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="제출서류양식"
-                    android:textSize="17dp"/>
+                    android:textSize="17dp" />
 
-                -<LinearLayout
+                -
+
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
                     android:orientation="vertical">
+
                     <TextView
                         android:id="@+id/attachFileUrl1"
                         android:layout_width="wrap_content"
@@ -810,7 +849,8 @@
                         android:text="다운로드 링크 1"
                         android:textColor="@color/black"
                         android:textSize="17dp"
-                        android:visibility="gone"/>
+                        android:visibility="gone" />
+
                     <TextView
                         android:id="@+id/attachFileUrl2"
                         android:layout_width="wrap_content"
@@ -820,7 +860,8 @@
                         android:text="다운로드 링크 2"
                         android:textColor="@color/black"
                         android:textSize="17dp"
-                        android:visibility="gone"/>
+                        android:visibility="gone" />
+
                     <TextView
                         android:id="@+id/attachFileUrl3"
                         android:layout_width="wrap_content"
@@ -830,7 +871,8 @@
                         android:text="다운로드 링크 3"
                         android:textColor="@color/black"
                         android:textSize="17dp"
-                        android:visibility="gone"/>
+                        android:visibility="gone" />
+
                     <TextView
                         android:id="@+id/attachFileUrl4"
                         android:layout_width="wrap_content"
@@ -840,7 +882,8 @@
                         android:text="다운로드 링크 4"
                         android:textColor="@color/black"
                         android:textSize="17dp"
-                        android:visibility="gone"/>
+                        android:visibility="gone" />
+
                     <TextView
                         android:id="@+id/attachFileUrl5"
                         android:layout_width="wrap_content"
@@ -850,7 +893,7 @@
                         android:text="다운로드 링크 5"
                         android:textColor="@color/black"
                         android:textSize="17dp"
-                        android:visibility="gone"/>
+                        android:visibility="gone" />
                 </LinearLayout>
 
 
@@ -858,7 +901,7 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="13dp"
+                android:layout_height="2dp"
                 android:layout_gravity="center"
                 android:layout_marginVertical="15dp"
                 android:background="?android:attr/listDivider" />
@@ -867,18 +910,19 @@
                 android:id="@+id/preferT"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:layout_marginLeft="25dp"
                 android:text="우대사항"
                 android:textColor="@color/black"
                 android:textSize="17dp"
-                android:textStyle="bold"/>
+                android:textStyle="bold" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
                 android:layout_marginHorizontal="25dp"
-                android:layout_marginTop="10dp">
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/pfCondT"
@@ -886,7 +930,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="우대조건"
-                    android:textSize="17dp"/>
+                    android:textSize="17dp" />
 
                 <TextView
                     android:id="@+id/pfCond"
@@ -901,9 +945,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
                 android:layout_marginHorizontal="25dp"
-                android:layout_marginTop="10dp">
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/etcPfCondT"
@@ -911,7 +955,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="기타우대사항"
-                    android:textSize="17dp"/>
+                    android:textSize="17dp" />
 
                 <TextView
                     android:id="@+id/etcPfCond"
@@ -926,9 +970,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
                 android:layout_marginHorizontal="25dp"
-                android:layout_marginTop="10dp">
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/certificateT"
@@ -936,7 +980,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="자격먼허"
-                    android:textSize="17dp"/>
+                    android:textSize="17dp" />
 
                 <TextView
                     android:id="@+id/certificate"
@@ -951,9 +995,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
                 android:layout_marginHorizontal="25dp"
-                android:layout_marginVertical="10dp">
+                android:layout_marginVertical="10dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/compAblT"
@@ -961,7 +1005,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="컴퓨터활용\n능력"
-                    android:textSize="17dp"/>
+                    android:textSize="17dp" />
 
                 <TextView
                     android:id="@+id/compAbl"
@@ -976,7 +1020,7 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="13dp"
+                android:layout_height="2dp"
                 android:layout_gravity="center"
                 android:layout_marginVertical="15dp"
                 android:background="?android:attr/listDivider" />
@@ -985,18 +1029,19 @@
                 android:id="@+id/corpT"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:layout_marginLeft="25dp"
                 android:text="기업정보"
                 android:textColor="@color/black"
                 android:textSize="17dp"
-                android:textStyle="bold"/>
+                android:textStyle="bold" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
                 android:layout_marginHorizontal="25dp"
-                android:layout_marginTop="10dp">
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/corpNmT"
@@ -1004,7 +1049,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="기업명"
-                    android:textSize="17dp"/>
+                    android:textSize="17dp" />
 
                 <TextView
                     android:id="@+id/corpNm"
@@ -1019,9 +1064,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
                 android:layout_marginHorizontal="25dp"
-                android:layout_marginTop="10dp">
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/reperNmT"
@@ -1029,7 +1074,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="대표자명"
-                    android:textSize="17dp"/>
+                    android:textSize="17dp" />
 
                 <TextView
                     android:id="@+id/reperNm"
@@ -1044,9 +1089,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
                 android:layout_marginHorizontal="25dp"
-                android:layout_marginTop="10dp">
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/indTpCdNmT"
@@ -1054,7 +1099,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="업종"
-                    android:textSize="17dp"/>
+                    android:textSize="17dp" />
 
                 <TextView
                     android:id="@+id/indTpCdNm"
@@ -1069,9 +1114,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
                 android:layout_marginHorizontal="25dp"
-                android:layout_marginTop="10dp">
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/corpAddrT"
@@ -1079,7 +1124,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="주소"
-                    android:textSize="17dp"/>
+                    android:textSize="17dp" />
 
                 <TextView
                     android:id="@+id/corpAddr"
@@ -1094,9 +1139,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
                 android:layout_marginHorizontal="25dp"
-                android:layout_marginTop="10dp">
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/totPsncntT"
@@ -1104,7 +1149,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="근로자수"
-                    android:textSize="17dp"/>
+                    android:textSize="17dp" />
 
                 <TextView
                     android:id="@+id/totPsncnt"
@@ -1119,9 +1164,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
                 android:layout_marginHorizontal="25dp"
-                android:layout_marginVertical="10dp">
+                android:layout_marginVertical="10dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/yrSalesAmtT"
@@ -1129,7 +1174,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="연매출액"
-                    android:textSize="17dp"/>
+                    android:textSize="17dp" />
 
                 <TextView
                     android:id="@+id/yrSalesAmt"
@@ -1143,7 +1188,7 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="13dp"
+                android:layout_height="2dp"
                 android:layout_gravity="center"
                 android:layout_marginVertical="15dp"
                 android:background="?android:attr/listDivider" />
@@ -1152,19 +1197,20 @@
                 android:id="@+id/goWorknetBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:backgroundTint="#E1E2E1"
                 android:layout_gravity="center"
+                android:layout_marginBottom="5dp"
+                android:backgroundTint="#E1E2E1"
                 android:text="채용정보 제공사이트로 이동" />
 
             <ImageView
                 android:id="@+id/goWorknetImg"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginHorizontal="4dp"
                 app:srcCompat="@drawable/info_source" />
 
 
         </LinearLayout>
     </ScrollView>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

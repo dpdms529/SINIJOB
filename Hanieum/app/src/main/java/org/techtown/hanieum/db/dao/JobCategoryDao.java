@@ -12,4 +12,7 @@ import java.util.List;
     public interface JobCategoryDao {
     @Query("SELECT * FROM job_category")
     List<JobCategory> getAll() ;
+
+    @Query("SELECT * FROM job_category WHERE LENGTH(category_code) < 5")
+    List<JobCategory> getCategory() ;
 }
