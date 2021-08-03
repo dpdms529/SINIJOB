@@ -172,13 +172,13 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
         List<String> bDongCode = new ArrayList<>(); //지역
         for(ChipList i : regions){
             bDongCode.add(i.getCode());
-            Log.d("recruit", "onResume: bDongCode : " + bDongCode.get(i.getPosition()));
+//            Log.d("recruit", "onResume: bDongCode : " + bDongCode.get(i.getPosition()));
         }
 
         List<String> jobCode = new ArrayList<>();   //직종
         for(ChipList i : jobs){
             jobCode.add(i.getCode());
-            Log.d("recruit", "onResume: jobCode : " + jobCode.get(i.getPosition()));
+//            Log.d("recruit", "onResume: jobCode : " + jobCode.get(i.getPosition()));
 
         }
         int career = 36;   //경력
