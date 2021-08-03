@@ -163,26 +163,26 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
         Log.d("recruit", "onResume: jobs : " + jobs.toString());
         int careerStatus = pref.preferences.getInt(SharedPreference.CAREER_STATUS,0);
         Log.d("recruit", "onResume: careerStatus : " + careerStatus);
-        String workform =  pref.preferences.getString(SharedPreference.WORKFORM_STATUS,"A");
+        String workform =  pref.preferences.getString(SharedPreference.WORKFORM_STATUS,"A");    //근무형태
         Log.d("recruit", "onResume: workform :" + workform);
         int licenseStatus = pref.preferences.getInt(SharedPreference.LICENSE_STATUS,0);
         Log.d("recruit", "onResume: licenseStatus : " + licenseStatus);
 
 
-        List<String> bDongCode = new ArrayList<>();
+        List<String> bDongCode = new ArrayList<>(); //지역
         for(ChipList i : regions){
             bDongCode.add(i.getCode());
             Log.d("recruit", "onResume: bDongCode : " + bDongCode.get(i.getPosition()));
         }
 
-        List<String> jobCode = new ArrayList<>();
+        List<String> jobCode = new ArrayList<>();   //직종
         for(ChipList i : jobs){
             jobCode.add(i.getCode());
             Log.d("recruit", "onResume: jobCode : " + jobCode.get(i.getPosition()));
 
         }
-        String career = "36";
-        List<String> certificate = new ArrayList<>(Arrays.asList(new String[]{"5000390", "5001150","6000731"}));
+        String career = "36";   //경력
+        List<String> certificate = new ArrayList<>(Arrays.asList(new String[]{"5000390", "5001150","6000731"}));    //자격증
         Log.d("recruit", "onResume: " + certificate.get(0) + " " + certificate.get(1));
         List<Recruit> result;
 
@@ -204,11 +204,11 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
                     }
                 }else{  //직종 선택했을 때
                     if(workform.equals("A")){   //근무형태 전체 선택
-                        result = db.RecruitDao().getFilteredList2();
+                        result = db.RecruitDao().getFilteredList2(jobCode);
                         Log.d("recruit", "onResume: dao2" + result.toString());
                         loadListData(result);
                     }else{  //근무형태 선택했을 때 (정규직 or 계약직)
-                        result = db.RecruitDao().getFilteredList3();
+                        result = db.RecruitDao().getFilteredList3(jobCode, workform);
                         Log.d("recruit", "onResume: dao3" + result.toString());
                         loadListData(result);
                     }
