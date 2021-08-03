@@ -112,12 +112,12 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
         menuButton.setOnClickListener(this);
 
         checkLastUpdated();     // 최신 업데이트 일시 확인(일치 -> 유지, 불일치 -> 데이터 가져오기)
-        db.RecruitDao().getAll().observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
-            @Override
-            public void onChanged(List<Recruit> recruits) {
-                loadListData(recruits);     // LiveData - 데이터 변경을 감지하면 UI 갱신
-            }
-        });
+//        db.RecruitDao().getAll().observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
+//            @Override
+//            public void onChanged(List<Recruit> recruits) {
+//                loadListData(recruits);     // LiveData - 데이터 변경을 감지하면 UI 갱신
+//            }
+//        });
 
         editSearch.addTextChangedListener(new TextWatcher() {   // 공고 검색
             @Override
@@ -464,7 +464,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
                         String b_dong_code = jsonObject1.getString("b_dong_code");
                         String job_code = jsonObject1.getString("job_code");
                         String career_required = jsonObject1.getString("career_required");
-                        String career_min = jsonObject1.getString("career_min");
+                        int career_min = jsonObject1.getInt("career_min");
                         String enrollment_code = jsonObject1.getString("enrollment_code");
                         String certificate_required = jsonObject1.getString("certificate_required");
                         String x = jsonObject1.getString("x");
