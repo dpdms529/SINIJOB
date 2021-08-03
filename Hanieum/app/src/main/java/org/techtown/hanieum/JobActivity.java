@@ -47,7 +47,7 @@ public class JobActivity extends AppCompatActivity implements View.OnClickListen
 
         AppDatabase db = AppDatabase.getInstance(this);
         Log.e("JobDatabase","job data 조회");
-        List<JobCategory> category = db.jobCategoryDao().getAll();
+        List<JobCategory> category = db.jobCategoryDao().getCategory();
 
         toolbar = findViewById(R.id.toolbar5);
         jobSearchButton = findViewById(R.id.jobSearchButton);
@@ -141,7 +141,7 @@ public class JobActivity extends AppCompatActivity implements View.OnClickListen
         ArrayList<Job> items1 = new ArrayList<>();
         ArrayList<Job> items2 = new ArrayList<>();
         AppDatabase db = AppDatabase.getInstance(this);
-        List<JobCategory> category = db.jobCategoryDao().getAll();
+        List<JobCategory> category = db.jobCategoryDao().getCategory();
 
         JobAdapter.lastSelectedPosition1 = -1;
         for (int i=0; i<category.size(); i++) {
