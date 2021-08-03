@@ -40,6 +40,7 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
     RadioButton workFormButton1; // 정규직 라디오버튼
     RadioButton workFormButton2; // 계약직 라디오버튼
     ChipGroup jobChipGroup; // 선택한 직종 ChipGroup
+    ChipGroup regionChipGroup; // 선택한 지역 ChipGroup
 
     Context context;
     int careerId;
@@ -68,6 +69,7 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
         workFormButton1 = findViewById(R.id.workForm1);
         workFormButton2 = findViewById(R.id.workForm2);
         jobChipGroup = findViewById(R.id.jobFinalChipGroup);
+        regionChipGroup = findViewById(R.id.regionFinalChipGroup);
         context = this;
 
         pref = new SharedPreference(getApplicationContext());
@@ -80,6 +82,7 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
             yesCareerButton.setChecked(true);
         }
 
+
         // 자격조건 상태값 불러오기
         licenseId = pref.preferences.getInt(SharedPreference.LICENSE_STATUS,0);
         if(licenseId == 0) { // 적용 안 함 선택한 상태
@@ -90,11 +93,11 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
 
         // 근무형태 조건 상태값 불러오기
         workFormId = pref.preferences.getString(SharedPreference.WORKFORM_STATUS,"A");
-        if(workFormId == "A") { // 전체 선택한 상태
+        if(workFormId.equals("A")) { // 전체 선택한 상태
             allWorkFormButton.setChecked(true);
-        } else if (workFormId == "F") { // 정규직 선택한 상태
+        } else if (workFormId.equals("F")) { // 정규직 선택한 상태
             workFormButton1.setChecked(true);
-        } else if (workFormId == "P") { // 계약직 선택한 상태
+        } else if (workFormId.equals("P")) { // 계약직 선택한 상태
             workFormButton2.setChecked(true);
         }
 
@@ -142,10 +145,14 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
         regionButton.setOnClickListener(this);
         jobButton.setOnClickListener(this);
 
-        ArrayList<ChipList> chipList = pref.getArrayPref(SharedPreference.JOB_LIST);
-        pref.setArrayPref(chipList, SharedPreference.JOB_TMP);
+        ArrayList<ChipList> jobChipList = pref.getArrayPref(SharedPreference.JOB_LIST);
+        pref.setArrayPref(jobChipList, SharedPreference.JOB_TMP);
+
+        ArrayList<ChipList> regionChipList = pref.getArrayPref(SharedPreference.REGION_LIST);
+        pref.setArrayPref(regionChipList, SharedPreference.REGION_TMP);
 
         loadChip(context, jobChipGroup, SharedPreference.JOB_TMP);
+        loadChip(context, regionChipGroup, SharedPreference.REGION_TMP);
     }
 
     @Override
@@ -175,6 +182,10 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
             ArrayList<ChipList> chipList = pref.getArrayPref(SharedPreference.JOB_TMP);
             pref.setArrayPref(chipList, SharedPreference.JOB_LIST);
 
+            // 지역 조건 저장
+            ArrayList<ChipList> regionChipList = pref.getArrayPref(SharedPreference.REGION_TMP);
+            pref.setArrayPref(regionChipList, SharedPreference.REGION_LIST);
+
             finish();
         } else if (v == resetButton) {
             noCareerButton.setChecked(true);
@@ -187,7 +198,7 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
             workFormId = "A";
         } else if (v == regionButton) {
             Intent intent = new Intent(this, RegionActivity.class);
-            startActivity(intent);
+            regionLauncher.launch(intent);
         } else if (v == jobButton) {
             Intent intent = new Intent(this, JobActivity.class);
             launcher.launch(intent);
@@ -204,6 +215,18 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
                     }
                 }
             });
+
+    ActivityResultLauncher<Intent> regionLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        loadChip(context, regionChipGroup, SharedPreference.REGION_TMP);
+                    }
+                }
+            }
+    );
 
     private void loadChip(Context context, ChipGroup chipGroup, String key) { // 선택된 칩을 불러오는 함수
         chipGroup.removeAllViews(); // 칩그룹 초기화

@@ -169,16 +169,76 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
         Log.d("recruit", "onResume: licenseStatus : " + licenseStatus);
 
         String career = "36";
-        ArrayList<String> bDongCode = new ArrayList<>();
+        List<String> bDongCode = new ArrayList<>();
         for(ChipList i : regions){
             bDongCode.add(i.getCode());
             Log.d("recruit", "onResume: bDongCode : " + bDongCode.get(0));
         }
-        ArrayList<String> certificate = new ArrayList<>(Arrays.asList(new String[]{"5000390", "5001150"}));
+        List<String> certificate = new ArrayList<>(Arrays.asList(new String[]{"5000390", "5001150"}));
         Log.d("recruit", "onResume: " + certificate.get(0) + " " + certificate.get(1));
-        List<Recruit> result = db.RecruitDao().getFilteredList(bDongCode,career,certificate,workform);
-        Log.d("recruit", "onResume: " + result.toString());
-        loadListData(result);
+        List<Recruit> result;
+
+        if(careerStatus == 0 && licenseStatus == 0){
+            if(bDongCode.size() == 0){
+                if(jobs.size() == 0){
+                    if(workform.equals("A")){
+                        checkLastUpdated();     // 최신 업데이트 일시 확인(일치 -> 유지, 불일치 -> 데이터 가져오기)
+                        db.RecruitDao().getAll().observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
+                            @Override
+                            public void onChanged(List<Recruit> recruits) {
+                                loadListData(recruits);     // LiveData - 데이터 변경을 감지하면 UI 갱신
+                            }
+                        });
+                    }else{
+
+                    }
+                }else{
+
+                }
+            }else{
+                if(jobs.size() == 0){
+                    if(workform.equals("A")){
+
+                    }else{
+
+                    }
+
+                }else{
+
+                }
+
+            }
+        }else if(careerStatus == 0){
+
+        }else if(licenseStatus == 0){
+
+        }else{
+            if(bDongCode.size() == 0){
+                if(jobs.size() == 0){
+                    if(workform.equals("A")){
+
+                    }else{
+
+                    }
+                }else{
+
+                }
+            }else{
+                if(jobs.size() == 0){
+                    if(workform.equals("A")){
+
+                    }else{
+                        result = db.RecruitDao().getFilteredList(bDongCode,career,certificate,workform);
+                        Log.d("recruit", "onResume: dao" + result.toString());
+                        loadListData(result);
+                    }
+                }else{
+
+                }
+
+            }
+
+        }
     }
 
     @Override
@@ -204,7 +264,6 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
     }
 
     private void checkLastUpdated() { // 기기의 업데이트 일시와 DB의 업데이트 일시를 확인
-        AppDatabase db = AppDatabase.getInstance(this.getContext());
         List<String> rows = db.RecruitDao().getLastUpdated();
         String lastUpdated = rows.get(0);
         String dbLastUpdated = "";
@@ -301,7 +360,6 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
     }
 
     private void loadListData(List<Recruit> result) { // 항목을 로드하는 함수
-        AppDatabase db = AppDatabase.getInstance(this.getContext());
         List<Recruit> rows = result;
 
         allItems.clear();

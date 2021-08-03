@@ -22,6 +22,13 @@ public interface BdongDao {
     @Query("select distinct(eupmyeondong_name) from b_dong where sido_name = :sido_name and sigungu_name = :sigungu_name")
     List<String> geteupmyeondong(String sido_name, String sigungu_name);
 
+
     @Query("select b_dong_code from b_dong where sido_name = :sido_name and sigungu_name = :sigungu_name and eupmyeondong_name = :eupmyeondong_name")
     String getBDongCode(String sido_name, String sigungu_name, String eupmyeondong_name);
+
+    @Query("select substr(b_dong_code,1,2) from b_dong where sido_name = :sido_name limit 1")
+    String getTotalSidoCode(String sido_name);
+
+    @Query("select substr(b_dong_code,1,5) from b_dong where sido_name = :sido_name and sigungu_name = :sigungu_name limit 1;")
+    String getTotalSigunguCode(String sido_name, String sigungu_name);
 }

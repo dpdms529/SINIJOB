@@ -215,6 +215,8 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowCustomEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         mapView.setMapViewEventListener(this);
         mapView.setPOIItemEventListener(this);
