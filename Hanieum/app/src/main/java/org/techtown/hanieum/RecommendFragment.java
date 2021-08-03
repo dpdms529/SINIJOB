@@ -181,7 +181,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
             Log.d("recruit", "onResume: jobCode : " + jobCode.get(i.getPosition()));
 
         }
-        String career = "36";   //경력
+        int career = 36;   //경력
         List<String> certificate = new ArrayList<>(Arrays.asList(new String[]{"5000390", "5001150","6000731"}));    //자격증
         Log.d("recruit", "onResume: " + certificate.get(0) + " " + certificate.get(1));
         List<Recruit> result;
@@ -309,7 +309,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
                         Log.d("recruit", "onResume: dao18" + result.toString());
                         loadListData(result);
                     }else{  //근무형태 선택했을 때 (정규직 or 계약직)
-                        result = db.RecruitDao().getFilteredList19();
+                        result = db.RecruitDao().getFilteredList19(jobCode, workform, certificate);
                         Log.d("recruit", "onResume: dao19" + result.toString());
                         loadListData(result);
                     }
@@ -317,22 +317,22 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
             }else{  //지역 선택 했을 때
                 if(jobs.size() == 0){   //직종 선택 안했을 때 -> 전체 지역
                     if(workform.equals("A")){   //근무형태 전체 선택
-                        result = db.RecruitDao().getFilteredList20();
+                        result = db.RecruitDao().getFilteredList20(bDongCode, certificate);
                         Log.d("recruit", "onResume: dao20" + result.toString());
                         loadListData(result);
                     }else{  //근무형태 선택했을 때 (정규직 or 계약직)
-                        result = db.RecruitDao().getFilteredList21();
+                        result = db.RecruitDao().getFilteredList21(bDongCode, workform, certificate);
                         Log.d("recruit", "onResume: dao21" + result.toString());
                         loadListData(result);
                     }
 
                 }else{  //직종 선택 했을 때
                     if(workform.equals("A")){   //근무형태 전체 선택
-                        result = db.RecruitDao().getFilteredList22();
+                        result = db.RecruitDao().getFilteredList22(bDongCode, jobCode, certificate);
                         Log.d("recruit", "onResume: dao22" + result.toString());
                         loadListData(result);
                     }else{  //근무형태 선택했을 때 (정규직 or 계약직)
-                        result = db.RecruitDao().getFilteredList23();
+                        result = db.RecruitDao().getFilteredList23(bDongCode, jobCode, workform, certificate);
                         Log.d("recruit", "onResume: dao23" + result.toString());
                         loadListData(result);
                     }
@@ -345,7 +345,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
             if(bDongCode.size() == 0){  //지역 선택 안했을 때 -> 전체 지역
                 if(jobs.size() == 0){   //직종 선택 안했을 때 -> 전체 직종
                     if(workform.equals("A")){   //근무형태 전체 선택
-                        result = db.RecruitDao().getFilteredList24();
+                        result = db.RecruitDao().getFilteredList24(career, certificate);
                         Log.d("recruit", "onResume: dao24" + result.toString());
                         loadListData(result);
                     }else{  //근무형태 선택했을 때 (정규직 or 계약직)
