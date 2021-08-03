@@ -90,9 +90,12 @@
                 app:backgroundTint="@null" />
 
             <com.google.android.material.chip.ChipGroup
+                android:id="@+id/regionFinalChipGroup"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginHorizontal="25dp" />
+                android:layout_marginHorizontal="25dp" >
+
+            </com.google.android.material.chip.ChipGroup>
 
             <View
                 android:layout_width="match_parent"
