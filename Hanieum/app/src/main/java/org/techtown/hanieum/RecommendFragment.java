@@ -29,6 +29,8 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.chip.Chip;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,6 +39,7 @@ import org.techtown.hanieum.db.dao.RecruitDao;
 import org.techtown.hanieum.db.entity.Recruit;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -57,8 +60,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
     InputMethodManager imm;
     AppDatabase db;
 
-    SharedPreferences pref;
-    SharedPreferences.Editor edit;
+    SharedPreference pref;
 
     public RecommendFragment() {
         // Required empty public constructor
@@ -84,6 +86,8 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
 
         imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         db = AppDatabase.getInstance(this.getContext());
+
+        pref = new SharedPreference(getContext());
 
         // 리사이클러뷰와 어댑터 연결
         LinearLayoutManager layoutManager = new LinearLayoutManager(view.getContext(),
@@ -154,7 +158,240 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
     @Override
     public void onResume() {
         super.onResume();
+        ArrayList<ChipList> regions = pref.getArrayPref(SharedPreference.REGION_LIST);
+        ArrayList<ChipList> jobs = pref.getArrayPref(SharedPreference.JOB_LIST);
+        Log.d("recruit", "onResume: jobs : " + jobs.toString());
+        int careerStatus = pref.preferences.getInt(SharedPreference.CAREER_STATUS,0);
+        Log.d("recruit", "onResume: careerStatus : " + careerStatus);
+        String workform =  pref.preferences.getString(SharedPreference.WORKFORM_STATUS,"A");    //근무형태
+        Log.d("recruit", "onResume: workform :" + workform);
+        int licenseStatus = pref.preferences.getInt(SharedPreference.LICENSE_STATUS,0);
+        Log.d("recruit", "onResume: licenseStatus : " + licenseStatus);
 
+
+        List<String> bDongCode = new ArrayList<>(); //지역
+        for(ChipList i : regions){
+            bDongCode.add(i.getCode());
+            Log.d("recruit", "onResume: bDongCode : " + bDongCode.get(i.getPosition()));
+        }
+
+        List<String> jobCode = new ArrayList<>();   //직종
+        for(ChipList i : jobs){
+            jobCode.add(i.getCode());
+            Log.d("recruit", "onResume: jobCode : " + jobCode.get(i.getPosition()));
+
+        }
+        int career = 36;   //경력
+        List<String> certificate = new ArrayList<>(Arrays.asList(new String[]{"5000390", "5001150","6000731"}));    //자격증
+        Log.d("recruit", "onResume: " + certificate.get(0) + " " + certificate.get(1));
+        List<Recruit> result;
+
+        if(careerStatus == 0 && licenseStatus == 0){    //경력, 자격증 적용안함
+            if(bDongCode.size() == 0){  //지역 선택 안했을 때 -> 전체 지역
+                if(jobs.size() == 0){   //직종 선택 안했을 때 -> 전체 직종
+                    if(workform.equals("A")){   //근무형태 전체 선택
+                        checkLastUpdated();     // 최신 업데이트 일시 확인(일치 -> 유지, 불일치 -> 데이터 가져오기)
+                        db.RecruitDao().getAll().observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
+                            @Override
+                            public void onChanged(List<Recruit> recruits) {
+                                loadListData(recruits);     // LiveData - 데이터 변경을 감지하면 UI 갱신
+                            }
+                        });
+                    }else{  //근무형태 선택했을 때 (정규직 or 계약직)
+                        result = db.RecruitDao().getFilteredList1(workform);
+                        Log.d("recruit", "onResume: dao1" + result.toString());
+                        loadListData(result);
+                    }
+                }else{  //직종 선택했을 때
+                    if(workform.equals("A")){   //근무형태 전체 선택
+                        result = db.RecruitDao().getFilteredList2(jobCode);
+                        Log.d("recruit", "onResume: dao2" + result.toString());
+                        loadListData(result);
+                    }else{  //근무형태 선택했을 때 (정규직 or 계약직)
+                        result = db.RecruitDao().getFilteredList3(jobCode, workform);
+                        Log.d("recruit", "onResume: dao3" + result.toString());
+                        loadListData(result);
+                    }
+                }
+            }else{  //지역 선택 했을 때
+                if(jobs.size() == 0){   //직종 선택 안했을 때 -> 전체 지역
+                    if(workform.equals("A")){   //근무형태 전체 선택
+                        result = db.RecruitDao().getFilteredList4();
+                        Log.d("recruit", "onResume: dao4" + result.toString());
+                        loadListData(result);
+
+                    }else{  //근무형태 선택했을 때 (정규직 or 계약직)
+                        result = db.RecruitDao().getFilteredList5();
+                        Log.d("recruit", "onResume: dao5" + result.toString());
+                        loadListData(result);
+                    }
+
+                }else{  //직종 선택 했을 때
+                    if(workform.equals("A")){   //근무형태 전체 선택
+                        result = db.RecruitDao().getFilteredList6();
+                        Log.d("recruit", "onResume: dao6" + result.toString());
+                        loadListData(result);
+
+                    }else{  //근무형태 선택했을 때 (정규직 or 계약직)
+                        result = db.RecruitDao().getFilteredList7();
+                        Log.d("recruit", "onResume: dao7" + result.toString());
+                        loadListData(result);
+                    }
+
+                }
+
+            }
+        }else if(careerStatus == 0){    //경력 적용, 자격증 적용 안함
+            if(bDongCode.size() == 0){  //지역 선택 안했을 때 -> 전체 지역
+                if(jobs.size() == 0){   //직종 선택 안했을 때 -> 전체 직종
+                    if(workform.equals("A")){   //근무형태 전체 선택
+                        result = db.RecruitDao().getFilteredList8();
+                        Log.d("recruit", "onResume: dao8" + result.toString());
+                        loadListData(result);
+                    }else{  //근무형태 선택했을 때 (정규직 or 계약직)
+                        result = db.RecruitDao().getFilteredList9();
+                        Log.d("recruit", "onResume: dao9" + result.toString());
+                        loadListData(result);
+                    }
+                }else{  //직종 선택했을 때
+                    if(workform.equals("A")){   //근무형태 전체 선택
+                        result = db.RecruitDao().getFilteredList10();
+                        Log.d("recruit", "onResume: dao10" + result.toString());
+                        loadListData(result);
+                    }else{  //근무형태 선택했을 때 (정규직 or 계약직)
+                        result = db.RecruitDao().getFilteredList11();
+                        Log.d("recruit", "onResume: dao11" + result.toString());
+                        loadListData(result);
+                    }
+                }
+            }else{  //지역 선택 했을 때
+                if(jobs.size() == 0){   //직종 선택 안했을 때 -> 전체 지역
+                    if(workform.equals("A")){   //근무형태 전체 선택
+                        result = db.RecruitDao().getFilteredList12();
+                        Log.d("recruit", "onResume: dao12" + result.toString());
+                        loadListData(result);
+                    }else{  //근무형태 선택했을 때 (정규직 or 계약직)
+                        result = db.RecruitDao().getFilteredList13();
+                        Log.d("recruit", "onResume: dao13" + result.toString());
+                        loadListData(result);
+                    }
+
+                }else{  //직종 선택 했을 때
+                    if(workform.equals("A")){   //근무형태 전체 선택
+                        result = db.RecruitDao().getFilteredList14();
+                        Log.d("recruit", "onResume: dao14" + result.toString());
+                        loadListData(result);
+                    }else{  //근무형태 선택했을 때 (정규직 or 계약직)
+                        result = db.RecruitDao().getFilteredList15();
+                        Log.d("recruit", "onResume: dao15" + result.toString());
+                        loadListData(result);
+                    }
+
+                }
+
+            }
+
+        }else if(licenseStatus == 0){   //경력 적용 안함, 자격증 적용
+            if(bDongCode.size() == 0){  //지역 선택 안했을 때 -> 전체 지역
+                if(jobs.size() == 0){   //직종 선택 안했을 때 -> 전체 직종
+                    if(workform.equals("A")){   //근무형태 전체 선택
+                        result = db.RecruitDao().getFilteredList16();
+                        Log.d("recruit", "onResume: dao16" + result.toString());
+                        loadListData(result);
+                    }else{  //근무형태 선택했을 때 (정규직 or 계약직)
+                        result = db.RecruitDao().getFilteredList17();
+                        Log.d("recruit", "onResume: dao17" + result.toString());
+                        loadListData(result);
+                    }
+                }else{  //직종 선택했을 때
+                    if(workform.equals("A")){   //근무형태 전체 선택
+                        result = db.RecruitDao().getFilteredList18();
+                        Log.d("recruit", "onResume: dao18" + result.toString());
+                        loadListData(result);
+                    }else{  //근무형태 선택했을 때 (정규직 or 계약직)
+                        result = db.RecruitDao().getFilteredList19();
+                        Log.d("recruit", "onResume: dao19" + result.toString());
+                        loadListData(result);
+                    }
+                }
+            }else{  //지역 선택 했을 때
+                if(jobs.size() == 0){   //직종 선택 안했을 때 -> 전체 지역
+                    if(workform.equals("A")){   //근무형태 전체 선택
+                        result = db.RecruitDao().getFilteredList20();
+                        Log.d("recruit", "onResume: dao20" + result.toString());
+                        loadListData(result);
+                    }else{  //근무형태 선택했을 때 (정규직 or 계약직)
+                        result = db.RecruitDao().getFilteredList21();
+                        Log.d("recruit", "onResume: dao21" + result.toString());
+                        loadListData(result);
+                    }
+
+                }else{  //직종 선택 했을 때
+                    if(workform.equals("A")){   //근무형태 전체 선택
+                        result = db.RecruitDao().getFilteredList22();
+                        Log.d("recruit", "onResume: dao22" + result.toString());
+                        loadListData(result);
+                    }else{  //근무형태 선택했을 때 (정규직 or 계약직)
+                        result = db.RecruitDao().getFilteredList23();
+                        Log.d("recruit", "onResume: dao23" + result.toString());
+                        loadListData(result);
+                    }
+
+                }
+
+            }
+
+        }else{  //경력 적용, 자격증 적용
+            if(bDongCode.size() == 0){  //지역 선택 안했을 때 -> 전체 지역
+                if(jobs.size() == 0){   //직종 선택 안했을 때 -> 전체 직종
+                    if(workform.equals("A")){   //근무형태 전체 선택
+                        result = db.RecruitDao().getFilteredList24();
+                        Log.d("recruit", "onResume: dao24" + result.toString());
+                        loadListData(result);
+                    }else{  //근무형태 선택했을 때 (정규직 or 계약직)
+                        result = db.RecruitDao().getFilteredList25(career, workform, certificate);
+                        Log.d("recruit", "onResume: dao25" + result.toString());
+                        loadListData(result);
+                    }
+                }else{  //직종 선택했을 때
+                    if(workform.equals("A")){   //근무형태 전체 선택
+                        result = db.RecruitDao().getFilteredList26(jobCode, career, certificate);
+                        Log.d("recruit", "onResume: dao26" + result.toString());
+                        loadListData(result);
+                    }else{  //근무형태 선택했을 때 (정규직 or 계약직)
+                        result = db.RecruitDao().getFilteredList27(jobCode, career, workform, certificate);
+                        Log.d("recruit", "onResume: dao27" + result.toString());
+                        loadListData(result);
+                    }
+                }
+            }else{  //지역 선택 했을 때
+                if(jobs.size() == 0){   //직종 선택 안했을 때 -> 전체 지역
+                    if(workform.equals("A")){   //근무형태 전체 선택
+                        result = db.RecruitDao().getFilteredList28(bDongCode, career, certificate);
+                        Log.d("recruit", "onResume: dao28" + result.toString());
+                        loadListData(result);
+                    }else{  //근무형태 선택했을 때 (정규직 or 계약직)
+                        result = db.RecruitDao().getFilteredList29(bDongCode, career, workform, certificate);
+                        Log.d("recruit", "onResume: dao" + result.toString());
+                        loadListData(result);
+                    }
+
+                }else{  //직종 선택 했을 때
+                    if(workform.equals("A")){   //근무형태 전체 선택
+                        result = db.RecruitDao().getFilteredList30(bDongCode, jobCode, career, certificate);
+                        Log.d("recruit", "onResume: dao30" + result.toString());
+                        loadListData(result);
+                    }else{  //근무형태 선택했을 때 (정규직 or 계약직)
+                        result = db.RecruitDao().getFilteredList31(bDongCode, jobCode, career, workform, certificate);
+                        Log.d("recruit", "onResume: dao31" + result.toString());
+                        loadListData(result);
+                    }
+
+                }
+
+            }
+
+        }
 
     }
 
@@ -278,6 +515,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
     private void loadListData(List<Recruit> result) { // 항목을 로드하는 함수
         List<Recruit> rows = result;
 
+        allItems.clear();
         items = new ArrayList<>();
 
         itemNum.setText(String.valueOf(rows.size()));

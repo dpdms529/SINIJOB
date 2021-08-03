@@ -5,13 +5,11 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName = "recruit_certificate")
+@Entity(tableName = "recruit_certificate", primaryKeys = {"certificate_no", "recruit_id"})
 public class RecruitCertificate {
-    @PrimaryKey
     @NonNull
     public Integer certificate_no;
 
-    @PrimaryKey
     @NonNull
     public String recruit_id;
 
