@@ -54,7 +54,6 @@ def recruit_list(pageNum):  # 공고 목록 불러와 리스트에 저장
             quote_plus('startPage'): str(pageNum),
             quote_plus('display'): '100',
             quote_plus('pfPreferential'): 'B'   # 시니어 공고: B
-            #, quote_plus('regDate'): 'D-0' # 첫 수집 이후 반복 시 주석 제거 후 사용(오늘 업로드 된 데이터만 가져오도록 함)
          }
     )
 
@@ -403,7 +402,8 @@ def db_check_constraint():
 
     try:
         # job SELECT
-        sql = """SELECT category_code from `job_category_t`;"""
+        sql = """SELECT category_code FROM `job_category`
+                WHERE LENGTH(category_code) > 4;"""
         cursor.execute(sql)
         results = cursor.fetchall()
         result = []
