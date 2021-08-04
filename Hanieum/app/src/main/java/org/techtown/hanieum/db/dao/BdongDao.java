@@ -31,4 +31,10 @@ public interface BdongDao {
 
     @Query("select substr(b_dong_code,1,5) from b_dong where sido_name = :sido_name and sigungu_name = :sigungu_name limit 1;")
     String getTotalSigunguCode(String sido_name, String sigungu_name);
+
+    @Query("select b_dong_code from b_dong where substr(b_dong_code,1,2) = :b_dong_code")
+    List<String> getAllSidoCode(String b_dong_code);
+
+    @Query("select b_dong_code from b_dong where substr(b_dong_code,1,5) = :b_dong_code")
+    List<String> getAllSigunguCode(String b_dong_code);
 }
