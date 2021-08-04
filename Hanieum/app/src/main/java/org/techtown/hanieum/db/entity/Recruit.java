@@ -81,4 +81,18 @@ public class Recruit {
         this.y_coordinate = y_coordinate;
         this.update_dt = update_dt;
     }
+
+    @Override
+    public String toString() {
+        return "Recruit{" +
+                "recruit_id='" + recruit_id + '\'' +
+                ", recruit_title='" + recruit_title + '\'' +
+                ", b_dong_code='" + b_dong_code + '\'' +
+                ", job_code='" + job_code + '\'' +
+                ", career_required='" + career_required + '\'' +
+                ", career_min=" + career_min +
+                ", enrollment_code='" + enrollment_code + '\'' +
+                ", certificate_required='" + certificate_required + '\'' +
+                "}\n";
+    }
 }
