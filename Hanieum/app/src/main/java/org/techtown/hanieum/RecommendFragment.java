@@ -171,15 +171,37 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
 
         List<String> bDongCode = new ArrayList<>(); //지역
         for(ChipList i : regions){
-            bDongCode.add(i.getCode());
-            Log.d("recruit", "onResume: bDongCode : " + i.getCode());
+            if(i.getCode().length()==2){    //시도 전체 법정동 코드 가져오기
+                List<String> sido = db.BdongDao().getAllSidoCode(i.getCode());
+                for(String j : sido){
+                    bDongCode.add(j);
+                    Log.d("recruit", "onResume: bDongCode : " + j);
+                }
+            }else if(i.getCode().length()==5){  //시군구 전체 법정도 코드 가져오기
+                List<String> sigungu = db.BdongDao().getAllSigunguCode(i.getCode());
+                for(String j : sigungu){
+                    bDongCode.add(j);
+                    Log.d("recruit", "onResume: bDongCode : " + j);
+                }
+            }else{  //해당 법정동 코드 가져오기
+                bDongCode.add(i.getCode());
+                Log.d("recruit", "onResume: bDongCode : " + i.getCode());
+            }
         }
 
         List<String> jobCode = new ArrayList<>();   //직종
         for(ChipList i : jobs){
-            jobCode.add(i.getCode());
-            Log.d("recruit", "onResume: jobCode : " + i.getCode());
-
+            if(i.getCode().length()==2){    //1차분류 전체 직종코드 가져오기
+                List<String> allJob = db.jobCategoryDao().getAllJobCode(i.getCode());
+                for(String j : allJob){
+                    jobCode.add(j);
+                }
+            }else{  //해당 직종코드 가져오기
+                jobCode.add(i.getCode());
+            }
+        }
+        for(String i : jobCode){
+            Log.d("recruit", "onResume: jobCode : " + i);
         }
         String careerJob = "706000";
         int career = 36;   //경력
