@@ -292,14 +292,14 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
 
                 }else{  //직종 선택 했을 때
                     if(workform.equals("A")){   //근무형태 전체 선택
-                        if(bDongCode.size()>999){
-                            int n = bDongCode.size()/999;
+                        if(bDongCode.size()>(999-jobCode.size())){
+                            int n = bDongCode.size()/(999-jobCode.size());
                             for(int i = 0;i<=n;i++){
                                 List<String> tmp;
-                                if(i*999 + 999 > bDongCode.size()){
-                                    tmp = bDongCode.subList(i*999,bDongCode.size());
+                                if(i*(999-jobCode.size()) + (999-jobCode.size()) > bDongCode.size()){
+                                    tmp = bDongCode.subList(i*(999-jobCode.size()),bDongCode.size());
                                 }else{
-                                    tmp = bDongCode.subList(i*999,i*999 + 999);
+                                    tmp = bDongCode.subList(i*(999-jobCode.size()),i*(999-jobCode.size()) + (999-jobCode.size()));
                                 }
                                 result.addAll(db.RecruitDao().getFilteredList6(tmp,jobCode));
                             }
@@ -312,14 +312,14 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
                         loadListData(result);
 
                     }else{  //근무형태 선택했을 때 (정규직 or 계약직)
-                        if(bDongCode.size()>999){
-                            int n = bDongCode.size()/999;
+                        if(bDongCode.size()>(998-jobCode.size())){
+                            int n = bDongCode.size()/(998-jobCode.size());
                             for(int i = 0;i<=n;i++){
                                 List<String> tmp;
-                                if(i*999 + 999 > bDongCode.size()){
-                                    tmp = bDongCode.subList(i*999,bDongCode.size());
+                                if(i*(998-jobCode.size()) + (998-jobCode.size()) > bDongCode.size()){
+                                    tmp = bDongCode.subList(i*(998-jobCode.size()),bDongCode.size());
                                 }else{
-                                    tmp = bDongCode.subList(i*999,i*999 + 999);
+                                    tmp = bDongCode.subList(i*(998-jobCode.size()),i*(998-jobCode.size()) + (998-jobCode.size()));
                                 }
                                 result.addAll(db.RecruitDao().getFilteredList7(tmp,jobCode,workform));
                             }
@@ -361,14 +361,14 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
             }else{  //지역 선택 했을 때
                 if(jobs.size() == 0){   //직종 선택 안했을 때 -> 전체 지역
                     if(workform.equals("A")){   //근무형태 전체 선택
-                        if(bDongCode.size()>999){
-                            int n = bDongCode.size()/999;
+                        if(bDongCode.size()>997){
+                            int n = bDongCode.size()/997;
                             for(int i = 0;i<=n;i++){
                                 List<String> tmp;
-                                if(i*999 + 999 > bDongCode.size()){
-                                    tmp = bDongCode.subList(i*999,bDongCode.size());
+                                if(i*997 + 997 > bDongCode.size()){
+                                    tmp = bDongCode.subList(i*997,bDongCode.size());
                                 }else{
-                                    tmp = bDongCode.subList(i*999,i*999 + 999);
+                                    tmp = bDongCode.subList(i*997,i*997 + 997);
                                 }
                                 result.addAll(db.RecruitDao().getFilteredList12(tmp,careerJobCode,career));
                             }
@@ -380,14 +380,14 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
                         Log.d("recruit", "onResume: dao12" + result.toString());
                         loadListData(result);
                     }else{  //근무형태 선택했을 때 (정규직 or 계약직)
-                        if(bDongCode.size()>999){
-                            int n = bDongCode.size()/999;
+                        if(bDongCode.size()>996){
+                            int n = bDongCode.size()/996;
                             for(int i = 0;i<=n;i++){
                                 List<String> tmp;
-                                if(i*999 + 999 > bDongCode.size()){
-                                    tmp = bDongCode.subList(i*999,bDongCode.size());
+                                if(i*996 + 996 > bDongCode.size()){
+                                    tmp = bDongCode.subList(i*996,bDongCode.size());
                                 }else{
-                                    tmp = bDongCode.subList(i*999,i*999 + 999);
+                                    tmp = bDongCode.subList(i*996,i*996 + 996);
                                 }
                                 result.addAll(db.RecruitDao().getFilteredList13(tmp,careerJobCode,career,workform));
                             }
@@ -402,14 +402,14 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
 
                 }else{  //직종 선택 했을 때
                     if(workform.equals("A")){   //근무형태 전체 선택
-                        if(bDongCode.size()>999){
-                            int n = bDongCode.size()/999;
+                        if(bDongCode.size()>(997-jobCode.size())){
+                            int n = bDongCode.size()/(997-jobCode.size());
                             for(int i = 0;i<=n;i++){
                                 List<String> tmp;
-                                if(i*999 + 999 > bDongCode.size()){
-                                    tmp = bDongCode.subList(i*999,bDongCode.size());
+                                if(i*(997-jobCode.size()) + (997-jobCode.size()) > bDongCode.size()){
+                                    tmp = bDongCode.subList(i*(997-jobCode.size()),bDongCode.size());
                                 }else{
-                                    tmp = bDongCode.subList(i*999,i*999 + 999);
+                                    tmp = bDongCode.subList(i*(997-jobCode.size()),i*(997-jobCode.size()) + (997-jobCode.size()));
                                 }
                                 result.addAll(db.RecruitDao().getFilteredList14(tmp,jobCode,careerJobCode,career));
                             }
@@ -421,14 +421,14 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
                         Log.d("recruit", "onResume: dao14" + result.toString());
                         loadListData(result);
                     }else{  //근무형태 선택했을 때 (정규직 or 계약직)
-                        if(bDongCode.size()>999){
-                            int n = bDongCode.size()/999;
+                        if(bDongCode.size()>(996-jobCode.size())){
+                            int n = bDongCode.size()/(996-jobCode.size());
                             for(int i = 0;i<=n;i++){
                                 List<String> tmp;
-                                if(i*999 + 999 > bDongCode.size()){
-                                    tmp = bDongCode.subList(i*999,bDongCode.size());
+                                if(i*(996-jobCode.size()) + (996-jobCode.size()) > bDongCode.size()){
+                                    tmp = bDongCode.subList(i*(996-jobCode.size()),bDongCode.size());
                                 }else{
-                                    tmp = bDongCode.subList(i*999,i*999 + 999);
+                                    tmp = bDongCode.subList(i*(996-jobCode.size()),i*(996-jobCode.size()) + (996-jobCode.size()));
                                 }
                                 result.addAll(db.RecruitDao().getFilteredList15(tmp,jobCode,careerJobCode,career,workform));
                             }
@@ -471,14 +471,14 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
             }else{  //지역 선택 했을 때
                 if(jobs.size() == 0){   //직종 선택 안했을 때 -> 전체 지역
                     if(workform.equals("A")){   //근무형태 전체 선택
-                        if(bDongCode.size()>999){
-                            int n = bDongCode.size()/999;
+                        if(bDongCode.size()>(999-certificate.size())){
+                            int n = bDongCode.size()/(999-certificate.size());
                             for(int i = 0;i<=n;i++){
                                 List<String> tmp;
-                                if(i*999 + 999 > bDongCode.size()){
-                                    tmp = bDongCode.subList(i*999,bDongCode.size());
+                                if(i*(999-certificate.size()) + (999-certificate.size()) > bDongCode.size()){
+                                    tmp = bDongCode.subList(i*(999-certificate.size()),bDongCode.size());
                                 }else{
-                                    tmp = bDongCode.subList(i*999,i*999 + 999);
+                                    tmp = bDongCode.subList(i*(999-certificate.size()),i*(999-certificate.size()) + (999-certificate.size()));
                                 }
                                 result.addAll(db.RecruitDao().getFilteredList20(tmp,certificate));
                             }
@@ -490,14 +490,14 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
                         Log.d("recruit", "onResume: dao20" + result.toString());
                         loadListData(result);
                     }else{  //근무형태 선택했을 때 (정규직 or 계약직)
-                        if(bDongCode.size()>999){
-                            int n = bDongCode.size()/999;
+                        if(bDongCode.size()>(998-certificate.size())){
+                            int n = bDongCode.size()/(998-certificate.size());
                             for(int i = 0;i<=n;i++){
                                 List<String> tmp;
-                                if(i*999 + 999 > bDongCode.size()){
-                                    tmp = bDongCode.subList(i*999,bDongCode.size());
+                                if(i*(998-certificate.size()) + (998-certificate.size()) > bDongCode.size()){
+                                    tmp = bDongCode.subList(i*(998-certificate.size()),bDongCode.size());
                                 }else{
-                                    tmp = bDongCode.subList(i*999,i*999 + 999);
+                                    tmp = bDongCode.subList(i*(998-certificate.size()),i*(998-certificate.size()) + (998-certificate.size()));
                                 }
                                 result.addAll(db.RecruitDao().getFilteredList21(tmp,workform,certificate));
                             }
@@ -512,14 +512,14 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
 
                 }else{  //직종 선택 했을 때
                     if(workform.equals("A")){   //근무형태 전체 선택
-                        if(bDongCode.size()>999){
-                            int n = bDongCode.size()/999;
+                        if(bDongCode.size()>(999-jobCode.size()-certificate.size())){
+                            int n = bDongCode.size()/(999-jobCode.size()-certificate.size());
                             for(int i = 0;i<=n;i++){
                                 List<String> tmp;
-                                if(i*999 + 999 > bDongCode.size()){
-                                    tmp = bDongCode.subList(i*999,bDongCode.size());
+                                if(i*(999-jobCode.size()-certificate.size()) + (999-jobCode.size()-certificate.size()) > bDongCode.size()){
+                                    tmp = bDongCode.subList(i*(999-jobCode.size()-certificate.size()),bDongCode.size());
                                 }else{
-                                    tmp = bDongCode.subList(i*999,i*999 + 999);
+                                    tmp = bDongCode.subList(i*(999-jobCode.size()-certificate.size()),i*(999-jobCode.size()-certificate.size()) + (999-jobCode.size()-certificate.size()));
                                 }
                                 result.addAll(db.RecruitDao().getFilteredList22(tmp,jobCode,certificate));
                             }
@@ -531,14 +531,14 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
                         Log.d("recruit", "onResume: dao22" + result.toString());
                         loadListData(result);
                     }else{  //근무형태 선택했을 때 (정규직 or 계약직)
-                        if(bDongCode.size()>999){
-                            int n = bDongCode.size()/999;
+                        if(bDongCode.size()>(998-jobCode.size()-certificate.size())){
+                            int n = bDongCode.size()/(998-jobCode.size()-certificate.size());
                             for(int i = 0;i<=n;i++){
                                 List<String> tmp;
-                                if(i*999 + 999 > bDongCode.size()){
-                                    tmp = bDongCode.subList(i*999,bDongCode.size());
+                                if(i*(998-jobCode.size()-certificate.size()) + (998-jobCode.size()-certificate.size()) > bDongCode.size()){
+                                    tmp = bDongCode.subList(i*(998-jobCode.size()-certificate.size()),bDongCode.size());
                                 }else{
-                                    tmp = bDongCode.subList(i*999,i*999 + 999);
+                                    tmp = bDongCode.subList(i*(998-jobCode.size()-certificate.size()),i*(998-jobCode.size()-certificate.size()) + (998-jobCode.size()-certificate.size()));
                                 }
                                 result.addAll(db.RecruitDao().getFilteredList23(tmp,jobCode,workform,certificate));
                             }
@@ -581,14 +581,14 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
             }else{  //지역 선택 했을 때
                 if(jobs.size() == 0){   //직종 선택 안했을 때 -> 전체 지역
                     if(workform.equals("A")){   //근무형태 전체 선택
-                        if(bDongCode.size()>999){
-                            int n = bDongCode.size()/999;
+                        if(bDongCode.size()>(997-certificate.size())){
+                            int n = bDongCode.size()/(997-certificate.size());
                             for(int i = 0;i<=n;i++){
                                 List<String> tmp;
-                                if(i*999 + 999 > bDongCode.size()){
-                                    tmp = bDongCode.subList(i*999,bDongCode.size());
+                                if(i*(997-certificate.size()) + (997-certificate.size()) > bDongCode.size()){
+                                    tmp = bDongCode.subList(i*(997-certificate.size()),bDongCode.size());
                                 }else{
-                                    tmp = bDongCode.subList(i*999,i*999 + 999);
+                                    tmp = bDongCode.subList(i*(997-certificate.size()),i*(997-certificate.size()) + (997-certificate.size()));
                                 }
                                 result.addAll(db.RecruitDao().getFilteredList28(tmp,careerJobCode,career,certificate));
                             }
@@ -600,14 +600,14 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
                         Log.d("recruit", "onResume: dao28" + result.toString());
                         loadListData(result);
                     }else{  //근무형태 선택했을 때 (정규직 or 계약직)
-                        if(bDongCode.size()>999){
-                            int n = bDongCode.size()/999;
+                        if(bDongCode.size()>(996-certificate.size())){
+                            int n = bDongCode.size()/(996-certificate.size());
                             for(int i = 0;i<=n;i++){
                                 List<String> tmp;
-                                if(i*999 + 999 > bDongCode.size()){
-                                    tmp = bDongCode.subList(i*999,bDongCode.size());
+                                if(i*(996-certificate.size()) + (996-certificate.size()) > bDongCode.size()){
+                                    tmp = bDongCode.subList(i*(996-certificate.size()),bDongCode.size());
                                 }else{
-                                    tmp = bDongCode.subList(i*999,i*999 + 999);
+                                    tmp = bDongCode.subList(i*(996-certificate.size()),i*(996-certificate.size()) + (996-certificate.size()));
                                 }
                                 result.addAll(db.RecruitDao().getFilteredList29(tmp,careerJobCode,career,workform,certificate));
                             }
@@ -622,14 +622,14 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
 
                 }else{  //직종 선택 했을 때
                     if(workform.equals("A")){   //근무형태 전체 선택
-                        if(bDongCode.size()>999){
-                            int n = bDongCode.size()/999;
+                        if(bDongCode.size()>(997-jobCode.size()-certificate.size())){
+                            int n = bDongCode.size()/(997-jobCode.size()-certificate.size());
                             for(int i = 0;i<=n;i++){
                                 List<String> tmp;
-                                if(i*999 + 999 > bDongCode.size()){
-                                    tmp = bDongCode.subList(i*999,bDongCode.size());
+                                if(i*(997-jobCode.size()-certificate.size()) + (997-jobCode.size()-certificate.size()) > bDongCode.size()){
+                                    tmp = bDongCode.subList(i*(997-jobCode.size()-certificate.size()),bDongCode.size());
                                 }else{
-                                    tmp = bDongCode.subList(i*999,i*999 + 999);
+                                    tmp = bDongCode.subList(i*(997-jobCode.size()-certificate.size()),i*(997-jobCode.size()-certificate.size()) + (997-jobCode.size()-certificate.size()));
                                 }
                                 result.addAll(db.RecruitDao().getFilteredList30(tmp,jobCode,careerJobCode,career,certificate));
                             }
@@ -641,14 +641,14 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
                         Log.d("recruit", "onResume: dao30" + result.toString());
                         loadListData(result);
                     }else{  //근무형태 선택했을 때 (정규직 or 계약직)
-                        if(bDongCode.size()>999){
-                            int n = bDongCode.size()/999;
+                        if(bDongCode.size()>(996-jobCode.size()-certificate.size())){
+                            int n = bDongCode.size()/(996-jobCode.size()-certificate.size());
                             for(int i = 0;i<=n;i++){
                                 List<String> tmp;
-                                if(i*999 + 999 > bDongCode.size()){
-                                    tmp = bDongCode.subList(i*999,bDongCode.size());
+                                if(i*(996-jobCode.size()-certificate.size()) + (996-jobCode.size()-certificate.size()) > bDongCode.size()){
+                                    tmp = bDongCode.subList(i*(996-jobCode.size()-certificate.size()),bDongCode.size());
                                 }else{
-                                    tmp = bDongCode.subList(i*999,i*999 + 999);
+                                    tmp = bDongCode.subList(i*(996-jobCode.size()-certificate.size()),i*(996-jobCode.size()-certificate.size()) + (996-jobCode.size()-certificate.size()));
                                 }
                                 result.addAll(db.RecruitDao().getFilteredList31(tmp,jobCode,careerJobCode,career,workform,certificate));
                             }
