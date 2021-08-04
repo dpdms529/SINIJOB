@@ -172,13 +172,13 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
         List<String> bDongCode = new ArrayList<>(); //지역
         for(ChipList i : regions){
             bDongCode.add(i.getCode());
-//            Log.d("recruit", "onResume: bDongCode : " + bDongCode.get(i.getPosition()));
+            Log.d("recruit", "onResume: bDongCode : " + i.getCode());
         }
 
         List<String> jobCode = new ArrayList<>();   //직종
         for(ChipList i : jobs){
             jobCode.add(i.getCode());
-//            Log.d("recruit", "onResume: jobCode : " + jobCode.get(i.getPosition()));
+            Log.d("recruit", "onResume: jobCode : " + i.getCode());
 
         }
         int career = 36;   //경력
@@ -241,7 +241,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
                 }
 
             }
-        }else if(careerStatus == 0){    //경력 적용, 자격증 적용 안함
+        }else if(licenseStatus == 0){    //경력 적용, 자격증 적용 안함
             if(bDongCode.size() == 0){  //지역 선택 안했을 때 -> 전체 지역
                 if(jobs.size() == 0){   //직종 선택 안했을 때 -> 전체 직종
                     if(workform.equals("A")){   //근무형태 전체 선택
@@ -291,7 +291,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
 
             }
 
-        }else if(licenseStatus == 0){   //경력 적용 안함, 자격증 적용
+        }else if(careerStatus == 0){   //경력 적용 안함, 자격증 적용
             if(bDongCode.size() == 0){  //지역 선택 안했을 때 -> 전체 지역
                 if(jobs.size() == 0){   //직종 선택 안했을 때 -> 전체 직종
                     if(workform.equals("A")){   //근무형태 전체 선택
