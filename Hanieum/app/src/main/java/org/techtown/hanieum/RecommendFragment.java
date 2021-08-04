@@ -35,8 +35,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.techtown.hanieum.db.AppDatabase;
+import org.techtown.hanieum.db.dao.RecruitCertificateDao;
 import org.techtown.hanieum.db.dao.RecruitDao;
 import org.techtown.hanieum.db.entity.Recruit;
+import org.techtown.hanieum.db.entity.RecruitCertificate;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -203,7 +205,9 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
         List<String> careerTmp = pref.getStringArrayPref(SharedPreference.CAREER_PERIOD);
         int career = 0;
         if (!careerTmp.isEmpty()) {
-            career = Integer.valueOf(careerTmp.get(0));
+            if (!careerTmp.get(0).equals("")) {
+                career = Integer.valueOf(careerTmp.get(0));
+            }
         }
         List<String> certificateTmp = pref.getStringArrayPref(SharedPreference.CERTIFICATE_CODE);
         List<String> certificate = new ArrayList<>();
@@ -219,6 +223,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
                 if(jobs.size() == 0){   //직종 선택 안했을 때 -> 전체 직종
                     if(workform.equals("A")){   //근무형태 전체 선택
                         checkLastUpdated();     // 최신 업데이트 일시 확인(일치 -> 유지, 불일치 -> 데이터 가져오기)
+                        checkCertifiLastUpdated();
                         db.RecruitDao().getAll().observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
                             @Override
                             public void onChanged(List<Recruit> recruits) {
@@ -688,6 +693,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
     private void checkLastUpdated() { // 기기의 업데이트 일시와 DB의 업데이트 일시를 확인
         List<String> rows = db.RecruitDao().getLastUpdated();
         String lastUpdated = rows.get(0);
+        Log.d("date: ", "recruit: "+lastUpdated);
         String dbLastUpdated = "";
 
         String php = getResources().getString(R.string.serverIP)+"recruit_lastupdated.php";
@@ -740,9 +746,69 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
                         String y = jsonObject1.getString("y");
                         String update_dt = jsonObject1.getString("update_dt");
                         Recruit newRecruit = new Recruit(recruit_id, title, organization, salary_type_code, salary, b_dong_code, job_code, career_required, career_min, enrollment_code, certificate_required, x, y, update_dt);
-                        new InsertAsyncTask(db.RecruitDao()).execute(newRecruit);   // 백그라운드 INSERT 실행
+                        new RecruitInsertAsyncTask(db.RecruitDao()).execute(newRecruit);   // 백그라운드 INSERT 실행
                     } else {    // 지워진 기존 데이터
-                        new DeleteAsyncTask(db.RecruitDao()).execute(jsonObject1.getString("recruit_id"));   // 백그라운드 DELETE 실행
+                        new RecruitDeleteAsyncTask(db.RecruitDao()).execute(jsonObject1.getString("recruit_id"));   // 백그라운드 DELETE 실행
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void checkCertifiLastUpdated() { // 기기의 업데이트 일시와 DB의 업데이트 일시를 확인
+        List<String> rows = db.recruitCertificateDao().getLastUpdated();
+        String lastUpdated = rows.get(0);
+        Log.d("date: ", "certifi: "+lastUpdated);
+        String dbLastUpdated = "";
+
+        String php = getResources().getString(R.string.serverIP)+"recruit_lastupdated.php";
+        URLConnector urlConnector = new URLConnector(php);
+
+        urlConnector.start();
+        try {
+            urlConnector.join();
+        } catch (InterruptedException e) {
+        }
+        String result = urlConnector.getResult();
+
+        try {
+            JSONObject jsonObject = new JSONObject(result);
+            JSONArray jsonArray = jsonObject.getJSONArray("result");
+            dbLastUpdated = jsonArray.getJSONObject(0).getString("last_updated");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        if (!lastUpdated.equals(dbLastUpdated)) {   // 최신 업데이트 일시 확인(불일치 -> 데이터 가져오기)
+            String recruitCertificatePhp = getResources().getString(R.string.serverIP)+"certificate_update.php?last_updated=" + lastUpdated;
+            URLConnector urlConnectorRecruitCertificate = new URLConnector(recruitCertificatePhp);
+
+            urlConnectorRecruitCertificate.start();
+            try {
+                urlConnectorRecruitCertificate.join();
+            } catch (InterruptedException e) {
+            }
+            String recruitCertificateResult = urlConnectorRecruitCertificate.getResult();
+
+            try {
+                JSONObject jsonObject = new JSONObject(recruitCertificateResult);
+                JSONArray jsonArray = jsonObject.getJSONArray("result");
+                for(int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject jsonObject1 = jsonArray.getJSONObject(i);
+                    if (jsonObject1.getString("deleted").equals("0")) {     // 새로 생긴 데이터
+                        String recruit_id = jsonObject1.getString("recruit_id");
+                        Integer certificate_no = jsonObject1.getInt("certificate_no");
+                        String certificate_id = jsonObject1.getString("certificate_id");
+                        RecruitCertificate newRecruitCertificate = new RecruitCertificate(certificate_no, recruit_id, certificate_id);
+                        new CertifiInsertAsyncTask(db.recruitCertificateDao()).execute(newRecruitCertificate);   // 백그라운드 INSERT 실행
+                    } else {    // 지워진 기존 데이터
+                        String recruit_id = jsonObject1.getString("recruit_id");
+                        Integer certificate_no = jsonObject1.getInt("certificate_no");
+                        String certificate_id = jsonObject1.getString("certificate_id");
+                        RecruitCertificate newRecruitCertificate = new RecruitCertificate(certificate_no, recruit_id, certificate_id);
+                        new CertifiDeleteAsyncTask(db.recruitCertificateDao()).execute(newRecruitCertificate);   // 백그라운드 DELETE 실행
                     }
                 }
             } catch (JSONException e) {
@@ -752,10 +818,10 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
     }
 
     // 메인스레드에서 데이터베이스에 접근할 수 없으므로 AsyncTask 사용 - INSERT
-    public static class InsertAsyncTask extends AsyncTask<Recruit, Void, Void> {
+    public static class RecruitInsertAsyncTask extends AsyncTask<Recruit, Void, Void> {
         private RecruitDao mRecruitDao;
 
-        public  InsertAsyncTask(RecruitDao recruitDao){
+        public  RecruitInsertAsyncTask(RecruitDao recruitDao){
             this.mRecruitDao = recruitDao;
         }
 
@@ -766,17 +832,45 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
         }
     }
 
+    public static class CertifiInsertAsyncTask extends AsyncTask<RecruitCertificate, Void, Void> {
+        private RecruitCertificateDao mRecruitCertifiDao;
+
+        public  CertifiInsertAsyncTask(RecruitCertificateDao recruitCertificateDao){
+            this.mRecruitCertifiDao = recruitCertificateDao;
+        }
+
+        @Override // 백그라운드작업(메인스레드 X)
+        protected Void doInBackground(RecruitCertificate... recruits) {
+            mRecruitCertifiDao.insertNewRecruit(recruits[0]);
+            return null;
+        }
+    }
+
     // 메인스레드에서 데이터베이스에 접근할 수 없으므로 AsyncTask 사용 - DELETE
-    public static class DeleteAsyncTask extends AsyncTask<String, Void, Void> {
+    public static class RecruitDeleteAsyncTask extends AsyncTask<String, Void, Void> {
         private RecruitDao mRecruitDao;
 
-        public  DeleteAsyncTask(RecruitDao recruitDao){
+        public  RecruitDeleteAsyncTask(RecruitDao recruitDao){
             this.mRecruitDao = recruitDao;
         }
 
         @Override // 백그라운드작업(메인스레드 X)
         protected Void doInBackground(String... strings) {
             mRecruitDao.deleteGoneRecruit(strings[0]);
+            return null;
+        }
+    }
+
+    public static class CertifiDeleteAsyncTask extends AsyncTask<RecruitCertificate, Void, Void> {
+        private RecruitCertificateDao mRecruitCertifiDao;
+
+        public  CertifiDeleteAsyncTask(RecruitCertificateDao recruitCertificateDao){
+            this.mRecruitCertifiDao = recruitCertificateDao;
+        }
+
+        @Override // 백그라운드작업(메인스레드 X)
+        protected Void doInBackground(RecruitCertificate... recruitCertificates) {
+            mRecruitCertifiDao.deleteGoneRecruit(recruitCertificates[0]);
             return null;
         }
     }
