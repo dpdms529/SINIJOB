@@ -168,7 +168,6 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
         int licenseStatus = pref.preferences.getInt(SharedPreference.LICENSE_STATUS,0);
         Log.d("recruit", "onResume: licenseStatus : " + licenseStatus);
 
-
         List<String> bDongCode = new ArrayList<>(); //지역
         for(ChipList i : regions){
             bDongCode.add(i.getCode());
@@ -181,9 +180,16 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
             Log.d("recruit", "onResume: jobCode : " + i.getCode());
 
         }
-        int career = 36;   //경력
-        List<String> certificate = new ArrayList<>(Arrays.asList(new String[]{"5000390", "5001150","6000731"}));    //자격증
-        Log.d("recruit", "onResume: " + certificate.get(0) + " " + certificate.get(1));
+        List<String> careerJobCode = pref.getStringArrayPref(SharedPreference.CAREER_JOB_CODE);
+        List<String> careerString = pref.getStringArrayPref(SharedPreference.CAREER_PERIOD);
+        List<Integer> career = new ArrayList<>();
+        for(String i : careerString){
+            career.add(Integer.valueOf(i));
+        }
+        List<String> certificate = pref.getStringArrayPref(SharedPreference.CERTIFICATE_CODE);
+//        int career = 36;   //경력
+//        List<String> certificate = new ArrayList<>(Arrays.asList(new String[]{"5000390", "5001150","6000731"}));    //자격증
+//        Log.d("recruit", "onResume: " + certificate.get(0) + " " + certificate.get(1));
         List<Recruit> result;
 
         if(careerStatus == 0 && licenseStatus == 0){    //경력, 자격증 적용안함
