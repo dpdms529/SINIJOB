@@ -111,14 +111,6 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
         searchButton.setOnClickListener(this);
         menuButton.setOnClickListener(this);
 
-        checkLastUpdated();     // 최신 업데이트 일시 확인(일치 -> 유지, 불일치 -> 데이터 가져오기)
-//        db.RecruitDao().getAll().observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
-//            @Override
-//            public void onChanged(List<Recruit> recruits) {
-//                loadListData(recruits);     // LiveData - 데이터 변경을 감지하면 UI 갱신
-//            }
-//        });
-
         editSearch.addTextChangedListener(new TextWatcher() {   // 공고 검색
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -204,9 +196,15 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
         }
 
         List<String> careerJobTmp= pref.getStringArrayPref(SharedPreference.CAREER_JOB_CODE);
-        String careerJobCode = careerJobTmp.get(0);
+        String careerJobCode = "";
+        if (!careerJobTmp.isEmpty()) {
+            careerJobCode = careerJobTmp.get(0);
+        }
         List<String> careerTmp = pref.getStringArrayPref(SharedPreference.CAREER_PERIOD);
-        int career = Integer.valueOf(careerTmp.get(0));
+        int career = 0;
+        if (!careerTmp.isEmpty()) {
+            career = Integer.valueOf(careerTmp.get(0));
+        }
         List<String> certificateTmp = pref.getStringArrayPref(SharedPreference.CERTIFICATE_CODE);
         List<String> certificate = new ArrayList<>();
         for(String i : certificateTmp){
@@ -220,9 +218,6 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
             if(bDongCode.size() == 0){  //지역 선택 안했을 때 -> 전체 지역
                 if(jobs.size() == 0){   //직종 선택 안했을 때 -> 전체 직종
                     if(workform.equals("A")){   //근무형태 전체 선택
-//                        result = db.RecruitDao().getAll();
-//                        Log.d("recruit", "onResume: dao0" + result.toString());
-//                        loadListData(result);
                         checkLastUpdated();     // 최신 업데이트 일시 확인(일치 -> 유지, 불일치 -> 데이터 가져오기)
                         db.RecruitDao().getAll().observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
                             @Override
