@@ -16,4 +16,10 @@ public class RecruitCertificate {
     @ColumnInfo(name = "certificate_id")
     @NonNull
     public String certificate_id;
+
+    public RecruitCertificate(Integer certificate_no, String recruit_id, String certificate_id){
+        this.certificate_no = certificate_no;
+        this.recruit_id = recruit_id;
+        this.certificate_id = certificate_id;
+    }
 }
