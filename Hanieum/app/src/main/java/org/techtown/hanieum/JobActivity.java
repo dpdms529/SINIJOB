@@ -98,6 +98,9 @@ public class JobActivity extends AppCompatActivity implements View.OnClickListen
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowCustomEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+
 
         jobSearchButton.setOnClickListener(this);
 
