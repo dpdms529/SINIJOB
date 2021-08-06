@@ -141,6 +141,9 @@ public class RegionActivity extends AppCompatActivity implements View.OnClickLis
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowCustomEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+
 
         regionSearchButton.setOnClickListener(this);
 
