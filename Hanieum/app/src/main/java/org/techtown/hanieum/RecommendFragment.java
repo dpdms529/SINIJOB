@@ -683,8 +683,6 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
                 editSearch.setVisibility(View.GONE);
                 imm.hideSoftInputFromWindow(editSearch.getWindowToken(),0);
             }
-
-
         } else if (v == menuButton) {
             Toast.makeText(v.getContext(), "메뉴 버튼 눌림", Toast.LENGTH_LONG).show();
         }

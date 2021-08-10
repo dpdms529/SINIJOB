@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -22,7 +21,7 @@
             android:layout_weight="1"
             android:text="무진장흑돼지푸드"
             android:textColor="@color/black"
-            android:textSize="15dp" />
+            android:textSize="17dp" />
 
         <TextView
             android:id="@+id/distance"
@@ -32,7 +31,7 @@
             android:layout_marginLeft="15dp"
             android:text="253"
             android:textColor="#828282"
-            android:textSize="15dp"
+            android:textSize="17dp"
             android:textStyle="bold" />
 
         <TextView
@@ -43,7 +42,7 @@
             android:layout_marginHorizontal="3dp"
             android:text="m"
             android:textColor="#828282"
-            android:textSize="13dp"
+            android:textSize="15dp"
             android:textStyle="bold" />
 
     </LinearLayout>
@@ -61,7 +60,7 @@
             android:layout_weight="1"
             android:text="사무경리 여직원/생산직 구함"
             android:textColor="@color/black"
-            android:textSize="17dp"
+            android:textSize="20dp"
             android:textStyle="bold" />
 
     </LinearLayout>
@@ -80,7 +79,7 @@
             android:layout_weight="0"
             android:text="월"
             android:textColor="@color/black"
-            android:textSize="15dp" />
+            android:textSize="17dp" />
 
         <TextView
             android:id="@+id/salary"
@@ -92,7 +91,7 @@
             android:layout_weight="0"
             android:text="250"
             android:textColor="#FF9800"
-            android:textSize="17dp"
+            android:textSize="20dp"
             android:textStyle="bold" />
 
         <TextView
@@ -103,7 +102,7 @@
             android:layout_weight="1"
             android:text="만"
             android:textColor="@color/black"
-            android:textSize="15dp" />
+            android:textSize="17dp" />
 
         <ImageButton
             android:id="@+id/bookmark"
