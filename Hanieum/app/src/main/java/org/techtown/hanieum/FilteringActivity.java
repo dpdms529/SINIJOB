@@ -246,6 +246,7 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
 
             Chip chip = new Chip(context);
             chip.setText(name);
+            chip.setTextSize(17);
             chip.setCloseIconResource(R.drawable.close);
             chip.setCloseIconVisible(true);
             chipGroup.addView(chip);

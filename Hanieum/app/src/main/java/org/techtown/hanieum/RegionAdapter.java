@@ -123,7 +123,7 @@ public class RegionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         public void setItem(Region item) {
             regionText.setText(item.getRegion1());
             if (item.isSelected()) { // 선택된 아이템이면
-                regionText.setBackgroundColor(Color.parseColor("#80cbc4"));
+                regionText.setBackgroundColor(Color.parseColor("#a1cadd"));
             } else { // 선택된 아이템이 아니면
                 regionText.setBackgroundColor(Color.WHITE);
             }
@@ -177,7 +177,7 @@ public class RegionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         public void setItem(Region item) {
             regionText.setText(item.getRegion2());
             if (item.isSelected()) { // 선택된 아이템이면
-                regionText.setBackgroundColor(Color.parseColor("#80cbc4"));
+                regionText.setBackgroundColor(Color.parseColor("#a1cadd"));
             } else { // 선택된 아이템이 아니면
                 regionText.setBackgroundColor(Color.WHITE);
             }
@@ -253,7 +253,7 @@ public class RegionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         public void setItem(Region item) {
             regionText.setText(item.getRegion3());
             if (item.isSelected()) { // 선택된 아이템이면
-                regionText.setBackgroundColor(Color.parseColor("#80cbc4"));
+                regionText.setBackgroundColor(Color.parseColor("#a1cadd"));
             } else { // 선택된 아이템이 아니면
                 regionText.setBackgroundColor(Color.WHITE);
             }

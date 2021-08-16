@@ -2,13 +2,13 @@
     <!-- Base application theme. -->
     <style name="Theme.Hanieum" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">#80cbc4</item>
-        <item name="colorPrimaryVariant">#4f9a94</item>
-        <item name="colorOnPrimary">@color/black</item>
+        <item name="colorPrimary">#82b3c9</item>
+        <item name="colorPrimaryVariant">#437e96</item>
+        <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">#ff9e80</item>
-        <item name="colorSecondaryVariant">#c96f53</item>
-        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorSecondary">#F2AA52</item>
+        <item name="colorSecondaryVariant">#ffc400</item>
+        <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->

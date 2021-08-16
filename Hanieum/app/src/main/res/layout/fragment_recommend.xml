@@ -25,7 +25,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="일자리 목록"
-            android:textColor="@color/black"
+            android:textColor="@color/white"
             android:textSize="20dp"
             android:textStyle="bold"
             android:visibility="visible"/>
@@ -38,6 +38,7 @@
             android:ems="10"
             android:inputType="textPersonName"
             android:hint="검색어를 입력하세요"
+            android:background="#00ff0000"
             android:visibility="gone"/>
     </androidx.appcompat.widget.Toolbar>
 
@@ -47,6 +48,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="20dp"
         android:background="#00ff0000"
+        app:tint="@color/white"
         app:layout_constraintBottom_toBottomOf="@+id/toolbar"
         app:layout_constraintEnd_toEndOf="@+id/toolbar"
         app:layout_constraintTop_toTopOf="@+id/toolbar"
@@ -58,6 +60,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="10dp"
         android:background="#00ff0000"
+        app:tint="@color/white"
         app:layout_constraintBottom_toBottomOf="@+id/toolbar"
         app:layout_constraintEnd_toStartOf="@+id/menuButton"
         app:layout_constraintTop_toTopOf="@+id/toolbar"
@@ -81,7 +84,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
         android:layout_marginTop="13dp"
-        android:text=""
+        android:text="0"
         android:textColor="@color/black"
         android:textSize="20dp"
         android:textStyle="bold"
@@ -102,12 +105,15 @@
         android:id="@+id/changeButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="10dp"
-        android:backgroundTint="#E1E2E1"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/border_txt"
         android:text="조건변경"
-        android:textSize="15dp"
+        android:textSize="17dp"
+        android:textColor="#508ea8"
+        app:layout_constraintBottom_toTopOf="@+id/recommendView"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"
+        app:backgroundTint="@null" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recommendView"

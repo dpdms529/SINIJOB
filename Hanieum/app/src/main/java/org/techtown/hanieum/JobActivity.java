@@ -30,6 +30,8 @@ import java.util.List;
 public class JobActivity extends AppCompatActivity implements View.OnClickListener {
     Toolbar toolbar;
     Button jobSearchButton; // 직종 검색 화면으로 이동하는 버튼
+    Button resetButton; // 선택한 칩을 리셋하는 버튼
+    Button okButton;    // 확인 버튼
     RecyclerView jobView1; // 직종 분류(1차) 리사이클러뷰
     RecyclerView jobView2; // 직종 분류(2차) 리사이클러뷰
     static ChipGroup chipGroup; // 선택한 직종을 나타내기 위한 ChipGroup
@@ -51,6 +53,8 @@ public class JobActivity extends AppCompatActivity implements View.OnClickListen
 
         toolbar = findViewById(R.id.toolbar5);
         jobSearchButton = findViewById(R.id.jobSearchButton);
+        resetButton = findViewById(R.id.resetButton);
+        okButton = findViewById(R.id.okButton);
         jobView1 = findViewById(R.id.jobView1);
         jobView2 = findViewById(R.id.jobView2);
         chipGroup = findViewById(R.id.jobChipGroup);
@@ -100,6 +104,8 @@ public class JobActivity extends AppCompatActivity implements View.OnClickListen
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         jobSearchButton.setOnClickListener(this);
+        resetButton.setOnClickListener(this);
+        okButton.setOnClickListener(this);
 
         loadListData();
         loadChip(context, chipGroup);
@@ -122,6 +128,13 @@ public class JobActivity extends AppCompatActivity implements View.OnClickListen
         if (v == jobSearchButton) {
             Intent intent = new Intent(this, JobSearchActivity.class);
             launcher.launch(intent);
+        } else if (v == resetButton) {
+            ArrayList<ChipList> chipList = new ArrayList<>();
+            pref.setArrayPref(chipList, SharedPreference.JOB_TMP);
+            loadChip(context, chipGroup);
+            loadListData();
+        } else if (v == okButton) {
+            finish();
         }
     }
 
@@ -165,6 +178,7 @@ public class JobActivity extends AppCompatActivity implements View.OnClickListen
 
             Chip chip = new Chip(context);
             chip.setText(name);
+            chip.setTextSize(17);
             chip.setCloseIconResource(R.drawable.close);
             chip.setCloseIconVisible(true);
             chipGroup.addView(chip);

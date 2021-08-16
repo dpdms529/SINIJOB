@@ -20,6 +20,7 @@ public class SharedPreference {
     public static final String WORKFORM_STATUS = "workForm";
     public static final String CAREER_STATUS = "careerStatus";
     public static final String LICENSE_STATUS = "licenseStatus";
+    public static final String TEXT_SIZE = "textSize";
     // for test
     public static final String CAREER_JOB_CODE = "careerJobCode";
     public static final String CAREER_PERIOD = "careerPeriod";

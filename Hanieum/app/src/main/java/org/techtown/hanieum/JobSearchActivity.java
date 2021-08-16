@@ -61,7 +61,9 @@ public class JobSearchActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
 
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);  // 뒤로가기
+        getSupportActionBar().setDisplayShowCustomEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         loadChip(this, chipGroup);
 
@@ -90,6 +92,7 @@ public class JobSearchActivity extends AppCompatActivity {
         searchView.setMaxWidth(Integer.MAX_VALUE); // 최대 넓이
         searchView.setQueryHint("직종을 검색하세요"); // 검색 힌트
         searchView.setIconifiedByDefault(false); // 펼쳐서 보이기
+
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -144,6 +147,7 @@ public class JobSearchActivity extends AppCompatActivity {
 
             Chip chip = new Chip(context);
             chip.setText(name);
+            chip.setTextSize(17);
             chip.setCloseIconResource(R.drawable.close);
             chip.setCloseIconVisible(true);
             chipGroup.addView(chip);
