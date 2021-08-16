@@ -75,8 +75,7 @@ def recruit_list(pageNum):  # 공고 목록 불러와 리스트에 저장
                 'wantedMobileInfoUrl', 'strtnmCd', 'basicAddr', 'detailAddr', 'jobsCd'
             ]:
                 eachColumn = columns[j].text
-                # eachColumn_decoded = html.unescape(eachColumn)  # html 디코딩
-                # columnList.append(eachColumn_decoded)
+                eachColumn = html.escape(eachColumn)  # html escape code
                 columnList.append(eachColumn)
         rowList.append(columnList)
         columnList = []  # 다음 row 값을 넣기 위해 비워준다.
@@ -161,12 +160,11 @@ def recruit_detail():   # 채용 상세 데이터 불러와 리스트에 저장
         for j in range(0, columnsLen):
             name = columns[j].name
             eachColumn = columns[j].text
+            eachColumn = html.escape(eachColumn)  # html escape code
             if name in columnNames:
                 if name in nameList:   # 중복된 태그 무시(corpInfo 태그에 empchargeInfo 데이터가 들어가 있는 경우)
                     continue
                 else:
-                    # eachColumn_decoded = html.unescape(eachColumn)  # html 디코딩
-                    # columnList.append(eachColumn_decoded)
                     columnList.append(eachColumn)
                     nameList.append(name)
             elif name == 'enterTpNm':
@@ -337,10 +335,15 @@ def processing():   # 데이터 전처리
         count = 0
         for i in delList:
             certifi_count = 0
+            file_count = 0
             for j in range(0, len(certificateList)):     # 삭제 공고의 자격증 데이터 또한 삭제
                 if rowList[i-count][0] == certificateList[j-certifi_count][1]:
                     del certificateList[j-certifi_count]
                     certifi_count += 1
+            for j in range(0, len(corpAttachList)):     # 삭제 공고의 첨부파일 데이터 또한 삭제
+                if rowList[i-count][0] == corpAttachList[j-file_count][0]:
+                    del corpAttachList[j-file_count]
+                    file_count += 1
             print(rowList[i-count][0])  # log
             del rowList[i-count]
             del rowList_detail[i-count]
@@ -512,12 +515,13 @@ def db_check_deleted():
         print("update " + str(len(delList)) + " data from recruit(deleted = 1) which has id below...")  # log
         print(delList)  # log
 
-        # API에서 지워진 공고에 삭제 표시 업데이트
-        sql = f"""UPDATE `recruit`
-                SET deleted = '1'
-                WHERE recruit_id in {delList};"""
-        cursor.execute(sql)
-        db.commit()
+        if delList:
+            # API에서 지워진 공고에 삭제 표시 업데이트
+            sql = f"""UPDATE `recruit`
+                    SET deleted = '1'
+                    WHERE recruit_id in {delList};"""
+            cursor.execute(sql)
+            db.commit()
 
     except pymysql.err.InternalError as e:
         code, msg = e.args
