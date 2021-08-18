@@ -109,7 +109,7 @@ public class JobAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> im
         public void setItem(Job item) {
             jobText.setText(item.getJob1());
             if (item.isSelected()) { // 선택된 아이템이면
-                jobText.setBackgroundColor(Color.parseColor("#80cbc4"));
+                jobText.setBackgroundColor(Color.parseColor("#a1cadd"));
             } else { // 선택된 아이템이 아니면
                 jobText.setBackgroundColor(Color.WHITE);
             }
@@ -170,7 +170,7 @@ public class JobAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> im
         public void setItem(Job item) {
             jobText.setText(item.getJob2());
             if (item.isSelected()) { // 선택된 아이템이면
-                jobText.setBackgroundColor(Color.parseColor("#80cbc4"));
+                jobText.setBackgroundColor(Color.parseColor("#a1cadd"));
             } else { // 선택된 아이템이 아니면
                 jobText.setBackgroundColor(Color.WHITE);
             }

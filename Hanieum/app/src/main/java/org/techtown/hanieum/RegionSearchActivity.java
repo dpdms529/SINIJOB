@@ -144,6 +144,7 @@ public class RegionSearchActivity extends AppCompatActivity {
 
             Chip chip = new Chip(context);
             chip.setText(name);
+            chip.setTextSize(17);
             chip.setCloseIconResource(R.drawable.close);
             chip.setCloseIconVisible(true);
             chipGroup.addView(chip);

@@ -42,11 +42,26 @@
         android:stateListAnimator="@null"
         android:text="직종을 검색하세요"
         android:textAlignment="textStart"
-        android:textSize="15dp"
+        android:textColor="@color/black"
+        android:textSize="17dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar5"
         app:backgroundTint="@null" />
+
+    <Button
+        android:id="@+id/resetButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="10dp"
+        android:text="초기화"
+        android:textSize="17dp"
+        android:textColor="#508ea8"
+        android:background="@drawable/border_txt"
+        app:layout_constraintBottom_toBottomOf="@+id/toolbar5"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:backgroundTint="@null"/>
 
     <LinearLayout
         android:id="@+id/linearLayout2"
@@ -63,10 +78,10 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:padding="10dp"
-            android:background="#80cbc4"
+            android:background="#437e96"
             android:text="1차 직종"
-            android:textColor="@color/black"
-            android:textSize="15dp"
+            android:textColor="@color/white"
+            android:textSize="17dp"
             android:textAlignment="center"/>
 
         <TextView
@@ -74,10 +89,10 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:padding="10dp"
-            android:background="#80cbc4"
+            android:background="#437e96"
             android:text="2차 직종"
-            android:textColor="@color/black"
-            android:textSize="15dp"
+            android:textColor="@color/white"
+            android:textSize="17dp"
             android:textAlignment="center" />
 
     </LinearLayout>
@@ -88,7 +103,7 @@
         android:layout_height="0dp"
         android:orientation="horizontal"
         android:layout_weight="1"
-        app:layout_constraintBottom_toTopOf="@+id/horizontalScrollView"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout4"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
 
         <androidx.recyclerview.widget.RecyclerView
@@ -105,24 +120,43 @@
 
     </LinearLayout>
 
-    <HorizontalScrollView
-        android:id="@+id/horizontalScrollView"
+    <LinearLayout
+        android:id="@+id/linearLayout4"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:padding="5dp"
-        android:scrollbars="none"
-        android:background="@drawable/border"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <com.google.android.material.chip.ChipGroup
-            android:id="@+id/jobChipGroup"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+        <HorizontalScrollView
+            android:id="@+id/horizontalScrollView"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_weight="4"
+            android:background="@drawable/border"
+            android:padding="5dp"
+            android:scrollbars="none">
 
-        </com.google.android.material.chip.ChipGroup>
-    </HorizontalScrollView>
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/jobChipGroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            </com.google.android.material.chip.ChipGroup>
+        </HorizontalScrollView>
+
+        <Button
+            android:id="@+id/okButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="#437e96"
+            android:text="확인"
+            android:textSize="17dp"
+            app:backgroundTint="@null"/>
+
+    </LinearLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

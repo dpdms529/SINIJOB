@@ -29,6 +29,8 @@ import java.util.List;
 public class RegionActivity extends AppCompatActivity implements View.OnClickListener {
     Toolbar toolbar;
     Button regionSearchButton; // 지역 검색 화면으로 이동하는 버튼
+    Button resetButton; // 선택한 칩을 리셋하는 버튼
+    Button okButton;    // 확인 버튼
     RecyclerView regionView1; // 지역 분류(시/도) 리사이클러뷰
     RecyclerView regionView2; // 지역 분류(구/군/시) 리사이클러뷰
     RecyclerView regionView3; // 지역 분류(동/읍/면) 리사이클러뷰
@@ -51,6 +53,8 @@ public class RegionActivity extends AppCompatActivity implements View.OnClickLis
 
         toolbar = findViewById(R.id.toolbar3);
         regionSearchButton = findViewById(R.id.regionSearchButton);
+        okButton = findViewById(R.id.okButton);
+        resetButton = findViewById(R.id.resetButton);
         regionView1 = findViewById(R.id.regionView1);
         regionView2 = findViewById(R.id.regionView2);
         regionView3 = findViewById(R.id.regionView3);
@@ -146,6 +150,8 @@ public class RegionActivity extends AppCompatActivity implements View.OnClickLis
 
 
         regionSearchButton.setOnClickListener(this);
+        resetButton.setOnClickListener(this);
+        okButton.setOnClickListener(this);
 
         loadListData();
         loadChip(context, chipGroup);
@@ -168,6 +174,13 @@ public class RegionActivity extends AppCompatActivity implements View.OnClickLis
         if (v == regionSearchButton) {
             Intent intent = new Intent(this, RegionSearchActivity.class);
             launcher.launch(intent);
+        } else if (v == resetButton) {
+            ArrayList<ChipList> chipList = new ArrayList<>();
+            pref.setArrayPref(chipList, SharedPreference.REGION_TMP);
+            loadChip(context, chipGroup);
+            loadListData();
+        } else if (v == okButton) {
+            finish();
         }
     }
 
@@ -214,6 +227,7 @@ public class RegionActivity extends AppCompatActivity implements View.OnClickLis
 
             Chip chip = new Chip(context);
             chip.setText(name);
+            chip.setTextSize(17);
             chip.setCloseIconResource(R.drawable.close);
             chip.setCloseIconVisible(true);
             chipGroup.addView(chip);

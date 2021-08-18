@@ -61,6 +61,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     String url;
     String contact;
     Context context;
+    SharedPreference pref;
 
     ArrayList<TextView> attachFileUrl = new ArrayList<>(); //접수방법_제출서류양식
 
@@ -170,6 +171,8 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         textSizeChangeBar = findViewById(R.id.textSizeChangeBar);
         textSize = findViewById(R.id.textSize);
 
+        pref = new SharedPreference(getApplicationContext());
+
         for(String key : address.keySet()){    //동적으로 ID부여
             String addressId = key;
             int resId = getResources().getIdentifier(addressId,"id",getApplicationContext().getPackageName());
@@ -204,6 +207,31 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             String corpId = key;
             int resId = getResources().getIdentifier(corpId,"id",getApplicationContext().getPackageName());
             corp.replace(key,findViewById(resId));
+        }
+
+        int size = pref.preferences.getInt(SharedPreference.TEXT_SIZE, 20);
+        textSizeChangeBar.setProgress(size);
+        textSize.setText(String.valueOf(size));
+        for(String key : address.keySet()){
+            address.get(key).setTextSize(TypedValue.COMPLEX_UNIT_DIP,size);
+        }
+        for(String key : recruitCd.keySet()){
+            recruitCd.get(key).setTextSize(TypedValue.COMPLEX_UNIT_DIP,size);
+        }
+        for(String key : workCd.keySet()){
+            workCd.get(key).setTextSize(TypedValue.COMPLEX_UNIT_DIP,size);
+        }
+        for(String key : apply.keySet()){
+            apply.get(key).setTextSize(TypedValue.COMPLEX_UNIT_DIP,size);
+        }
+        for(int i = 0;i<attachFileUrl.size();i++){
+            attachFileUrl.get(i).setTextSize(TypedValue.COMPLEX_UNIT_DIP,size);
+        }
+        for(String key : prefer.keySet()){
+            prefer.get(key).setTextSize(TypedValue.COMPLEX_UNIT_DIP,size);
+        }
+        for(String key : corp.keySet()){
+            corp.get(key).setTextSize(TypedValue.COMPLEX_UNIT_DIP,size);
         }
 
         mapView = new MapView(this);
@@ -244,6 +272,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     public void onClick(View v) {
         if (v == applyButton) {
+
             // 접수 방법 알림 다이얼로그
             AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
             alertDialog.setTitle("접수 방법을 확인해주세요\n");
@@ -344,7 +373,6 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onMapViewCenterPointMoved(MapView mapView, MapPoint mapPoint) {
-        scrollView.requestDisallowInterceptTouchEvent(true);
     }
 
     @Override
@@ -354,32 +382,26 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onMapViewSingleTapped(MapView mapView, MapPoint mapPoint) {
-        scrollView.requestDisallowInterceptTouchEvent(true);
     }
 
     @Override
     public void onMapViewDoubleTapped(MapView mapView, MapPoint mapPoint) {
-        scrollView.requestDisallowInterceptTouchEvent(true);
     }
 
     @Override
     public void onMapViewLongPressed(MapView mapView, MapPoint mapPoint) {
-        scrollView.requestDisallowInterceptTouchEvent(true);
     }
 
     @Override
     public void onMapViewDragStarted(MapView mapView, MapPoint mapPoint) {
-        scrollView.requestDisallowInterceptTouchEvent(true);
     }
 
     @Override
     public void onMapViewDragEnded(MapView mapView, MapPoint mapPoint) {
-        scrollView.requestDisallowInterceptTouchEvent(true);
     }
 
     @Override
     public void onMapViewMoveFinished(MapView mapView, MapPoint mapPoint) {
-        scrollView.requestDisallowInterceptTouchEvent(true);
     }
 
     public void loadData(String id) {
@@ -602,6 +624,8 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
+        pref.editor.putInt(SharedPreference.TEXT_SIZE, progress);
+        pref.editor.commit();
         textSize.setText(String.valueOf(progress));
         for(String key : address.keySet()){
             address.get(key).setTextSize(TypedValue.COMPLEX_UNIT_DIP,progress);
