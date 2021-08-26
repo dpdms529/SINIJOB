@@ -1,12 +1,16 @@
 package org.techtown.hanieum;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.collection.ArraySet;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
@@ -14,6 +18,9 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -51,7 +58,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
     RecommendAdapter adapter; // 추천 목록 어댑터
     Button changeButton; // 조건 변경 화면으로 이동하는 버튼
     ImageButton searchButton; // 검색 버튼
-    ImageButton menuButton; // 메뉴 버튼
+    ImageButton micButton; // 마이크 버튼
     TextView itemNum;
     TextView title; //화면 제목
     EditText editSearch;  //검색창
@@ -63,6 +70,12 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
     AppDatabase db;
 
     SharedPreference pref;
+
+    Context context;
+
+    //음성 인식용
+    Intent intent;
+    SpeechRecognizer speechRecognizer;
 
     public RecommendFragment() {
         // Required empty public constructor
@@ -78,10 +91,11 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_recommend, container, false);
 
+        context = getContext();
         recyclerView = view.findViewById(R.id.recommendView);
         changeButton = view.findViewById(R.id.changeButton);
         searchButton = view.findViewById(R.id.searchButton);
-        menuButton = view.findViewById(R.id.menuButton);
+        micButton = view.findViewById(R.id.micButton);
         itemNum = view.findViewById(R.id.itemNum);
         title = view.findViewById(R.id.title);
         editSearch = view.findViewById(R.id.editSearch);
@@ -109,9 +123,16 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
             }
         });
 
+        // 음성인식
+        intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getActivity().getPackageName());
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE,"ko-KR");   //한국어 사용
+        speechRecognizer = SpeechRecognizer.createSpeechRecognizer(context);
+        speechRecognizer.setRecognitionListener(listener);
+
         changeButton.setOnClickListener(this);
         searchButton.setOnClickListener(this);
-        menuButton.setOnClickListener(this);
+        micButton.setOnClickListener(this);
 
         editSearch.addTextChangedListener(new TextWatcher() {   // 공고 검색
             @Override
@@ -678,13 +699,84 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
             if(title.getVisibility()==View.VISIBLE){
                 title.setVisibility(View.GONE);
                 editSearch.setVisibility(View.VISIBLE);
+                micButton.setVisibility(View.VISIBLE);
             }else{
                 title.setVisibility(View.VISIBLE);
                 editSearch.setVisibility(View.GONE);
+                micButton.setVisibility(View.GONE);
                 imm.hideSoftInputFromWindow(editSearch.getWindowToken(),0);
             }
-        } else if (v == menuButton) {
-            Toast.makeText(v.getContext(), "메뉴 버튼 눌림", Toast.LENGTH_LONG).show();
+        } else if (v == micButton) {
+//            Toast.makeText(v.getContext(), "메뉴 버튼 눌림", Toast.LENGTH_LONG).show();
+            System.out.println("음성인식 시작!");
+            // 권한을 허용하지 않는 경우
+            if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.RECORD_AUDIO},1);
+            } else { // 권한을 허용한 경우
+                try {
+                    speechRecognizer.startListening(intent);
+                } catch (SecurityException e){
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    // 음성인식을 위한 메소드
+    private RecognitionListener listener = new RecognitionListener() {
+        @Override
+        public void onReadyForSpeech(Bundle bundle) {
+            Toast.makeText(context, "지금부터 말을 해주세요", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onBeginningOfSpeech() {
+        }
+
+        @Override
+        public void onRmsChanged(float v) {
+        }
+
+        @Override
+        public void onBufferReceived(byte[] bytes) {
+        }
+
+        @Override
+        public void onEndOfSpeech() {
+        }
+
+        @Override
+        public void onError(int i) {
+            Toast.makeText(context, "천천히 다시 말해 주세요", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onResults(Bundle results) {
+            String key= "";
+            key = SpeechRecognizer.RESULTS_RECOGNITION;
+            ArrayList<String> mResult =results.getStringArrayList(key);
+            String[] rs = new String[mResult.size()];
+            mResult.toArray(rs);
+            editSearch.setText(rs[0]);
+        }
+
+        @Override
+        public void onPartialResults(Bundle bundle) {
+        }
+
+        @Override
+        public void onEvent(int i, Bundle bundle) {
+        }
+    };
+
+    // 음성인식 어플이 종료되지 않아 계속 실행되는 경우를 막기위해 어플 종료 함수
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (speechRecognizer != null){
+            speechRecognizer.destroy();
+            speechRecognizer.cancel();
+            speechRecognizer = null;
         }
     }
 

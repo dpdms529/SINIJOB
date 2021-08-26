@@ -1,9 +1,14 @@
 package org.techtown.hanieum;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -12,6 +17,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.text.util.Linkify;
 import android.util.Log;
 import android.util.TypedValue;
@@ -22,6 +28,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.SeekBar;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import net.daum.mf.map.api.MapPOIItem;
@@ -35,6 +42,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -55,6 +63,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     ScrollView scrollView;
     SeekBar textSizeChangeBar;
     TextView textSize;
+    Switch voiceTf;
 
     String epX;
     String epY;
@@ -62,6 +71,9 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     String contact;
     Context context;
     SharedPreference pref;
+
+    //음성 출력용
+    TextToSpeech tts;
 
     ArrayList<TextView> attachFileUrl = new ArrayList<>(); //접수방법_제출서류양식
 
@@ -85,7 +97,6 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         put("empTpNm",null); //고용형태
         put("collectPsncntT",null);
         put("collectPsncnt",null); //모집인원
-        put("collectPsncntM",null);
         put("etcHopeContT",null);
         put("etcHopeCont",null); //기타안내
     }};
@@ -148,6 +159,12 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         put("yrSalesAmt",null); //연매출액
     }};
 
+    String[] recruitStr = {"jobsNm", "jobCont", "enterTpNm", "eduNm", "empTpNm", "collectPsncnt", "etcHopeCont"};
+    String[] workStr = {"salaryTypeCode", "salary", "workTime", "workDay", "retirepay", "fourIns", "etcWelfare"};
+    String[] applyStr = {"receiptCloseDt", "selMthd", "rcptMthd", "submitDoc"};
+    String[] preferStr = {"pfCond", "etcPfCond", "compAbl"};
+    String[] corpStr = {"corpNm", "reperNm", "indTpCdNm", "corpAddr", "totPsncnt", "yrSalesAmt"};
+
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -170,8 +187,19 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         scrollView = findViewById(R.id.detailScrollView);
         textSizeChangeBar = findViewById(R.id.textSizeChangeBar);
         textSize = findViewById(R.id.textSize);
+        voiceTf = findViewById(R.id.voiceTf);
 
         pref = new SharedPreference(getApplicationContext());
+
+        // 음성출력 생성, 리스너 초기화
+        tts = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (status != android.speech.tts.TextToSpeech.ERROR){
+                    tts.setLanguage(Locale.KOREAN);
+                }
+            }
+        });
 
         for(String key : address.keySet()){    //동적으로 ID부여
             String addressId = key;
@@ -209,6 +237,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             corp.replace(key,findViewById(resId));
         }
 
+        // 글씨 크기 설정
         int size = pref.preferences.getInt(SharedPreference.TEXT_SIZE, 20);
         textSizeChangeBar.setProgress(size);
         textSize.setText(String.valueOf(size));
@@ -255,6 +284,22 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         goWorknetBtn.setOnClickListener(this);
         goWorknetImg.setOnClickListener(this);
         shareButton.setOnClickListener(this);
+        address.get("addressDetail").setOnClickListener(this);
+        for (int i=0; i<recruitStr.length; i++) {
+            recruitCd.get(recruitStr[i]).setOnClickListener(this);
+        }
+        for (int i=0; i<workStr.length; i++) {
+            workCd.get(workStr[i]).setOnClickListener(this);
+        }
+        for (int i=0; i<applyStr.length; i++) {
+            apply.get(applyStr[i]).setOnClickListener(this);
+        }
+        for (int i=0; i<preferStr.length; i++) {
+            prefer.get(preferStr[i]).setOnClickListener(this);
+        }
+        for (int i=0; i<corpStr.length; i++) {
+            corp.get(corpStr[i]).setOnClickListener(this);
+        }
 
         textSizeChangeBar.setOnSeekBarChangeListener(this);
     }
@@ -299,19 +344,29 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("tel:"+contact));
                                 startActivity(intent);
                             } else if (charSequences[which] == "문자") {
-                                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("tel:"));
-                                intent.setType("vnd.android-dir/mms-sms");
-                                intent.putExtra("address", "");
-                                intent.putExtra("sms_body", companyNameDetail.getText()+"에 지원합니다.");
+//                                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("tel:"));
+//                                intent.setType("vnd.android-dir/mms-sms");
+//                                intent.putExtra("address", "");
+//                                intent.putExtra("sms_body", companyNameDetail.getText()+"에 지원합니다.");
+//                                startActivity(intent);
+
+                                Intent intent = new Intent(context, ApplyActivity.class);
+                                intent.putExtra("type", "sms");
+                                intent.putExtra("company", companyNameDetail.getText());
                                 startActivity(intent);
                             } else if (charSequences[which] == "이메일") {
-                                String uriText = "mailto:" + "?subject=" +
-                                        Uri.encode(companyNameDetail.getText()+"에 지원합니다.") + "&body=" + Uri.encode("");
-                                Uri uri = Uri.parse(uriText);
+//                                String uriText = "mailto:" + "?subject=" +
+//                                        Uri.encode(companyNameDetail.getText()+"에 지원합니다.") + "&body=" + Uri.encode("");
+//                                Uri uri = Uri.parse(uriText);
+//
+//                                Intent intent = new Intent(Intent.ACTION_SENDTO);
+//                                intent.setData(uri);
+//                                startActivity(Intent.createChooser(intent, "이메일 앱을 선택하세요"));
 
-                                Intent intent = new Intent(Intent.ACTION_SENDTO);
-                                intent.setData(uri);
-                                startActivity(Intent.createChooser(intent, "이메일 앱을 선택하세요"));
+                                Intent intent = new Intent(context, ApplyActivity.class);
+                                intent.putExtra("type", "email");
+                                intent.putExtra("company", companyNameDetail.getText());
+                                startActivity(intent);
                             } else if (charSequences[which] == "워크넷") {
                                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
                                 startActivity(intent);
@@ -341,7 +396,42 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             intent.putExtra(Intent.EXTRA_TEXT,shareContent);
             intent.setType("text/plain");
             startActivity(Intent.createChooser(intent,null));
-
+        }
+        if (voiceTf.isChecked()) {
+            if (v == address.get("addressDetail")) {
+                String msg = address.get("addressDetail").getText().toString();
+                voiceOut(msg);
+            }
+            for (int i=0; i<recruitStr.length; i++) {
+                if (v == recruitCd.get(recruitStr[i])) {
+                    String msg = recruitCd.get(recruitStr[i]).getText().toString();
+                    voiceOut(msg);
+                }
+            }
+            for (int i=0; i<workStr.length; i++) {
+                if (v == workCd.get(workStr[i])) {
+                    String msg = workCd.get(workStr[i]).getText().toString();
+                    voiceOut(msg);
+                }
+            }
+            for (int i=0; i<applyStr.length; i++) {
+                if (v == apply.get(applyStr[i])) {
+                    String msg = apply.get(applyStr[i]).getText().toString();
+                    voiceOut(msg);
+                }
+            }
+            for (int i=0; i<preferStr.length; i++) {
+                if (v == prefer.get(preferStr[i])) {
+                    String msg = prefer.get(preferStr[i]).getText().toString();
+                    voiceOut(msg);
+                }
+            }
+            for (int i=0; i<corpStr.length; i++) {
+                if (v == corp.get(corpStr[i])) {
+                    String msg = corp.get(corpStr[i]).getText().toString();
+                    voiceOut(msg);
+                }
+            }
         }
     }
 
@@ -402,6 +492,27 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onMapViewMoveFinished(MapView mapView, MapPoint mapPoint) {
+    }
+
+    // 음성인식 어플이 종료되지 않아 계속 실행되는 경우를 막기위해 어플 종료 함수
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (tts != null) {
+            tts.stop();
+            tts.shutdown();
+            tts = null;
+        }
+    }
+
+    // 음성 메세지 출력용
+    private void voiceOut(String msg){
+        if (msg.length() < 1) return;
+
+        // 음성 출력
+        tts.setPitch(0.8f); //목소리 톤1.0
+        tts.setSpeechRate(0.9f);    //목소리 속도
+        tts.speak(msg, TextToSpeech.QUEUE_FLUSH,null, null);
     }
 
     public void loadData(String id) {
@@ -495,7 +606,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             recruitCd.get("enterTpNm").setText(careerMin);
             recruitCd.get("eduNm").setText(education_scope);
             recruitCd.get("empTpNm").setText(enrollment_name);
-            recruitCd.get("collectPsncnt").setText(num_of_people);
+            recruitCd.get("collectPsncnt").setText(num_of_people + "명 모집");
             recruitCd.get("etcHopeCont").setText(etc_info);
             workCd.get("salaryTypeCode").setText(salary_type_name);
             workCd.get("salary").setText(salary_);

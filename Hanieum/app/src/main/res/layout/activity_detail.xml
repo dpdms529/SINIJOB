@@ -47,7 +47,7 @@
         android:id="@+id/applyButton"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
+        android:layout_marginBottom="20dp"
         android:background="@drawable/border_sec_color"
         android:text="지원하기"
         android:textSize="20dp"
@@ -245,6 +245,15 @@
                     android:textSize="20dp" />
 
             </LinearLayout>
+
+            <Switch
+                android:id="@+id/voiceTf"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="25dp"
+                android:layout_gravity="left"
+                android:text="음성 출력"
+                android:textSize="20dp" />
 
             <View
                 android:layout_width="match_parent"
@@ -474,24 +483,16 @@
                     android:id="@+id/collectPsncntT"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1.1"
+                    android:layout_weight="1"
                     android:text="모집인원"
                     android:textSize="20dp" />
 
                 <TextView
                     android:id="@+id/collectPsncnt"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="1"
-                    android:textColor="@color/black"
-                    android:textSize="20dp" />
-
-                <TextView
-                    android:id="@+id/collectPsncntM"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="2.1"
-                    android:text="명 모집"
+                    android:layout_weight="2"
+                    android:text="1명 모집"
                     android:textColor="@color/black"
                     android:textSize="20dp" />
 
@@ -1212,7 +1213,7 @@
 
             <Space
                 android:layout_width="match_parent"
-                android:layout_height="120dp" />
+                android:layout_height="140dp" />
 
         </LinearLayout>
     </ScrollView>

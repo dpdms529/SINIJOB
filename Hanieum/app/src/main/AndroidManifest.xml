@@ -2,15 +2,26 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.techtown.hanieum">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <!-- 음성인식에 필요함 -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <queries>
+        <intent>
+            <action android:name="android.speech.RecognitionService" />
+        </intent>
+    </queries>
+
     <application
         android:allowBackup="false"
-        android:usesCleartextTraffic="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Hanieum">
-        <activity android:name=".DetailActivity"></activity>
+        android:theme="@style/Theme.Hanieum"
+        android:usesCleartextTraffic="true">
+        <activity android:name=".ApplyActivity"></activity>
+        <activity android:name=".DetailActivity" />
         <activity android:name=".JobActivity" />
         <activity android:name=".RegionSearchActivity" />
         <activity android:name=".JobSearchActivity" />
@@ -29,9 +40,10 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
-        <meta-data android:name="com.kakao.sdk.AppKey" android:value="@string/kakaoAPI" />
+
+        <meta-data
+            android:name="com.kakao.sdk.AppKey"
+            android:value="@string/kakaoAPI" />
     </application>
-    <uses-permission android:name="android.permission.INTERNET"></uses-permission>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
 </manifest>

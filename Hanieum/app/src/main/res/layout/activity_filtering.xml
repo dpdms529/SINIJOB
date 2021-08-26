@@ -47,7 +47,7 @@
         android:id="@+id/saveButton"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
+        android:layout_marginBottom="20dp"
         android:background="@drawable/border_sec_color"
         android:text="저장"
         android:textSize="20dp"
@@ -261,7 +261,7 @@
 
             <Space
                 android:layout_width="match_parent"
-                android:layout_height="120dp" />
+                android:layout_height="140dp" />
 
         </LinearLayout>
     </ScrollView>

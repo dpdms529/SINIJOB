@@ -43,28 +43,29 @@
     </androidx.appcompat.widget.Toolbar>
 
     <ImageButton
-        android:id="@+id/menuButton"
+        android:id="@+id/searchButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="20dp"
         android:background="#00ff0000"
-        app:tint="@color/white"
         app:layout_constraintBottom_toBottomOf="@+id/toolbar"
         app:layout_constraintEnd_toEndOf="@+id/toolbar"
         app:layout_constraintTop_toTopOf="@+id/toolbar"
-        app:srcCompat="@drawable/menu" />
+        app:srcCompat="@drawable/search"
+        app:tint="@color/white" />
 
     <ImageButton
-        android:id="@+id/searchButton"
+        android:id="@+id/micButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="10dp"
+        android:src="@drawable/voice_small"
         android:background="#00ff0000"
-        app:tint="@color/white"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/toolbar"
-        app:layout_constraintEnd_toStartOf="@+id/menuButton"
-        app:layout_constraintTop_toTopOf="@+id/toolbar"
-        app:srcCompat="@drawable/search" />
+        app:layout_constraintEnd_toStartOf="@+id/searchButton"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/white"/>
 
     <TextView
         android:id="@+id/textView2"
