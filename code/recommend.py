@@ -131,10 +131,12 @@ if __name__ == '__main__':
     my_idx.append(df[df['recruit_id']==i].index[0])
   my_df = pd.DataFrame(my_data,columns=df.columns)
   print(my_df['recruit_id'].values)
-  rec_result = recommend()
-  for i in rec_result:
-    i.insert(0,userId)
-  db_insert(userId)
+  if not my_df.empty:
+    rec_result = recommend()
+    for i in rec_result:
+      i.insert(0,userId)
+    db_insert(userId)
+  print("db close")
   db.close()
 
   
