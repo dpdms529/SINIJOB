@@ -24,6 +24,9 @@ public interface RecruitDao {
     @Query("DElETE FROM recruit WHERE recruit_id = :goneId")
     void deleteGoneRecruit(String goneId);
 
+    @Query("select * from recruit as r where r.recruit_id = :id")
+    List<Recruit> getList(String id);
+
     //근무형태만 선택
     @Query("select * from recruit as r where r.enrollment_code = :enrollment_code")
     List<Recruit> getFilteredList1(String enrollment_code);

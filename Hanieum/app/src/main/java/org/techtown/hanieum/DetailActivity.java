@@ -531,8 +531,6 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         } catch (InterruptedException e) {
         }
         String detailResult = urlConnectorDetail.getResult();
-        Log.d("detailResult", detailResult);
-        Log.d("idid", id);
 
         try {
             JSONObject jsonObject = new JSONObject(detailResult);
