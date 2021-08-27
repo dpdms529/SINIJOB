@@ -13,6 +13,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -51,6 +52,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 public class RecommendFragment extends Fragment implements View.OnClickListener {
@@ -844,8 +846,55 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+
+            // 북마크 업데이트 (삭제된 공고 제거)
+            ArrayList<HashMap<String, String>> arrayList = new ArrayList<>();
+            String bookmarkPhp = context.getResources().getString(R.string.serverIP)+"bookmark_read.php";
+            URLConnector urlConnectorBookmark = new URLConnector(bookmarkPhp);
+            urlConnectorBookmark.start();
+            try {
+                urlConnectorBookmark.join();
+            } catch (InterruptedException e) {
+            }
+            String bookmarkResult = urlConnectorBookmark.getResult();
+
+            try {
+                JSONObject jsonObject = new JSONObject(bookmarkResult);
+                JSONArray jsonArray = jsonObject.getJSONArray("result");
+
+                for (int i=0; i<jsonArray.length(); i++) {
+                    JSONObject jsonObject1 = jsonArray.getJSONObject(i);
+
+                    HashMap<String, String> hashMap = new HashMap<>();
+                    String user_id = jsonObject1.getString("user_id");
+                    String recruit_id = jsonObject1.getString("recruit_id");
+
+                    hashMap.put("user_id", user_id);
+                    hashMap.put("recruit_id", recruit_id);
+
+                    arrayList.add(hashMap);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            for (int j=0; j<arrayList.size(); j++) {
+                HashMap<String ,String> hashMap = arrayList.get(j);
+                String uId = hashMap.get("user_id");
+                String rId = hashMap.get("recruit_id");
+
+                if (db.RecruitDao().getList(rId).size() == 0) { // 삭제된 공고면 북마크 테이블에서 해당 공고 삭제
+                    String bookmarkDelPhp = context.getResources().getString(R.string.serverIP)+"bookmark_del.php?user_id="+uId+"&recruit_id="+rId;
+                    URLConnector urlConnectorBookmarkDel = new URLConnector(bookmarkDelPhp);
+                    urlConnectorBookmarkDel.start();
+                    try {
+                        urlConnectorBookmarkDel.join();
+                    } catch (InterruptedException e) {
+                    }
+                }
+            }
         }
-    }
+   }
 
     private void checkCertifiLastUpdated() { // 기기의 업데이트 일시와 DB의 업데이트 일시를 확인
         List<String> rows = db.recruitCertificateDao().getLastUpdated();
@@ -973,8 +1022,40 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
 
         itemNum.setText(String.valueOf(rows.size()));
 
+        // 북마크 테이블 읽어오기
+        ArrayList<HashMap<String, String>> arrayList = new ArrayList<>();
+        String bookmarkPhp = context.getResources().getString(R.string.serverIP)+"bookmark_read.php";
+        URLConnector urlConnectorBookmark = new URLConnector(bookmarkPhp);
+        urlConnectorBookmark.start();
+        try {
+            urlConnectorBookmark.join();
+        } catch (InterruptedException e) {
+        }
+        String bookmarkResult = urlConnectorBookmark.getResult();
+
+        try {
+            JSONObject jsonObject = new JSONObject(bookmarkResult);
+            JSONArray jsonArray = jsonObject.getJSONArray("result");
+
+            for (int i=0; i<jsonArray.length(); i++) {
+                JSONObject jsonObject1 = jsonArray.getJSONObject(i);
+
+                HashMap<String, String> hashMap = new HashMap<>();
+                String user_id = jsonObject1.getString("user_id");
+                String recruit_id = jsonObject1.getString("recruit_id");
+
+                hashMap.put("user_id", user_id);
+                hashMap.put("recruit_id", recruit_id);
+
+                arrayList.add(hashMap);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
         for (int i=0; i<rows.size(); i++) {
             Recruit row = rows.get(i);
+            int flag = 0;
             String salaryType = new String();
             switch (row.salary_type_code) {     // 급여 타입에 알맞은 단어
                 case "H":
@@ -1002,7 +1083,24 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
             }
             DistanceCalculator distance =  new DistanceCalculator("127.12934", "35.84688", row.x_coordinate, row.y_coordinate);
             Double dist = distance.getStraightDist();   // 직선거리 구하는 함수
-            allItems.add(new Recommendation(row.recruit_id, row.organization, row.recruit_title, salaryType, sal, dist, false));
+
+            // 북마크 확인하는 코드
+            for (int j=0; j<arrayList.size(); j++) {
+                HashMap<String ,String> hashMap = arrayList.get(j);
+                String uId = hashMap.get("user_id");
+                String rId = hashMap.get("recruit_id");
+
+                // 유저 아이디 = 3
+                if (uId.equals("3") && rId.equals(row.recruit_id)) {
+                    flag = 1;
+                }
+            }
+
+            if (flag == 1) {    // 북마크가 되어 있을 때
+                allItems.add(new Recommendation(row.recruit_id, TagToString.TagToString(row.organization), TagToString.TagToString(row.recruit_title), salaryType, sal, dist, true));
+            } else {    // 북마크가 안 되어 있을 때
+                allItems.add(new Recommendation(row.recruit_id, TagToString.TagToString(row.organization), TagToString.TagToString(row.recruit_title), salaryType, sal, dist, false));
+            }
         }
         Collections.sort(allItems);    // 거리순으로 정렬
         items.addAll(allItems);
