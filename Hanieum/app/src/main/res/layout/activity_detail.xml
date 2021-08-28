@@ -246,14 +246,23 @@
 
             </LinearLayout>
 
+
             <Switch
                 android:id="@+id/voiceTf"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="25dp"
                 android:layout_gravity="left"
+                android:layout_marginLeft="25dp"
                 android:text="음성 출력"
                 android:textSize="20dp" />
+
+            <Button
+                android:id="@+id/voice_summary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="요약해서 듣기"
+                android:textSize="20dp"
+                />
 
             <View
                 android:layout_width="match_parent"
