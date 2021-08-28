@@ -113,7 +113,6 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
         recyclerView.addItemDecoration(new DividerItemDecoration(view.getContext(), 1)); // 구분선
         recyclerView.setLayoutManager(layoutManager);
         adapter = new RecommendAdapter();
-        recyclerView.setAdapter(adapter);
 
         adapter.setItemClickListener(new OnRecoItemClickListener() {
             @Override
@@ -1091,7 +1090,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
                 String rId = hashMap.get("recruit_id");
 
                 // 유저 아이디 = 3
-                if (uId.equals("1") && rId.equals(row.recruit_id)) {
+                if (uId.equals("3") && rId.equals(row.recruit_id)) {
                     flag = 1;
                 }
             }
