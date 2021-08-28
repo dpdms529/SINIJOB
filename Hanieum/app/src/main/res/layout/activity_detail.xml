@@ -36,8 +36,8 @@
         android:background="#00ff0000"
         android:drawableLeft="@drawable/share"
         android:text="공유"
-        android:textSize="17dp"
         android:textColor="#757575"
+        android:textSize="17dp"
         app:layout_constraintBottom_toBottomOf="@+id/toolbar0201"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -84,10 +84,10 @@
                         android:id="@+id/companyNameDetail"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="bottom"
                         android:layout_marginLeft="25dp"
                         android:layout_marginBottom="2dp"
                         android:layout_weight="1"
-                        android:layout_gravity="bottom"
                         android:text="㈜에이피티에스"
                         android:textColor="@color/black"
                         android:textSize="17dp" />
@@ -124,7 +124,6 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </LinearLayout>
-
 
 
             <LinearLayout
@@ -227,12 +226,12 @@
                     android:id="@+id/textSizeChangeBar"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
                     android:layout_gravity="center"
+                    android:layout_marginLeft="5dp"
                     android:layout_weight="3"
-                    android:progress="20"
                     android:max="30"
-                    android:min="15" />
+                    android:min="15"
+                    android:progress="20" />
 
                 <TextView
                     android:id="@+id/textSize"
@@ -247,22 +246,38 @@
             </LinearLayout>
 
 
-            <Switch
-                android:id="@+id/voiceTf"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="left"
-                android:layout_marginLeft="25dp"
-                android:text="음성 출력"
-                android:textSize="20dp" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
 
-            <Button
-                android:id="@+id/voice_summary"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="요약해서 듣기"
-                android:textSize="20dp"
-                />
+                <Switch
+                    android:id="@+id/voiceTf"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="25dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_weight="2"
+                    android:text="음성 출력"
+                    android:textSize="20dp" />
+
+
+                <Button
+                    android:id="@+id/voice_summary"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="25dp"
+                    android:layout_weight="3"
+                    android:background="@drawable/border_txt"
+                    android:text="요약해서 듣기"
+                    android:textColor="#508ea8"
+                    android:textSize="20dp" />
+
+            </LinearLayout>
+
 
             <View
                 android:layout_width="match_parent"
@@ -275,8 +290,8 @@
                 android:id="@+id/addressT"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
                 android:layout_marginLeft="25dp"
+                android:layout_marginTop="10dp"
                 android:text="근무예정지"
                 android:textColor="@color/black"
                 android:textSize="20dp"
@@ -334,8 +349,8 @@
                     android:layout_marginRight="10dp"
                     android:background="@drawable/border_txt"
                     android:text="길찾기"
-                    android:textSize="17dp"
-                    android:textColor="#508ea8"/>
+                    android:textColor="#508ea8"
+                    android:textSize="17dp" />
             </LinearLayout>
 
             <View
@@ -349,8 +364,8 @@
                 android:id="@+id/recruitCdT"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
                 android:layout_marginLeft="25dp"
+                android:layout_marginTop="10dp"
                 android:text="모집조건"
                 android:textColor="@color/black"
                 android:textSize="20dp"
@@ -543,8 +558,8 @@
                 android:id="@+id/workCdT"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
                 android:layout_marginLeft="25dp"
+                android:layout_marginTop="10dp"
                 android:text="근무조건"
                 android:textColor="@color/black"
                 android:textSize="20dp"
@@ -721,8 +736,8 @@
                 android:id="@+id/applyT"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
                 android:layout_marginLeft="25dp"
+                android:layout_marginTop="10dp"
                 android:text="접수방법"
                 android:textColor="@color/black"
                 android:textSize="20dp"
@@ -919,8 +934,8 @@
                 android:id="@+id/preferT"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
                 android:layout_marginLeft="25dp"
+                android:layout_marginTop="10dp"
                 android:text="우대사항"
                 android:textColor="@color/black"
                 android:textSize="20dp"
@@ -1038,8 +1053,8 @@
                 android:id="@+id/corpT"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
                 android:layout_marginLeft="25dp"
+                android:layout_marginTop="10dp"
                 android:text="기업정보"
                 android:textColor="@color/black"
                 android:textSize="20dp"
@@ -1210,8 +1225,8 @@
                 android:layout_marginBottom="5dp"
                 android:background="@drawable/border_txt"
                 android:text="채용정보 제공사이트로 이동"
-                android:textSize="17dp"
-                android:textColor="#508ea8"/>
+                android:textColor="#508ea8"
+                android:textSize="17dp" />
 
             <ImageView
                 android:id="@+id/goWorknetImg"

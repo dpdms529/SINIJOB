@@ -42,33 +42,33 @@
         android:stateListAnimator="@null"
         android:text="지역을 검색하세요"
         android:textAlignment="textStart"
-        android:textSize="17dp"
         android:textColor="@color/black"
+        android:textSize="17dp"
+        app:backgroundTint="@null"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar3"
-        app:backgroundTint="@null" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbar3" />
 
     <Button
         android:id="@+id/resetButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginRight="10dp"
-        android:text="초기화"
-        android:textSize="17dp"
-        android:textColor="#508ea8"
         android:background="@drawable/border_txt"
+        android:text="초기화"
+        android:textColor="#508ea8"
+        android:textSize="17dp"
+        app:backgroundTint="@null"
         app:layout_constraintBottom_toBottomOf="@+id/toolbar3"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:backgroundTint="@null"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
         android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:layout_marginTop="15dp"
+        android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/regionSearchButton">
@@ -77,42 +77,42 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:padding="10dp"
             android:background="#437e96"
+            android:padding="10dp"
             android:text="시/도"
+            android:textAlignment="center"
             android:textColor="@color/white"
-            android:textSize="17dp"
-            android:textAlignment="center"/>
+            android:textSize="17dp" />
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:padding="10dp"
             android:background="#437e96"
+            android:padding="10dp"
             android:text="구/군/시"
+            android:textAlignment="center"
             android:textColor="@color/white"
-            android:textSize="17dp"
-            android:textAlignment="center" />
+            android:textSize="17dp" />
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:padding="10dp"
             android:background="#437e96"
+            android:padding="10dp"
             android:text="동/읍/면"
+            android:textAlignment="center"
             android:textColor="@color/white"
-            android:textSize="17dp"
-            android:textAlignment="center" />
+            android:textSize="17dp" />
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/linearLayout3"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:orientation="horizontal"
         android:layout_weight="1"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout4"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
 
@@ -135,7 +135,6 @@
             android:layout_weight="1" />
 
     </LinearLayout>
-
 
 
     <LinearLayout
@@ -172,7 +171,7 @@
             android:background="#437e96"
             android:text="확인"
             android:textSize="17dp"
-            app:backgroundTint="@null"/>
+            app:backgroundTint="@null" />
 
     </LinearLayout>
 

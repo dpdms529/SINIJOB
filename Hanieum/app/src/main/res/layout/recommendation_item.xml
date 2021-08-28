@@ -3,11 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:layout_marginTop="15dp"
     android:layout_marginLeft="15dp"
+    android:layout_marginTop="15dp"
     android:layout_marginRight="15dp"
-    android:layout_marginBottom="3dp">
+    android:layout_marginBottom="3dp"
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -27,8 +27,8 @@
             android:id="@+id/distance"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="0"
             android:layout_marginLeft="15dp"
+            android:layout_weight="0"
             android:text="253"
             android:textColor="#828282"
             android:textSize="17dp"
@@ -38,8 +38,8 @@
             android:id="@+id/measure"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="0"
             android:layout_marginHorizontal="3dp"
+            android:layout_weight="0"
             android:text="m"
             android:textColor="#828282"
             android:textSize="15dp"
@@ -50,8 +50,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal"
-        android:layout_marginTop="5dp">
+        android:layout_marginTop="5dp"
+        android:orientation="horizontal">
 
         <TextView
             android:id="@+id/advertisementTitle"
@@ -68,8 +68,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal"
-        android:layout_marginTop="5dp">
+        android:layout_marginTop="5dp"
+        android:orientation="horizontal">
 
         <TextView
             android:id="@+id/salaryType"
@@ -85,9 +85,9 @@
             android:id="@+id/salary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="1dp"
-            android:layout_gravity="center_vertical"
             android:layout_weight="0"
             android:text="250"
             android:textColor="#FF9800"
