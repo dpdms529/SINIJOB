@@ -1091,15 +1091,15 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
                 String rId = hashMap.get("recruit_id");
 
                 // 유저 아이디 = 3
-                if (uId.equals("3") && rId.equals(row.recruit_id)) {
+                if (uId.equals("1") && rId.equals(row.recruit_id)) {
                     flag = 1;
                 }
             }
 
             if (flag == 1) {    // 북마크가 되어 있을 때
-                allItems.add(new Recommendation(row.recruit_id, TagToString.TagToString(row.organization), TagToString.TagToString(row.recruit_title), salaryType, sal, dist, true));
+                allItems.add(new Recommendation(row.recruit_id, row.organization, row.recruit_title, salaryType, sal, dist, true));
             } else {    // 북마크가 안 되어 있을 때
-                allItems.add(new Recommendation(row.recruit_id, TagToString.TagToString(row.organization), TagToString.TagToString(row.recruit_title), salaryType, sal, dist, false));
+                allItems.add(new Recommendation(row.recruit_id, row.organization, row.recruit_title, salaryType, sal, dist, false));
             }
         }
         Collections.sort(allItems);    // 거리순으로 정렬

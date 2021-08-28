@@ -1,5 +1,8 @@
 import pymysql
 import pandas as pd
+from sklearn.feature_extraction.text import TfidfVectorizer
+from konlpy.tag import Okt
+import numpy as np
 from keys import dbhost, dbpw
 
 def db_connection():  # 데이터베이스 연결
@@ -62,6 +65,42 @@ def add_certificate(): # 자격증 여러 개인 데이터 한 행으로 합치�
                 recruit_data.loc[index2, 'certificate_name'] = certificate
     print("add_certificate()")
 
+def vectorize():
+  #불용어
+  stopwords = ["모집","급구","요건","임금","다음","업무","지원","및","근무","채용","우대","등","구인","고용","사항","직무","근무시간","직종","기타","형태","내용","조건","시간","기간","마감","관련","기준","담당","워크넷","가능","불가능","월급","로","문의"]
+
+  #형태소 분석기 생성
+  okt = Okt() 
+
+  #명사만 추출 후 한 글자인 단어 제거
+  def token(phrase): 
+    nouns = okt.nouns(phrase)
+    result = []
+    for i in nouns:
+      if len(i)>1:
+        result.append(i)
+    return result
+
+  #TfidfVectorizer 생성
+  tfidfv = TfidfVectorizer(tokenizer=token,min_df=3, max_df=0.9, stop_words=stopwords)    
+
+  #공고 제목, 내용, 직종명, 요구 자격증명 합쳐서 문서 생성
+  texts = []  
+  for i in range(df.index.size):
+    if df['certificate_name'][i] == None :
+      df['certificate_name'][i] = ""
+    texts.append(df['title'][i] + "\n" + df['content'][i] + "\n" + df['job_name'][i] + "\n" + df['certificate_name'][i])
+  texts[0]
+
+  #문서 정규화
+  content = [okt.normalize(texts[i]) for i in range(df.index.size)]  
+
+  #전체 공고 벡터
+  ftr_vect = tfidfv.fit_transform(content)   
+  ftr_arr = ftr_vect.toarray()
+  np.save("/home/ubuntu/workspace/ftrVect.npy", ftr_arr)
+
+
 if __name__ == '__main__' :
     db = db_connection()
     result = db_select_recruit()
@@ -93,5 +132,8 @@ if __name__ == '__main__' :
 
     recruit_data_final.to_csv("/home/ubuntu/workspace/recruitData.csv", mode="w")
     print("to_csv")
+
+    df = recruit_data_final
+    vectorize()
 
     db.close()
