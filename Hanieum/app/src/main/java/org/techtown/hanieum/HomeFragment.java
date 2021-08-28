@@ -79,12 +79,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private void loadListData() {
         ArrayList<Recommendation> items = new ArrayList<>();
 
-        itemNum.setText("20");
-
-        for (int i=0; i<20; i++) {
-            items.add(new Recommendation("DdA0402108062034", "(주)한경", "상가 관리소장 모집", "월", "105", 1100.0, false));
-        }
-
         adapter.setItems(items);
     }
 }
