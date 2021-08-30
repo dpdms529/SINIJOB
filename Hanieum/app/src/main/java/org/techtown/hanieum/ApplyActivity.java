@@ -155,7 +155,7 @@ public class ApplyActivity extends AppCompatActivity implements View.OnClickList
             ArrayList<String> mResult =results.getStringArrayList(key);
             String[] rs = new String[mResult.size()];
             mResult.toArray(rs);
-            textMsg.setText(textMsg.getText() + rs[0]);
+            textMsg.setText(textMsg.getText() + " " + rs[0]);
             textSys.setText("");
         }
 

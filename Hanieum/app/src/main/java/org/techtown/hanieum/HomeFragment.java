@@ -37,6 +37,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     AppDatabase db;
 
     Context context;
+    String uId = "3";   // 유저 아이디
 
     public HomeFragment() {
         // Required empty public constructor
@@ -94,13 +95,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     private void loadListData() {
         ArrayList<Recommendation> items = new ArrayList<>();
-        String _uId = "3";  // 유저 아이디
-        String recoPhp = getResources().getString(R.string.serverIP)+"reco_list.php?user_id=" + _uId;
+        String recoPhp = getResources().getString(R.string.serverIP)+"reco_list.php?user_id=" + uId;
         URLConnector urlConnector = new URLConnector(recoPhp);
 
         // 북마크 테이블 읽어오기
-        ArrayList<HashMap<String, String>> arrayList = new ArrayList<>();
-        String bookmarkPhp = context.getResources().getString(R.string.serverIP)+"bookmark_read.php";
+        ArrayList<String> arrayList = new ArrayList<>();
+        String bookmarkPhp = context.getResources().getString(R.string.serverIP)+"bookmark_read.php?user_id="+uId;
         URLConnector urlConnectorBookmark = new URLConnector(bookmarkPhp);
         urlConnectorBookmark.start();
         try {
@@ -115,15 +115,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
             for (int i=0; i<jsonArray.length(); i++) {
                 JSONObject jsonObject1 = jsonArray.getJSONObject(i);
-
-                HashMap<String, String> hashMap = new HashMap<>();
-                String user_id = jsonObject1.getString("user_id");
                 String recruit_id = jsonObject1.getString("recruit_id");
-
-                hashMap.put("user_id", user_id);
-                hashMap.put("recruit_id", recruit_id);
-
-                arrayList.add(hashMap);
+                arrayList.add(recruit_id);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -178,12 +171,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
                 // 북마크 확인하는 코드
                 for (int j=0; j<arrayList.size(); j++) {
-                    HashMap<String ,String> hashMap = arrayList.get(j);
-                    String uId = hashMap.get("user_id");
-                    String rId = hashMap.get("recruit_id");
-
-                    // 유저 아이디 = 3
-                    if (uId.equals("3") && rId.equals(recruit.get(0).recruit_id)) {
+                    String rId = arrayList.get(j);
+                    if (rId.equals(recruit.get(0).recruit_id)) {
                         flag = 1;
                     }
                 }

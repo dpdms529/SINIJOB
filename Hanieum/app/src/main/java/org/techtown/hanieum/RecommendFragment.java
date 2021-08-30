@@ -74,6 +74,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
     SharedPreference pref;
 
     Context context;
+    String uId = "3";   // 유저 아이디
 
     //음성 인식용
     Intent intent;
@@ -847,8 +848,8 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
             }
 
             // 북마크 업데이트 (삭제된 공고 제거)
-            ArrayList<HashMap<String, String>> arrayList = new ArrayList<>();
-            String bookmarkPhp = context.getResources().getString(R.string.serverIP)+"bookmark_read.php";
+            ArrayList<String> arrayList = new ArrayList<>();
+            String bookmarkPhp = context.getResources().getString(R.string.serverIP)+"bookmark_read.php?user_id="+uId;
             URLConnector urlConnectorBookmark = new URLConnector(bookmarkPhp);
             urlConnectorBookmark.start();
             try {
@@ -863,25 +864,15 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
 
                 for (int i=0; i<jsonArray.length(); i++) {
                     JSONObject jsonObject1 = jsonArray.getJSONObject(i);
-
-                    HashMap<String, String> hashMap = new HashMap<>();
-                    String user_id = jsonObject1.getString("user_id");
                     String recruit_id = jsonObject1.getString("recruit_id");
-
-                    hashMap.put("user_id", user_id);
-                    hashMap.put("recruit_id", recruit_id);
-
-                    arrayList.add(hashMap);
+                    arrayList.add(recruit_id);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
 
             for (int j=0; j<arrayList.size(); j++) {
-                HashMap<String ,String> hashMap = arrayList.get(j);
-                String uId = hashMap.get("user_id");
-                String rId = hashMap.get("recruit_id");
-
+                String rId = arrayList.get(j);
                 if (db.RecruitDao().getList(rId).size() == 0) { // 삭제된 공고면 북마크 테이블에서 해당 공고 삭제
                     String bookmarkDelPhp = context.getResources().getString(R.string.serverIP)+"bookmark_del.php?user_id="+uId+"&recruit_id="+rId;
                     URLConnector urlConnectorBookmarkDel = new URLConnector(bookmarkDelPhp);
@@ -1022,8 +1013,8 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
         itemNum.setText(String.valueOf(rows.size()));
 
         // 북마크 테이블 읽어오기
-        ArrayList<HashMap<String, String>> arrayList = new ArrayList<>();
-        String bookmarkPhp = context.getResources().getString(R.string.serverIP)+"bookmark_read.php";
+        ArrayList<String> arrayList = new ArrayList<>();
+        String bookmarkPhp = context.getResources().getString(R.string.serverIP)+"bookmark_read.php?user_id="+uId;
         URLConnector urlConnectorBookmark = new URLConnector(bookmarkPhp);
         urlConnectorBookmark.start();
         try {
@@ -1038,15 +1029,8 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
 
             for (int i=0; i<jsonArray.length(); i++) {
                 JSONObject jsonObject1 = jsonArray.getJSONObject(i);
-
-                HashMap<String, String> hashMap = new HashMap<>();
-                String user_id = jsonObject1.getString("user_id");
                 String recruit_id = jsonObject1.getString("recruit_id");
-
-                hashMap.put("user_id", user_id);
-                hashMap.put("recruit_id", recruit_id);
-
-                arrayList.add(hashMap);
+                arrayList.add(recruit_id);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -1085,12 +1069,8 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
 
             // 북마크 확인하는 코드
             for (int j=0; j<arrayList.size(); j++) {
-                HashMap<String ,String> hashMap = arrayList.get(j);
-                String uId = hashMap.get("user_id");
-                String rId = hashMap.get("recruit_id");
-
-                // 유저 아이디 = 3
-                if (uId.equals("3") && rId.equals(row.recruit_id)) {
+                String rId = arrayList.get(i);
+                if (rId.equals(row.recruit_id)) {
                     flag = 1;
                 }
             }
