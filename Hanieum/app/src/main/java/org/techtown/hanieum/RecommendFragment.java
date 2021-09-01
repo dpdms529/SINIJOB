@@ -1190,7 +1190,15 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
    }
 
     private void checkCertifiLastUpdated() { // 기기의 업데이트 일시와 DB의 업데이트 일시를 확인
-        List<String> rows = db.recruitCertificateDao().getLastUpdated();
+        List<String> rows = null;
+        try {
+            rows = new CertifiLastUpdateAsyncTask(db.recruitCertificateDao()).execute().get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+//        db.recruitCertificateDao().getLastUpdated();
         String lastUpdated = rows.get(0);
         Log.d("date: ", "certifi: "+lastUpdated);
         String dbLastUpdated = "";
@@ -1274,6 +1282,19 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
             return mRecruitDao.getLastUpdated();
         }
 
+    }
+
+    public static class CertifiLastUpdateAsyncTask extends AsyncTask<Void, Void, List<String>> {
+        private RecruitCertificateDao mRecruitCertifiDao;
+
+        public  CertifiLastUpdateAsyncTask(RecruitCertificateDao recruitCertificateDao){
+            this.mRecruitCertifiDao = recruitCertificateDao;
+        }
+
+        @Override
+        protected List<String> doInBackground(Void... voids) {
+            return mRecruitCertifiDao.getLastUpdated();
+        }
     }
 
     // 메인스레드에서 데이터베이스에 접근할 수 없으므로 AsyncTask 사용 - INSERT

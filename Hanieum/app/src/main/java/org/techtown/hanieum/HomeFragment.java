@@ -234,7 +234,15 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     }
 
     private void checkCertifiLastUpdated() { // 기기의 업데이트 일시와 DB의 업데이트 일시를 확인
-        List<String> rows = db.recruitCertificateDao().getLastUpdated();
+        List<String> rows = null;
+        try {
+            rows = new CertifiLastUpdateAsyncTask(db.recruitCertificateDao()).execute().get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+//        db.recruitCertificateDao().getLastUpdated();
         String lastUpdated = rows.get(0);
         Log.d("date: ", "certifi: "+lastUpdated);
         String dbLastUpdated = "";
@@ -320,6 +328,19 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     }
 
+    public static class CertifiLastUpdateAsyncTask extends AsyncTask<Void, Void, List<String>> {
+        private RecruitCertificateDao mRecruitCertifiDao;
+
+        public  CertifiLastUpdateAsyncTask(RecruitCertificateDao recruitCertificateDao){
+            this.mRecruitCertifiDao = recruitCertificateDao;
+        }
+
+        @Override
+        protected List<String> doInBackground(Void... voids) {
+            return mRecruitCertifiDao.getLastUpdated();
+        }
+    }
+
     // 메인스레드에서 데이터베이스에 접근할 수 없으므로 AsyncTask 사용 - INSERT
     public static class RecruitInsertAsyncTask extends AsyncTask<Recruit, Void, Void> {
         private RecruitDao mRecruitDao;
@@ -380,7 +401,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     private void loadListData() {
         ArrayList<Recommendation> items = new ArrayList<>();
-        String _uId = "3";  // 유저 아이디
+        String _uId = getResources().getString(R.string.user_id);  // 유저 아이디
         String recoPhp = getResources().getString(R.string.serverIP)+"reco_list.php?user_id=" + _uId;
         URLConnector urlConnector = new URLConnector(recoPhp);
 
@@ -439,8 +460,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+                Log.d("TAG", recruit_id + " " + recruit.size());
                 int flag = 0;
-                Log.d("TAG", "loadListData: "+recruit.get(0).salary_type_code);
                 String salaryType = new String();
                 switch (recruit.get(0).salary_type_code) {     // 급여 타입에 알맞은 단어
                     case "H":
