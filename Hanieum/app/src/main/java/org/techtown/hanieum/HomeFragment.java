@@ -177,7 +177,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
             // 북마크 업데이트 (삭제된 공고 제거)
             ArrayList<HashMap<String, String>> arrayList = new ArrayList<>();
-            String _uId = "3";  // 유저 아이디
+            String _uId = getResources().getString(R.string.user_id);  // 유저 아이디
             String bookmarkPhp = context.getResources().getString(R.string.serverIP)+"bookmark_read.php?user_id="+_uId;
             URLConnector urlConnectorBookmark = new URLConnector(bookmarkPhp);
             urlConnectorBookmark.start();
@@ -440,7 +440,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     e.printStackTrace();
                 }
                 int flag = 0;
-
+                Log.d("TAG", "loadListData: "+recruit.get(0).salary_type_code);
                 String salaryType = new String();
                 switch (recruit.get(0).salary_type_code) {     // 급여 타입에 알맞은 단어
                     case "H":
@@ -476,7 +476,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     String rId = hashMap.get("recruit_id");
 
                     // 유저 아이디 = 3
-                    if (uId.equals("3") && rId.equals(recruit.get(0).recruit_id)) {
+                    if (uId.equals(getResources().getString(R.string.user_id)) && rId.equals(recruit.get(0).recruit_id)) {
                         flag = 1;
                     }
                 }

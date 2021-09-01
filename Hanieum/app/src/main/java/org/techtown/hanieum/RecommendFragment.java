@@ -1133,7 +1133,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
 
             // 북마크 업데이트 (삭제된 공고 제거)
             ArrayList<HashMap<String, String>> arrayList = new ArrayList<>();
-            String _uId = "3";  // 유저 아이디
+            String _uId = getResources().getString(R.string.user_id);  // 유저 아이디
             String bookmarkPhp = context.getResources().getString(R.string.serverIP)+"bookmark_read.php?user_id="+_uId;
             URLConnector urlConnectorBookmark = new URLConnector(bookmarkPhp);
             urlConnectorBookmark.start();
@@ -1344,7 +1344,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
 
         // 북마크 테이블 읽어오기
         ArrayList<HashMap<String, String>> arrayList = new ArrayList<>();
-        String _uId = "3";  // 유저 아이디
+        String _uId = getResources().getString(R.string.user_id);  // 유저 아이디
         String bookmarkPhp = context.getResources().getString(R.string.serverIP)+"bookmark_read.php?user_id="+_uId;
         URLConnector urlConnectorBookmark = new URLConnector(bookmarkPhp);
         urlConnectorBookmark.start();
@@ -1412,7 +1412,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
                 String rId = hashMap.get("recruit_id");
 
                 // 유저 아이디 = 3
-                if (uId.equals("3") && rId.equals(row.recruit_id)) {
+                if (uId.equals(getResources().getString(R.string.user_id)) && rId.equals(row.recruit_id)) {
                     flag = 1;
                 }
             }
