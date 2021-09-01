@@ -446,7 +446,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         try {
             JSONObject jsonObject = new JSONObject(result);
             JSONArray jsonArray = jsonObject.getJSONArray("result");
-            itemNum.setText(jsonObject.getString("rownum"));
+            int count = 0;
 
             for (int i=0; i<jsonArray.length(); i++) {
                 JSONObject jsonObject1 = jsonArray.getJSONObject(i);
@@ -460,7 +460,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                Log.d("TAG", recruit_id + " " + recruit.size());
+
                 int flag = 0;
                 String salaryType = new String();
                 switch (recruit.get(0).salary_type_code) {     // 급여 타입에 알맞은 단어
@@ -489,29 +489,37 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 }
                 DistanceCalculator distance =  new DistanceCalculator("127.12934", "35.84688", recruit.get(0).x_coordinate, recruit.get(0).y_coordinate);
                 Double dist = distance.getStraightDist();   // 직선거리 구하는 함수
+                if(dist>15000){
+                    continue;
+                }else{
+                    // 북마크 확인하는 코드
+                    for (int j=0; j<arrayList.size(); j++) {
+                        HashMap<String ,String> hashMap = arrayList.get(j);
+                        String uId = hashMap.get("user_id");
+                        String rId = hashMap.get("recruit_id");
 
-                // 북마크 확인하는 코드
-                for (int j=0; j<arrayList.size(); j++) {
-                    HashMap<String ,String> hashMap = arrayList.get(j);
-                    String uId = hashMap.get("user_id");
-                    String rId = hashMap.get("recruit_id");
-
-                    // 유저 아이디 = 3
-                    if (uId.equals(getResources().getString(R.string.user_id)) && rId.equals(recruit.get(0).recruit_id)) {
-                        flag = 1;
+                        // 유저 아이디 = 3
+                        if (uId.equals(getResources().getString(R.string.user_id)) && rId.equals(recruit.get(0).recruit_id)) {
+                            flag = 1;
+                        }
                     }
+
+                    if (flag == 1) {    // 북마크가 되어 있을 때
+                        items.add(new Recommendation(recruit.get(0).recruit_id, recruit.get(0).organization, recruit.get(0).recruit_title, salaryType, sal, dist, true));
+                    } else {    // 북마크가 안 되어 있을 때
+                        items.add(new Recommendation(recruit.get(0).recruit_id, recruit.get(0).organization, recruit.get(0).recruit_title, salaryType, sal, dist, false));
+                    }
+                    count++;
+                }
+                if(count==100){
+                    break;
                 }
 
-                if (flag == 1) {    // 북마크가 되어 있을 때
-                    items.add(new Recommendation(recruit.get(0).recruit_id, recruit.get(0).organization, recruit.get(0).recruit_title, salaryType, sal, dist, true));
-                } else {    // 북마크가 안 되어 있을 때
-                    items.add(new Recommendation(recruit.get(0).recruit_id, recruit.get(0).organization, recruit.get(0).recruit_title, salaryType, sal, dist, false));
-                }
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
+        itemNum.setText(String.valueOf(items.size()));
         adapter.setItems(items);
     }
 }
