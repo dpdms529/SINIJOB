@@ -66,7 +66,7 @@ def recommend():
   total_sim_df['similarity'] = total_sim_values
   total_sim_df = total_sim_df.drop(my_idx)
   print("recommend()")  # 상위 100개만 추출
-  return total_sim_df[:100].values.tolist()
+  return total_sim_df.values.tolist()
 
 def db_insert(userId):
   cursor = db.cursor(pymysql.cursors.DictCursor)
