@@ -29,6 +29,17 @@
 
     </androidx.appcompat.widget.Toolbar>
 
+    <ImageButton
+        android:id="@+id/helpButton"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginStart="40dp"
+        android:background="#00ff0000"
+        app:layout_constraintBottom_toBottomOf="@+id/toolbar2"
+        app:layout_constraintStart_toStartOf="@+id/toolbar2"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/help" />
+
     <Button
         android:id="@+id/resetButton"
         android:layout_width="wrap_content"

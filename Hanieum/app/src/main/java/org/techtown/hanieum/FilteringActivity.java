@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
@@ -29,6 +30,7 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
     Button resetButton; // 초기화 버튼
     Button regionButton; // 지역 선택 화면으로 이동하는 버튼
     Button jobButton; // 직종 선택 화면으로 이동하는 버튼
+    ImageButton helpButton;
     RadioGroup careerGroup; // 경력 RadioGroup
     RadioGroup licenseGroup; // 자격증 RadioGroup
     RadioGroup workFormGroup; // 근무형태 RadioGroup
@@ -58,6 +60,7 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
         resetButton = findViewById(R.id.resetButton);
         regionButton = findViewById(R.id.regionButton);
         jobButton = findViewById(R.id.jobButton);
+        helpButton = findViewById(R.id.helpButton);
         careerGroup = findViewById(R.id.careerGroup);
         licenseGroup = findViewById(R.id.licenseGroup);
         workFormGroup = findViewById(R.id.workFormGroup);
@@ -146,6 +149,7 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
         resetButton.setOnClickListener(this);
         regionButton.setOnClickListener(this);
         jobButton.setOnClickListener(this);
+        helpButton.setOnClickListener(this);
 
         ArrayList<ChipList> jobChipList = pref.getArrayPref(SharedPreference.JOB_LIST);
         pref.setArrayPref(jobChipList, SharedPreference.JOB_TMP);
@@ -211,6 +215,10 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
         } else if (v == jobButton) {
             Intent intent = new Intent(this, JobActivity.class);
             launcher.launch(intent);
+        } else if (v == helpButton) {
+            Intent intent = new Intent(this, HelpActivity.class);
+            intent.putExtra("from", "FilteringActivity");
+            startActivity(intent);
         }
     }
 

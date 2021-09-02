@@ -61,6 +61,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
     Button changeButton; // 조건 변경 화면으로 이동하는 버튼
     ImageButton searchButton; // 검색 버튼
     ImageButton micButton; // 마이크 버튼
+    ImageButton helpButton; // 도움말 버튼
     TextView itemNum;
     TextView title; //화면 제목
     EditText editSearch;  //검색창
@@ -99,6 +100,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
         changeButton = view.findViewById(R.id.changeButton);
         searchButton = view.findViewById(R.id.searchButton);
         micButton = view.findViewById(R.id.micButton);
+        helpButton = view.findViewById(R.id.helpButton);
         itemNum = view.findViewById(R.id.itemNum);
         title = view.findViewById(R.id.title);
         editSearch = view.findViewById(R.id.editSearch);
@@ -135,6 +137,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
         changeButton.setOnClickListener(this);
         searchButton.setOnClickListener(this);
         micButton.setOnClickListener(this);
+        helpButton.setOnClickListener(this);
 
         editSearch.addTextChangedListener(new TextWatcher() {   // 공고 검색
             @Override
@@ -700,16 +703,17 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
         } else if (v == searchButton) {
             if(title.getVisibility()==View.VISIBLE){
                 title.setVisibility(View.GONE);
+                helpButton.setVisibility(View.GONE);
                 editSearch.setVisibility(View.VISIBLE);
                 micButton.setVisibility(View.VISIBLE);
             }else{
                 title.setVisibility(View.VISIBLE);
+                helpButton.setVisibility(View.VISIBLE);
                 editSearch.setVisibility(View.GONE);
                 micButton.setVisibility(View.GONE);
                 imm.hideSoftInputFromWindow(editSearch.getWindowToken(),0);
             }
         } else if (v == micButton) {
-//            Toast.makeText(v.getContext(), "메뉴 버튼 눌림", Toast.LENGTH_LONG).show();
             System.out.println("음성인식 시작!");
             // 권한을 허용하지 않는 경우
             if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
@@ -721,6 +725,10 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
                     e.printStackTrace();
                 }
             }
+        } else if (v == helpButton) {
+            Intent intent = new Intent(this.getContext(), HelpActivity.class);
+            intent.putExtra("from", "RecommendFragment");
+            startActivity(intent);
         }
     }
 
@@ -1069,7 +1077,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
 
             // 북마크 확인하는 코드
             for (int j=0; j<arrayList.size(); j++) {
-                String rId = arrayList.get(i);
+                String rId = arrayList.get(j);
                 if (rId.equals(row.recruit_id)) {
                     flag = 1;
                 }
