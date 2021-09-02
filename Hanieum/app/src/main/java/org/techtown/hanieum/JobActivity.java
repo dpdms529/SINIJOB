@@ -8,10 +8,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.Dao;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -22,10 +24,14 @@ import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
 import org.techtown.hanieum.db.AppDatabase;
+import org.techtown.hanieum.db.dao.JobCategoryDao;
+import org.techtown.hanieum.db.dao.RecruitDao;
 import org.techtown.hanieum.db.entity.JobCategory;
+import org.techtown.hanieum.db.entity.Recruit;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class JobActivity extends AppCompatActivity implements View.OnClickListener {
     Toolbar toolbar;
@@ -49,7 +55,15 @@ public class JobActivity extends AppCompatActivity implements View.OnClickListen
 
         AppDatabase db = AppDatabase.getInstance(this);
         Log.e("JobDatabase","job data 조회");
-        List<JobCategory> category = db.jobCategoryDao().getCategory();
+        List<JobCategory> category = null;
+        try {
+            category = new JobGetCategoryAsyncTask(db.jobCategoryDao()).execute().get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+//        db.jobCategoryDao().getCategory();
 
         toolbar = findViewById(R.id.toolbar5);
         jobSearchButton = findViewById(R.id.jobSearchButton);
@@ -72,6 +86,7 @@ public class JobActivity extends AppCompatActivity implements View.OnClickListen
         jobView2.setAdapter(adapter2);
 
         context = this;
+        List<JobCategory> finalCategory = category;
         adapter1.setItemClickListener(new OnJobItemClickListener() {
             @Override
             public void OnItemClick(JobAdapter.Job1ViewHolder holder, View view, int position) {
@@ -80,9 +95,9 @@ public class JobActivity extends AppCompatActivity implements View.OnClickListen
                 ArrayList<ChipList> chipList = pref.getArrayPref(SharedPreference.JOB_TMP);
 
                 items.add(new Job(job.getCode(), job.getJob1()+" 전체", job.getCode(), Code.ViewType.JOB2));
-                for (int i=0; i<category.size(); i++) {
-                    if (job.getJob2().equals(category.get(i).primary_cate_code)) {
-                        items.add(new Job(category.get(i).primary_cate_code, category.get(i).category_name, category.get(i).category_code, Code.ViewType.JOB2));
+                for (int i = 0; i< finalCategory.size(); i++) {
+                    if (job.getJob2().equals(finalCategory.get(i).primary_cate_code)) {
+                        items.add(new Job(finalCategory.get(i).primary_cate_code, finalCategory.get(i).category_name, finalCategory.get(i).category_code, Code.ViewType.JOB2));
                     }
                 }
 
@@ -157,7 +172,15 @@ public class JobActivity extends AppCompatActivity implements View.OnClickListen
         ArrayList<Job> items1 = new ArrayList<>();
         ArrayList<Job> items2 = new ArrayList<>();
         AppDatabase db = AppDatabase.getInstance(this);
-        List<JobCategory> category = db.jobCategoryDao().getCategory();
+        List<JobCategory> category = null;
+        try {
+            category = new JobGetCategoryAsyncTask(db.jobCategoryDao()).execute().get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+//        db.jobCategoryDao().getCategory();
 
         JobAdapter.lastSelectedPosition1 = -1;
         for (int i=0; i<category.size(); i++) {
@@ -188,6 +211,7 @@ public class JobActivity extends AppCompatActivity implements View.OnClickListen
             chip.setOnCloseIconClickListener(new View.OnClickListener() { // 삭제 클릭 시
                 @Override
                 public void onClick(View v) {
+                    int flag = 0;
                     // 아이템 삭제 코드
                     for (int i=0; i<chipList.size(); i++) {
                         if (chipList.get(i).getName().equals(name)) {
@@ -197,7 +221,19 @@ public class JobActivity extends AppCompatActivity implements View.OnClickListen
                                 adapter2.getItem(position).setSelected(false);
                                 pref.setArrayPref(chipList, SharedPreference.JOB_TMP);
                                 adapter2.notifyItemChanged(position);
-                            } else {
+                                flag = 1;
+                            } else if (adapter2.getItemCount() != 0) {
+                                for (int j=0; j<adapter2.getItemCount(); j++) {
+                                    if (adapter2.getItem(j).getJob2().equals(name)) {
+                                        adapter2.getItem(j).setSelected(false);
+                                        pref.setArrayPref(chipList, SharedPreference.JOB_TMP);
+                                        adapter2.notifyItemChanged(j);
+                                        flag = 1;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (flag == 0) {
                                 pref.setArrayPref(chipList, SharedPreference.JOB_TMP);
                             }
                         }
@@ -205,6 +241,19 @@ public class JobActivity extends AppCompatActivity implements View.OnClickListen
                     chipGroup.removeView(chip);
                 }
             });
+        }
+    }
+
+    public static class JobGetCategoryAsyncTask extends AsyncTask<Void,Void,List<JobCategory>> {
+        private JobCategoryDao mJobCategoryDao;
+
+        public JobGetCategoryAsyncTask(JobCategoryDao jobCategoryDao){
+            this.mJobCategoryDao = jobCategoryDao;
+        }
+
+        @Override
+        protected List<JobCategory> doInBackground(Void... voids) {
+            return mJobCategoryDao.getCategory();
         }
     }
 }

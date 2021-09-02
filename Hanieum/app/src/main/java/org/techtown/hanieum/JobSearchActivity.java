@@ -3,6 +3,7 @@ package org.techtown.hanieum;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -24,10 +25,12 @@ import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
 import org.techtown.hanieum.db.AppDatabase;
+import org.techtown.hanieum.db.dao.JobCategoryDao;
 import org.techtown.hanieum.db.entity.JobCategory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class JobSearchActivity extends AppCompatActivity {
     Toolbar toolbar;
@@ -48,7 +51,14 @@ public class JobSearchActivity extends AppCompatActivity {
 
         AppDatabase db = AppDatabase.getInstance(this);
         Log.e("JobDatabase","job data 조회");
-        category = db.jobCategoryDao().getCategory();
+        try {
+            category = new JobGetCategoryAsyncTask(db.jobCategoryDao()).execute().get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+//        db.jobCategoryDao().getCategory();
 
         toolbar = findViewById(R.id.toolbar4);
         recyclerView = findViewById(R.id.searchView);
@@ -178,6 +188,18 @@ public class JobSearchActivity extends AppCompatActivity {
                     chipGroup.removeView(chip);
                 }
             });
+        }
+    }
+    public static class JobGetCategoryAsyncTask extends AsyncTask<Void,Void,List<JobCategory>> {
+        private JobCategoryDao mJobCategoryDao;
+
+        public JobGetCategoryAsyncTask(JobCategoryDao jobCategoryDao){
+            this.mJobCategoryDao = jobCategoryDao;
+        }
+
+        @Override
+        protected List<JobCategory> doInBackground(Void... voids) {
+            return mJobCategoryDao.getCategory();
         }
     }
 }

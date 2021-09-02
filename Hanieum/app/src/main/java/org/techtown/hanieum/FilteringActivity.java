@@ -25,12 +25,12 @@ import com.google.android.material.chip.ChipGroup;
 import java.util.ArrayList;
 
 public class FilteringActivity extends AppCompatActivity implements View.OnClickListener {
-    Toolbar toolbar;
+//    Toolbar toolbar;
     Button saveButton; // 저장 버튼
     Button resetButton; // 초기화 버튼
     Button regionButton; // 지역 선택 화면으로 이동하는 버튼
     Button jobButton; // 직종 선택 화면으로 이동하는 버튼
-    ImageButton helpButton;
+    ImageButton helpButton; // 도움말 버튼
     RadioGroup careerGroup; // 경력 RadioGroup
     RadioGroup licenseGroup; // 자격증 RadioGroup
     RadioGroup workFormGroup; // 근무형태 RadioGroup
@@ -55,7 +55,7 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filtering);
 
-        toolbar = findViewById(R.id.toolbar2);
+//        toolbar = findViewById(R.id.toolbar2);
         saveButton = findViewById(R.id.saveButton);
         resetButton = findViewById(R.id.resetButton);
         regionButton = findViewById(R.id.regionButton);
@@ -140,10 +140,10 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
             }
         });
 
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true); // 뒤로가기
-        getSupportActionBar().setDisplayShowCustomEnabled(true);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+//        setSupportActionBar(toolbar);
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true); // 뒤로가기
+//        getSupportActionBar().setDisplayShowCustomEnabled(true);
+//        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         saveButton.setOnClickListener(this);
         resetButton.setOnClickListener(this);

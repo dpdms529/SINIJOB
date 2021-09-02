@@ -43,8 +43,14 @@ public class HelpActivity extends AppCompatActivity {
         from = intent.getStringExtra("from");
         if (from.equals("RecommendFragment")) {
             numPages = 5;
-        } else {    // FilteringActivity
+        } else if (from.equals("FilteringActivity")) {
             numPages = 5;
+        } else if (from.equals("HomeFragment")) {
+            numPages = 3;
+        } else if (from.equals("DetailActivity")) {
+            numPages = 6;
+        } else {    // ApplyActivity
+            numPages = 3;
         }
 
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
@@ -111,6 +117,8 @@ public class HelpActivity extends AppCompatActivity {
                     return new HelpFragment(4);
                 case 4:
                     return new HelpFragment(5);
+                case 5:
+                    return new HelpFragment(6);
                 default:
                     return new HelpFragment(1);
             }

@@ -85,7 +85,7 @@ public class HelpFragment extends Fragment implements View.OnClickListener {
                 image.setImageDrawable(context.getDrawable(R.drawable.job_list5));
                 text.setText("표시할 공고의 조건을 변경할 수 있습니다");
             }
-        } else {    // FilteringActivity
+        } else if (HelpActivity.from.equals("FilteringActivity")) {
             if (layout == 1) {
                 image.setImageDrawable(context.getDrawable(R.drawable.filtering1));
                 text.setText("보고싶은 공고의 지역과 직종을 선택할 수 있습니다");
@@ -104,6 +104,48 @@ public class HelpFragment extends Fragment implements View.OnClickListener {
             } else if (layout == 5) {
                 image.setImageDrawable(context.getDrawable(R.drawable.filtering5));
                 text.setText("저장 버튼을 누르면 선택된 조건으로 공고를 볼 수 있습니다");
+            }
+        } else if (HelpActivity.from.equals("HomeFragment")) {
+            if (layout == 1) {
+                image.setImageDrawable(context.getDrawable(R.drawable.reco1));
+                text.setText("즐겨찾기한 공고와 지원한 공고를 기반으로 15km 이내의 추천된 공고를 확인할 수 있습니다");
+            } else if (layout == 2) {
+                image.setImageDrawable(context.getDrawable(R.drawable.reco2));
+                text.setText("등록된 주소와 근무지까지의 거리를 볼 수 있고 별표를 눌러 맘에 드는 공고를 즐겨찾기 할 수 있습니다");
+            } else if (layout == 3) {
+                image.setImageDrawable(context.getDrawable(R.drawable.reco3));
+                text.setText("공고를 눌러 상세정보를 볼 수 있습니다");
+            }
+        } else if (HelpActivity.from.equals("DetailActivity")) {
+            if (layout == 1) {
+                image.setImageDrawable(context.getDrawable(R.drawable.detail1));
+                text.setText("공고의 정보를 간략히 확인할 수 있습니다\n별표를 누르면 공고를 즐겨찾기 할 수 있습니다");
+            } else if (layout == 2) {
+                image.setImageDrawable(context.getDrawable(R.drawable.detail2));
+                text.setText("글씨 크기를 조절할 수 있습니다\n음성 출력을 켜 텍스트를 터치해 음성으로 듣거나 '요약해서 듣기' 버튼을 눌러 공고를 요약해 들을 수 있습니다");
+            } else if (layout == 3) {
+                image.setImageDrawable(context.getDrawable(R.drawable.detail3));
+                text.setText("근무지 위치를 확인할 수 있고 '길찾기' 버튼을 눌러 근무지까지의 길을 찾을 수 있습니다");
+            } else if (layout == 4) {
+                image.setImageDrawable(context.getDrawable(R.drawable.detail4));
+                text.setText("버튼 또는 이미지를 눌러 채용정보 제공사이트로 이동할 수 있습니다");
+            } else if (layout == 5) {
+                image.setImageDrawable(context.getDrawable(R.drawable.detail6));
+                text.setText("'공유' 버튼을 눌러 해당 공고를 간략히 공유할 수 있습니다");
+            } else if (layout == 6) {
+                image.setImageDrawable(context.getDrawable(R.drawable.detail5));
+                text.setText("'지원하기' 버튼을 눌러 해당 공고에 지원할 수 있습니다");
+            }
+        } else {    // ApplyActivity
+            if (layout == 1) {
+                image.setImageDrawable(context.getDrawable(R.drawable.detail7));
+                text.setText("'마이크' 버튼을 누르면 하단에 안내 메시지가 뜨고 음성으로 텍스트를 입력할 수 있습니다\n또한 키보드로 입력할 수 있습니다");
+            } else if (layout == 2) {
+                image.setImageDrawable(context.getDrawable(R.drawable.detail8));
+                text.setText("음성 출력을 키고 텍스트를 터치하면 입력된 텍스트를 음성으로 들을 수 있습니다");
+            } else if (layout == 3) {
+                image.setImageDrawable(context.getDrawable(R.drawable.detail9));
+                text.setText("'완료' 버튼을 눌러 입력된 텍스트와 함께 해당 공고에 지원할 수 있습니다");
             }
         }
 
