@@ -4,6 +4,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from konlpy.tag import Okt
 import numpy as np
 from keys import dbhost, dbpw
+import subprocess
 
 def db_connection():  # 데이터베이스 연결
     db = pymysql.connect(
@@ -137,3 +138,5 @@ if __name__ == '__main__' :
     vectorize()
 
     db.close()
+
+    subprocess.call(["python3","/home/ubuntu/workspace/recommend.py","a"])
