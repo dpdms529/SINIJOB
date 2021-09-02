@@ -7,18 +7,24 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.text.util.Linkify;
+import android.util.Base64;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.MenuItem;
@@ -32,6 +38,14 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+/*
+import com.kakao.sdk.newtoneapi.SpeechRecognizerClient;
+import com.kakao.sdk.newtoneapi.SpeechRecognizerManager;
+import com.kakao.sdk.newtoneapi.TextToSpeechClient;
+import com.kakao.sdk.newtoneapi.TextToSpeechListener;
+import com.kakao.sdk.newtoneapi.TextToSpeechManager;
+*/
+
 import net.daum.mf.map.api.MapPOIItem;
 import net.daum.mf.map.api.MapPoint;
 import net.daum.mf.map.api.MapView;
@@ -40,6 +54,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -53,7 +68,7 @@ import java.text.SimpleDateFormat;
 import java.text.ParseException;
 
 public class DetailActivity extends AppCompatActivity implements View.OnClickListener, SeekBar.OnSeekBarChangeListener,
-        MapView.POIItemEventListener, MapView.MapViewEventListener {
+        MapView.POIItemEventListener, MapView.MapViewEventListener/*, TextToSpeechListener*/ {
     Toolbar toolbar;
     MapView mapView;
     Button applyButton;
@@ -81,6 +96,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
     //음성 출력용
     TextToSpeech tts;
+//    private TextToSpeechClient ttsClient;
 
     ArrayList<TextView> attachFileUrl = new ArrayList<>(); //접수방법_제출서류양식
 
@@ -198,6 +214,27 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         summaryButton = findViewById(R.id.voice_summary);
 
         pref = new SharedPreference(getApplicationContext());
+
+        //카카오 음성 api 사용
+        /*
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.RECORD_AUDIO) && ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                ActivityCompat.requestPermissions(this, new String[] { Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE_AUDIO_AND_WRITE_EXTERNAL_STAORGE);
+            } else {
+
+            }
+        } else {
+            startUsingSpeechSDK();
+        }
+
+        TextToSpeechManager.getInstance().initializeLibrary(getApplicationContext());
+        SpeechRecognizerManager.getInstance().initializeLibrary(this);
+
+        SpeechRecognizerClient.Builder builder = new SpeechRecognizerClient.Builder().
+                setServiceType(SpeechRecognizerClient.SERVICE_TYPE_WEB);
+
+        SpeechRecognizerClient client = builder.build();
+         */
 
         // 음성출력 생성, 리스너 초기화
         tts = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
@@ -408,8 +445,8 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         } else if (v == summaryButton){
             String date = apply.get(applyStr[0]).getText().toString(); // 지원 마감일
             String dueDate = date.replaceAll("[^0-9]",""); // 지원 마감일 yymmdd 형태로 바꿈
-            Calendar today = Calendar.getInstance();
-            today.setTime(new Date());
+            String today = "";
+
             long diffDays = 0;
 
             try{
@@ -417,13 +454,9 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 SimpleDateFormat sdfVoice = new SimpleDateFormat("yyyy년 mm월 dd일");
 
                 Date formatDate = sdf.parse(dueDate);
-                Date calDate = sdf.parse(dueDate);
+                today = sdfVoice.format(System.currentTimeMillis());
+                dueDate = sdf.format(formatDate);
 
-                Calendar dueDateCal = Calendar.getInstance();
-                dueDateCal.setTime(calDate);
-
-                long diffSec = (today.getTimeInMillis() - dueDateCal.getTimeInMillis()) / 1000;
-                diffDays = diffSec / (24*60*60);
 
                 dueDate = sdfVoice.format(formatDate);
             } catch (Exception e) {
@@ -434,9 +467,19 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                     "근무지는 " + address.get("addressDetail").getText().toString() + " 입니다." +
                     "임금은 " + workCd.get(workStr[0]).getText().toString() + " " + workCd.get(workStr[1]).getText().toString() + " 입니다." +
                     "근무형태는 " + workCd.get("workDay").getText().toString() + " 입니다." +
-                    "지원 마감일은 " + dueDate + ", 입니다.";
-            //        "마감까지 " + Long.toString(diffDays) + "일 남았습니다.";
-            voiceOut(msg);
+                    "지원 마감일은 " + dueDate + ", 입니다." +
+                    "오늘 날짜는 " + today + ", 입니다." +
+                    "마감까지 " + Long.toString(diffDays) + "일 남았습니다.";
+
+            /*
+            ttsClient = new TextToSpeechClient.Builder()
+                    .setSpeechMode(TextToSpeechClient.NEWTONE_TALK_1)
+                    .setSpeechSpeed(1.0)
+                    .setSpeechVoice(TextToSpeechClient.VOICE_WOMAN_READ_CALM)
+                    .setListener(this)
+                    .build();
+            ttsClient.play(msg);
+             */
         }
         if (voiceTf.isChecked()) {
             if (v == address.get("addressDetail")) {
@@ -539,6 +582,8 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     protected void onDestroy() {
         super.onDestroy();
+    //    SpeechRecognizerManager.getInstance().finalizeLibrary();
+    //    TextToSpeechManager.getInstance().finalizeLibrary();
         if (tts != null) {
             tts.stop();
             tts.shutdown();
@@ -810,4 +855,18 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     public void onStopTrackingTouch(SeekBar seekBar) {
 
     }
+
+    /*
+    // kakao tts 에러처리 함수
+    @Override
+    public void onFinished() {
+
+    }
+
+    // kakao tts 음성합성 종료 시 호출되는 함수
+    @Override
+    public void onError(int code, String message) {
+        Log.e("kakao tts", message);
+    }
+     */
 }

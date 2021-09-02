@@ -115,6 +115,22 @@
                     android:text="건"
                     android:textColor="@color/black"
                     android:textSize="17dp" />
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <Button
+                    android:id="@+id/voice_summary_rec"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="25dp"
+                    android:background="@drawable/border_txt"
+                    android:text="요약해서 듣기"
+                    android:textColor="#508ea8"
+                    android:textSize="20dp"
+                    android:layout_gravity="right"/>
+
             </LinearLayout>
 
             <androidx.recyclerview.widget.RecyclerView

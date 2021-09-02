@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.speech.tts.TextToSpeech;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,26 +18,43 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.kakao.sdk.newtoneapi.TextToSpeechClient;
+import com.kakao.sdk.newtoneapi.TextToSpeechListener;
+import com.kakao.sdk.newtoneapi.TextToSpeechManager;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.techtown.hanieum.db.AppDatabase;
 import org.techtown.hanieum.db.entity.Recruit;
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 public class HomeFragment extends Fragment implements View.OnClickListener {
     RecyclerView recyclerView; // 추천 목록 리사이클러뷰
     RecommendAdapter adapter; // 추천 목록 어댑터
     Button changeButton; // 조건 변경 화면으로 이동하는 버튼
+    Button summaryButton; // 음성 요약 버튼
     ImageButton searchButton; // 검색 버튼
     TextView itemNum;
+    String msg; // 음성 요약 메세지
 
     AppDatabase db;
 
     Context context;
+
+    private TextToSpeechClient ttsClient;
+    TextToSpeech tts;
+
 
     public HomeFragment() {
         // Required empty public constructor
@@ -45,6 +63,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // kakao
+        TextToSpeechManager.getInstance().initializeLibrary(getActivity().getApplicationContext());
+
     }
 
     @Override
@@ -55,10 +76,22 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         context = getContext();
         recyclerView = view.findViewById(R.id.recommendView);
         changeButton = view.findViewById(R.id.changeButton);
+        summaryButton = view.findViewById(R.id.voice_summary_rec);
         searchButton = view.findViewById(R.id.searchButton);
         itemNum = view.findViewById(R.id.itemNum);
+        msg = "추천된 일자리가 없습니다.";
 
         db = AppDatabase.getInstance(this.getContext());
+
+        // 음성출력 생성, 리스너 초기화
+        tts = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (status != android.speech.tts.TextToSpeech.ERROR){
+                    tts.setLanguage(Locale.KOREAN);
+                }
+            }
+        });
 
         // 리사이클러뷰와 어댑터 연결
         LinearLayoutManager layoutManager = new LinearLayoutManager(view.getContext(),
@@ -79,6 +112,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         });
 
         searchButton.setOnClickListener(this);
+        summaryButton.setOnClickListener(this);
 
         loadListData();
 
@@ -89,6 +123,16 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         if (v == searchButton) {
             Toast.makeText(getContext(), "검색", Toast.LENGTH_SHORT).show();
+        } else if (v == summaryButton) {
+            ttsClient = new TextToSpeechClient.Builder()
+                    .setSpeechMode(TextToSpeechClient.NEWTONE_TALK_1)
+                    .setSpeechSpeed(1.0)
+                    .setSpeechVoice(TextToSpeechClient.VOICE_WOMAN_READ_CALM)
+                    .setListener(ttsListener)
+                    .build();
+            ttsClient.setSpeechText(msg);
+            ttsClient.play();
+        //    voiceOut(msg);
         }
     }
 
@@ -97,6 +141,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         String _uId = "3";  // 유저 아이디
         String recoPhp = getResources().getString(R.string.serverIP)+"reco_list.php?user_id=" + _uId;
         URLConnector urlConnector = new URLConnector(recoPhp);
+
+        HashMap<String, Integer> summary = new HashMap<String, Integer>(){{}};
+        String firstDist = "0";
+        String firstCorp = "0";
+        String firstJob = "";
 
         // 북마크 테이블 읽어오기
         ArrayList<HashMap<String, String>> arrayList = new ArrayList<>();
@@ -193,11 +242,71 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 } else {    // 북마크가 안 되어 있을 때
                     items.add(new Recommendation(recruit.get(0).recruit_id, recruit.get(0).organization, recruit.get(0).recruit_title, salaryType, sal, dist, false));
                 }
+
+                String jobNm = db.jobCategoryDao().getCategoryName(recruit.get(0).job_code);
+
+                if(i == 0) { // 가장 먼저 추천된 공고일 때
+                    firstDist = dist.toString();
+                    firstCorp = recruit.get(0).organization;
+                    firstJob = jobNm;
+                }
+
+                if(summary.containsKey(jobNm)) {
+                    Integer n = summary.get(jobNm);
+                    n += 1;
+                    summary.put(jobNm, n);
+                } else {
+                    summary.put(jobNm, 1);
+                }
+
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
+        if(Integer.parseInt(itemNum.getText().toString()) > 0) {
+            List<Map.Entry<String, Integer>> entryList = new LinkedList<>(summary.entrySet());
+
+            Collections.sort(entryList, new Comparator<Map.Entry<String, Integer>>() {
+                @Override
+                public int compare(Map.Entry<String, Integer> obj1, Map.Entry<String, Integer> obj2) {
+                    return obj2.getValue().compareTo(obj1.getValue());
+                }
+            });
+            msg = "추천된 공고는 총" + itemNum.getText().toString() + ", 건 입니다." +
+                    "첫 번째로 추천된 공고는 " + firstCorp + "에서 모집하는, " + firstJob + ", 공고입니다." + "근무지는 현재 위치에서 " + firstDist + "km 떨어져 있습니다." +
+                    "가장 많이 추천된 공고는 " + entryList.get(0).getKey() + ", " + entryList.get(0).getValue() + "건 입니다.";
+        } else {
+
+        }
+
         adapter.setItems(items);
     }
+
+    // 음성 메세지 출력용
+    private void voiceOut(String msg){
+        if (msg.length() < 1) return;
+
+        // 음성 출력
+        tts.setPitch(0.8f); //목소리 톤1.0
+        tts.setSpeechRate(0.9f);    //목소리 속도
+        tts.speak(msg, TextToSpeech.QUEUE_FLUSH,null, null);
+    }
+
+    public void onDestroy() {
+        super.onDestroy();
+        TextToSpeechManager.getInstance().finalizeLibrary();
+    }
+
+    private TextToSpeechListener ttsListener = new TextToSpeechListener() {
+        @Override
+        public void onFinished() {
+
+        }
+
+        @Override
+        public void onError(int code, String message) {
+
+        }
+    };
 }
