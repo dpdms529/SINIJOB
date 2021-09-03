@@ -70,7 +70,9 @@ public class HelpFragment extends Fragment implements View.OnClickListener {
 
         if (HelpActivity.from.equals("RecommendFragment")) {
             if (layout == 1) {
-                image.setImageDrawable(context.getDrawable(R.drawable.job_list1));
+                Glide.with(this).load(R.drawable.job_list1)
+                        .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.NONE))
+                        .into(new DrawableImageViewTarget(image));
                 text.setText("일자리의 목록과 건수를 확인할 수 있습니다");
             } else if (layout == 2) {
                 image.setImageDrawable(context.getDrawable(R.drawable.job_list2));
@@ -87,22 +89,35 @@ public class HelpFragment extends Fragment implements View.OnClickListener {
             }
         } else if (HelpActivity.from.equals("FilteringActivity")) {
             if (layout == 1) {
-                image.setImageDrawable(context.getDrawable(R.drawable.filtering1));
-                text.setText("보고싶은 공고의 지역과 직종을 선택할 수 있습니다");
+                Glide.with(this).load(R.drawable.region_sel)
+                        .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.NONE))
+                        .into(new DrawableImageViewTarget(image));
+                text.setText("보고싶은 공고의 지역을 선택할 수 있습니다");
             } else if (layout == 2) {
-                image.setImageDrawable(context.getDrawable(R.drawable.filtering2));
+                Glide.with(this).load(R.drawable.job_sel)
+                        .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.NONE))
+                        .into(new DrawableImageViewTarget(image));
+                text.setText("보고싶은 공고의 직종을 선택할 수 있습니다");
+            } else if (layout == 3) {
+                Glide.with(this).load(R.drawable.filtering2)
+                        .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.NONE))
+                        .into(new DrawableImageViewTarget(image));
                 text.setText("등록된 이력서의 경력과 자격증에 맞는 공고를 볼지 선택할 수 있습니다\n" +
                         "적용 안함을 하면 모든 경력과 자격증의 공고가 노출됩니다");
-            } else if (layout == 3) {
-                image.setImageDrawable(context.getDrawable(R.drawable.filtering3));
-                text.setText("원하는 근무 형태의 공고를 선택할 수 있습니다");
             } else if (layout == 4) {
+                Glide.with(this).load(R.drawable.filtering3)
+                        .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.NONE))
+                        .into(new DrawableImageViewTarget(image));
+                text.setText("원하는 근무 형태의 공고를 선택할 수 있습니다");
+            } else if (layout == 5) {
                 Glide.with(this).load(R.drawable.filtering4)
                         .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.NONE))
                         .into(new DrawableImageViewTarget(image));
                 text.setText("x를 눌러 삭제할 수 있고 초기화 버튼을 눌러 모든 변경 사항을 없앨 수 있습니다");
-            } else if (layout == 5) {
-                image.setImageDrawable(context.getDrawable(R.drawable.filtering5));
+            } else if (layout == 6) {
+                Glide.with(this).load(R.drawable.filtering5)
+                        .apply(new RequestOptions().diskCacheStrategy(DiskCacheStrategy.NONE))
+                        .into(new DrawableImageViewTarget(image));
                 text.setText("저장 버튼을 누르면 선택된 조건으로 공고를 볼 수 있습니다");
             }
         } else if (HelpActivity.from.equals("HomeFragment")) {

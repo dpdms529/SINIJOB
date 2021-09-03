@@ -44,7 +44,7 @@ public class HelpActivity extends AppCompatActivity {
         if (from.equals("RecommendFragment")) {
             numPages = 5;
         } else if (from.equals("FilteringActivity")) {
-            numPages = 5;
+            numPages = 6;
         } else if (from.equals("HomeFragment")) {
             numPages = 3;
         } else if (from.equals("DetailActivity")) {

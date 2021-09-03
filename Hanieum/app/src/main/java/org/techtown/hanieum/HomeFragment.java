@@ -91,7 +91,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         checkLastUpdated();
         checkCertifiLastUpdated();
 
-//        loadListData();
+        loadListData();
 
         return view;
     }
