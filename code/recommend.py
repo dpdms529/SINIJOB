@@ -82,7 +82,8 @@ def recommend():
   total_sim_df['recruit_id'] = df.iloc[total_sorted_idx]['recruit_id']
   total_sim_df['similarity'] = total_sim_values
   total_sim_df = total_sim_df.drop(my_idx)
-  print("recommend()")  # 상위 100개만 추출
+  total_sim_df = total_sim_df[total_sim_df['similarity']>0.1]
+  print("recommend()") 
   return total_sim_df.values.tolist()
 
 def db_insert(userId):
