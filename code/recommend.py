@@ -35,6 +35,23 @@ def db_select_favorite(userId): # 선호 공고 데이터 불러오기
         print("db_select_favorite()")
         return result
 
+def db_select_userId(): # 선호 공고 데이터 불러오기
+    cursor = db.cursor(pymysql.cursors.DictCursor)
+    
+    try:
+        sql = """select user_id from temp_favorite group by user_id;"""
+        cursor.execute(sql)
+        results = cursor.fetchall()
+        result = []
+        for i in results:
+            result.append(i['user_id'])
+    except pymysql.err.internalError as e:
+        code,msg = e.args
+    finally:
+        cursor.close()
+        print("db_select_userId()")
+        return result
+
 def recommend(): 
   #전체 공고 벡터
   ftr_vect = np.load("/home/ubuntu/workspace/ftrVect.npy")
@@ -109,22 +126,44 @@ if __name__ == '__main__':
   db = db_connection()
   userId = sys.argv[1]
   print("userId : " + userId)
-  favorite = db_select_favorite(userId)
   df = pd.read_csv("/home/ubuntu/workspace/recruitData.csv",index_col=0)
-  my_data = []
-  my_idx = []
-  for i in favorite:
-    my_data.append(df[df['recruit_id']==i].values[0])
-    my_idx.append(df[df['recruit_id']==i].index[0])
-  my_df = pd.DataFrame(my_data,columns=df.columns)
-  print(my_df['recruit_id'].values)
-  if not my_df.empty:
-    rec_result = recommend()
-    for i in rec_result:
-      i.insert(0,userId)
-    db_insert(userId)
+
+  if userId == "a":
+    userIds = db_select_userId()
+    for id in userIds:
+      favorite = db_select_favorite(id)
+      my_data = []
+      my_idx = []
+      for i in favorite:
+        my_data.append(df[df['recruit_id']==i].values[0])
+        my_idx.append(df[df['recruit_id']==i].index[0])
+      my_df = pd.DataFrame(my_data,columns=df.columns)
+      print(my_df['recruit_id'].values)
+      if not my_df.empty:
+        rec_result = recommend()
+        for i in rec_result:
+          i.insert(0,id)
+        db_insert(id)
+      else:
+        db_delete(id)
+
   else:
-    db_delete(userId)
+    favorite = db_select_favorite(userId)
+    my_data = []
+    my_idx = []
+    for i in favorite:
+      my_data.append(df[df['recruit_id']==i].values[0])
+      my_idx.append(df[df['recruit_id']==i].index[0])
+    my_df = pd.DataFrame(my_data,columns=df.columns)
+    print(my_df['recruit_id'].values)
+    if not my_df.empty:
+      rec_result = recommend()
+      for i in rec_result:
+        i.insert(0,userId)
+      db_insert(userId)
+    else:
+      db_delete(userId)
+
   print("db close")
   db.close()
 
