@@ -25,6 +25,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.SeekBar;
@@ -54,8 +55,9 @@ import java.text.ParseException;
 
 public class DetailActivity extends AppCompatActivity implements View.OnClickListener, SeekBar.OnSeekBarChangeListener,
         MapView.POIItemEventListener, MapView.MapViewEventListener {
-    Toolbar toolbar;
+//    Toolbar toolbar;
     MapView mapView;
+    ImageButton helpButton; // 도움말 버튼
     Button applyButton;
     Button findWay;
     Button goWorknetBtn;
@@ -180,7 +182,8 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
         context = this;
 
-        toolbar = findViewById(R.id.toolbar0201);
+//        toolbar = findViewById(R.id.toolbar0201);
+        helpButton = findViewById(R.id.helpButton);
         applyButton = findViewById(R.id.applyButton);
         findWay = findViewById(R.id.findWay);
         goWorknetBtn = findViewById(R.id.goWorknetBtn);
@@ -279,20 +282,26 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         String id = intent.getStringExtra("id");
         loadData(id);
 
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowCustomEnabled(true);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+//        setSupportActionBar(toolbar);
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        getSupportActionBar().setDisplayShowCustomEnabled(true);
+//        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         mapView.setMapViewEventListener(this);
         mapView.setPOIItemEventListener(this);
 
+        helpButton.setOnClickListener(this);
         applyButton.setOnClickListener(this);
         findWay.setOnClickListener(this);
         goWorknetBtn.setOnClickListener(this);
         goWorknetImg.setOnClickListener(this);
         shareButton.setOnClickListener(this);
         summaryButton.setOnClickListener(this);
+        companyNameDetail.setOnClickListener(this);
+        titleDetail.setOnClickListener(this);
+        workFormDetail.setOnClickListener(this);
+        schoolDetail.setOnClickListener(this);
+        careerDetail.setOnClickListener(this);
         address.get("addressDetail").setOnClickListener(this);
         for (int i=0; i<recruitStr.length; i++) {
             recruitCd.get(recruitStr[i]).setOnClickListener(this);
@@ -326,7 +335,6 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     public void onClick(View v) {
         if (v == applyButton) {
-
             // 접수 방법 알림 다이얼로그
             AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
             alertDialog.setTitle("접수 방법을 확인해주세요\n");
@@ -437,8 +445,32 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                     "지원 마감일은 " + dueDate + ", 입니다.";
             //        "마감까지 " + Long.toString(diffDays) + "일 남았습니다.";
             voiceOut(msg);
+        } else if (v == helpButton) {
+            Intent intent = new Intent(this, HelpActivity.class);
+            intent.putExtra("from", "DetailActivity");
+            startActivity(intent);
         }
         if (voiceTf.isChecked()) {
+            if (v == companyNameDetail) {
+                String msg = companyNameDetail.getText().toString();
+                voiceOut(msg);
+            }
+            if (v == titleDetail) {
+                String msg = titleDetail.getText().toString();
+                voiceOut(msg);
+            }
+            if (v == workFormDetail) {
+                String msg = workFormDetail.getText().toString();
+                voiceOut(msg);
+            }
+            if (v == schoolDetail) {
+                String msg = schoolDetail.getText().toString();
+                voiceOut(msg);
+            }
+            if (v == careerDetail) {
+                String msg = careerDetail.getText().toString();
+                voiceOut(msg);
+            }
             if (v == address.get("addressDetail")) {
                 String msg = address.get("addressDetail").getText().toString();
                 voiceOut(msg);

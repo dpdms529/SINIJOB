@@ -211,6 +211,7 @@ public class JobActivity extends AppCompatActivity implements View.OnClickListen
             chip.setOnCloseIconClickListener(new View.OnClickListener() { // 삭제 클릭 시
                 @Override
                 public void onClick(View v) {
+                    int flag = 0;
                     // 아이템 삭제 코드
                     for (int i=0; i<chipList.size(); i++) {
                         if (chipList.get(i).getName().equals(name)) {
@@ -220,7 +221,19 @@ public class JobActivity extends AppCompatActivity implements View.OnClickListen
                                 adapter2.getItem(position).setSelected(false);
                                 pref.setArrayPref(chipList, SharedPreference.JOB_TMP);
                                 adapter2.notifyItemChanged(position);
-                            } else {
+                                flag = 1;
+                            } else if (adapter2.getItemCount() != 0) {
+                                for (int j=0; j<adapter2.getItemCount(); j++) {
+                                    if (adapter2.getItem(j).getJob2().equals(name)) {
+                                        adapter2.getItem(j).setSelected(false);
+                                        pref.setArrayPref(chipList, SharedPreference.JOB_TMP);
+                                        adapter2.notifyItemChanged(j);
+                                        flag = 1;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (flag == 0) {
                                 pref.setArrayPref(chipList, SharedPreference.JOB_TMP);
                             }
                         }

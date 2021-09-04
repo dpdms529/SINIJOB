@@ -29,6 +29,17 @@
 
     </androidx.appcompat.widget.Toolbar>
 
+    <ImageButton
+        android:id="@+id/helpButton"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginStart="10dp"
+        android:background="#00ff0000"
+        app:layout_constraintBottom_toBottomOf="@+id/toolbar0201"
+        app:layout_constraintStart_toStartOf="@+id/toolbar0201"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/help" />
+
     <Button
         android:id="@+id/shareButton"
         android:layout_width="wrap_content"
@@ -245,7 +256,6 @@
 
             </LinearLayout>
 
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -257,11 +267,10 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginLeft="25dp"
-                    android:layout_marginRight="15dp"
+                    android:layout_marginRight="10dp"
                     android:layout_weight="2"
                     android:text="음성 출력"
                     android:textSize="20dp" />
-
 
                 <Button
                     android:id="@+id/voice_summary"
