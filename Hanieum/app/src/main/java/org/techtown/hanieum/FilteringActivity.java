@@ -109,7 +109,6 @@ public class FilteringActivity extends AppCompatActivity implements View.OnClick
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
                 if(i == R.id.noCareer) { // 적용 안 함을 선택하면
                     careerId = 0;
-                    Toast.makeText(FilteringActivity.this, "noCareer",Toast.LENGTH_SHORT).show();
                 } else if(i == R.id.yesCareer) { // 나의 경력 적용(이력서)를 선택하면
                     careerId = 1;
                 }
