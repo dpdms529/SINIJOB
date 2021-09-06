@@ -1,15 +1,23 @@
 package org.techtown.hanieum;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.speech.tts.TextToSpeech;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,17 +26,18 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.kakao.sdk.newtoneapi.TextToSpeechClient;
-import com.kakao.sdk.newtoneapi.TextToSpeechListener;
-import com.kakao.sdk.newtoneapi.TextToSpeechManager;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.techtown.hanieum.db.AppDatabase;
+import org.techtown.hanieum.db.dao.RecruitCertificateDao;
+import org.techtown.hanieum.db.dao.RecruitDao;
 import org.techtown.hanieum.db.entity.Recruit;
-import org.w3c.dom.Text;
+import org.techtown.hanieum.db.entity.RecruitCertificate;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -38,6 +47,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 public class HomeFragment extends Fragment implements View.OnClickListener {
     RecyclerView recyclerView; // 추천 목록 리사이클러뷰
@@ -47,12 +57,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     ImageButton searchButton; // 검색 버튼
     TextView itemNum;
     String msg; // 음성 요약 메세지
+    String summary;
 
     AppDatabase db;
 
     Context context;
 
-    private TextToSpeechClient ttsClient;
     TextToSpeech tts;
 
 
@@ -63,9 +73,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // kakao
-        TextToSpeechManager.getInstance().initializeLibrary(getActivity().getApplicationContext());
-
+        summary = "";
     }
 
     @Override
@@ -114,6 +122,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         searchButton.setOnClickListener(this);
         summaryButton.setOnClickListener(this);
 
+        checkLastUpdated();
+        checkCertifiLastUpdated();
+
         loadListData();
 
         return view;
@@ -124,32 +135,315 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         if (v == searchButton) {
             Toast.makeText(getContext(), "검색", Toast.LENGTH_SHORT).show();
         } else if (v == summaryButton) {
-            ttsClient = new TextToSpeechClient.Builder()
-                    .setSpeechMode(TextToSpeechClient.NEWTONE_TALK_1)
-                    .setSpeechSpeed(1.0)
-                    .setSpeechVoice(TextToSpeechClient.VOICE_WOMAN_READ_CALM)
-                    .setListener(ttsListener)
-                    .build();
-            ttsClient.setSpeechText(msg);
-            ttsClient.play();
-        //    voiceOut(msg);
+            voiceOut(msg);
+        }
+    }
+
+    private void checkLastUpdated() { // 기기의 업데이트 일시와 DB의 업데이트 일시를 확인
+        List<String> rows = null;
+        try {
+            rows = new RecommendFragment.RecruitLastUpdateAsyncTask(db.RecruitDao()).execute().get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        String lastUpdated = rows.get(0);
+        Log.d("date: ", "recruit: "+lastUpdated);
+        String dbLastUpdated = "";
+
+        String php = getResources().getString(R.string.serverIP)+"recruit_lastupdated.php";
+        URLConnector urlConnector = new URLConnector(php);
+
+        urlConnector.start();
+        try {
+            urlConnector.join();
+        } catch (InterruptedException e) {
+        }
+        String result = urlConnector.getResult();
+
+        try {
+            JSONObject jsonObject = new JSONObject(result);
+            JSONArray jsonArray = jsonObject.getJSONArray("result");
+            dbLastUpdated = jsonArray.getJSONObject(0).getString("last_updated");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        if (!lastUpdated.equals(dbLastUpdated)) {   // 최신 업데이트 일시 확인(불일치 -> 데이터 가져오기)
+            String recruitPhp = getResources().getString(R.string.serverIP)+"recruit_update.php?last_updated=" + lastUpdated;
+            URLConnector urlConnectorRecruit = new URLConnector(recruitPhp);
+
+            urlConnectorRecruit.start();
+            try {
+                urlConnectorRecruit.join();
+            } catch (InterruptedException e) {
+            }
+            String recruitResult = urlConnectorRecruit.getResult();
+
+            try {
+                JSONObject jsonObject = new JSONObject(recruitResult);
+                JSONArray jsonArray = jsonObject.getJSONArray("result");
+                for(int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject jsonObject1 = jsonArray.getJSONObject(i);
+                    if (jsonObject1.getString("deleted").equals("0")) {     // 새로 생긴 데이터
+                        String recruit_id = jsonObject1.getString("recruit_id");
+                        String title = jsonObject1.getString("title");
+                        String organization = jsonObject1.getString("organization");
+                        String salary_type_code = jsonObject1.getString("salary_type_code");
+                        String salary = jsonObject1.getString("salary");
+                        String b_dong_code = jsonObject1.getString("b_dong_code");
+                        String job_code = jsonObject1.getString("job_code");
+                        String career_required = jsonObject1.getString("career_required");
+                        int career_min = jsonObject1.getInt("career_min");
+                        String enrollment_code = jsonObject1.getString("enrollment_code");
+                        String certificate_required = jsonObject1.getString("certificate_required");
+                        String x = jsonObject1.getString("x");
+                        String y = jsonObject1.getString("y");
+                        String update_dt = jsonObject1.getString("update_dt");
+                        Recruit newRecruit = new Recruit(recruit_id, title, organization, salary_type_code, salary, b_dong_code, job_code, career_required, career_min, enrollment_code, certificate_required, x, y, update_dt);
+                        new RecommendFragment.RecruitInsertAsyncTask(db.RecruitDao()).execute(newRecruit);   // 백그라운드 INSERT 실행
+                    } else {    // 지워진 기존 데이터
+                        new RecommendFragment.RecruitDeleteAsyncTask(db.RecruitDao()).execute(jsonObject1.getString("recruit_id"));   // 백그라운드 DELETE 실행
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            // 북마크 업데이트 (삭제된 공고 제거)
+            ArrayList<HashMap<String, String>> arrayList = new ArrayList<>();
+            String _uId = getResources().getString(R.string.user_id);  // 유저 아이디
+            String bookmarkPhp = context.getResources().getString(R.string.serverIP)+"bookmark_read.php?user_id="+_uId;
+            URLConnector urlConnectorBookmark = new URLConnector(bookmarkPhp);
+            urlConnectorBookmark.start();
+            try {
+                urlConnectorBookmark.join();
+            } catch (InterruptedException e) {
+            }
+            String bookmarkResult = urlConnectorBookmark.getResult();
+
+            try {
+                JSONObject jsonObject = new JSONObject(bookmarkResult);
+                JSONArray jsonArray = jsonObject.getJSONArray("result");
+
+                for (int i=0; i<jsonArray.length(); i++) {
+                    JSONObject jsonObject1 = jsonArray.getJSONObject(i);
+
+                    HashMap<String, String> hashMap = new HashMap<>();
+                    String user_id = jsonObject1.getString("user_id");
+                    String recruit_id = jsonObject1.getString("recruit_id");
+
+                    hashMap.put("user_id", user_id);
+                    hashMap.put("recruit_id", recruit_id);
+
+                    arrayList.add(hashMap);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            for (int j=0; j<arrayList.size(); j++) {
+                HashMap<String ,String> hashMap = arrayList.get(j);
+                String uId = hashMap.get("user_id");
+                String rId = hashMap.get("recruit_id");
+                List<Recruit> recruits = null;
+                try {
+                    recruits = new RecommendFragment.RecruitGetListAsyncTask(db.RecruitDao()).execute(rId).get();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                if (recruits.size() == 0) { // 삭제된 공고면 북마크 테이블에서 해당 공고 삭제
+                    String bookmarkDelPhp = context.getResources().getString(R.string.serverIP)+"bookmark_del.php?user_id="+_uId+"&recruit_id="+rId;
+                    URLConnector urlConnectorBookmarkDel = new URLConnector(bookmarkDelPhp);
+                    urlConnectorBookmarkDel.start();
+                    try {
+                        urlConnectorBookmarkDel.join();
+                    } catch (InterruptedException e) {
+                    }
+                }
+            }
+        }
+    }
+
+    private void checkCertifiLastUpdated() { // 기기의 업데이트 일시와 DB의 업데이트 일시를 확인
+        List<String> rows = null;
+        try {
+            rows = new CertifiLastUpdateAsyncTask(db.recruitCertificateDao()).execute().get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+//        db.recruitCertificateDao().getLastUpdated();
+        String lastUpdated = rows.get(0);
+        Log.d("date: ", "certifi: "+lastUpdated);
+        String dbLastUpdated = "";
+
+        String php = getResources().getString(R.string.serverIP)+"recruit_lastupdated.php";
+        URLConnector urlConnector = new URLConnector(php);
+
+        urlConnector.start();
+        try {
+            urlConnector.join();
+        } catch (InterruptedException e) {
+        }
+        String result = urlConnector.getResult();
+
+        try {
+            JSONObject jsonObject = new JSONObject(result);
+            JSONArray jsonArray = jsonObject.getJSONArray("result");
+            dbLastUpdated = jsonArray.getJSONObject(0).getString("last_updated");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        if (!lastUpdated.equals(dbLastUpdated)) {   // 최신 업데이트 일시 확인(불일치 -> 데이터 가져오기)
+            String recruitCertificatePhp = getResources().getString(R.string.serverIP)+"certificate_update.php?last_updated=" + lastUpdated;
+            URLConnector urlConnectorRecruitCertificate = new URLConnector(recruitCertificatePhp);
+
+            urlConnectorRecruitCertificate.start();
+            try {
+                urlConnectorRecruitCertificate.join();
+            } catch (InterruptedException e) {
+            }
+            String recruitCertificateResult = urlConnectorRecruitCertificate.getResult();
+
+            try {
+                JSONObject jsonObject = new JSONObject(recruitCertificateResult);
+                JSONArray jsonArray = jsonObject.getJSONArray("result");
+                for(int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject jsonObject1 = jsonArray.getJSONObject(i);
+                    if (jsonObject1.getString("deleted").equals("0")) {     // 새로 생긴 데이터
+                        String recruit_id = jsonObject1.getString("recruit_id");
+                        Integer certificate_no = jsonObject1.getInt("certificate_no");
+                        String certificate_id = jsonObject1.getString("certificate_id");
+                        RecruitCertificate newRecruitCertificate = new RecruitCertificate(certificate_no, recruit_id, certificate_id);
+                        new RecommendFragment.CertifiInsertAsyncTask(db.recruitCertificateDao()).execute(newRecruitCertificate);   // 백그라운드 INSERT 실행
+                    } else {    // 지워진 기존 데이터
+                        String recruit_id = jsonObject1.getString("recruit_id");
+                        Integer certificate_no = jsonObject1.getInt("certificate_no");
+                        String certificate_id = jsonObject1.getString("certificate_id");
+                        RecruitCertificate newRecruitCertificate = new RecruitCertificate(certificate_no, recruit_id, certificate_id);
+                        new RecommendFragment.CertifiDeleteAsyncTask(db.recruitCertificateDao()).execute(newRecruitCertificate);   // 백그라운드 DELETE 실행
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static class RecruitGetListAsyncTask extends AsyncTask<String,Void,List<Recruit>>{
+        private RecruitDao mRecruitDao;
+
+        public RecruitGetListAsyncTask(RecruitDao recruitDao){
+            this.mRecruitDao = recruitDao;
+        }
+
+        @Override
+        protected List<Recruit> doInBackground(String... strings) {
+            return mRecruitDao.getList(strings[0]);
+        }
+    }
+
+    public static class RecruitLastUpdateAsyncTask extends AsyncTask<Void,Void,List<String>>{
+        private RecruitDao mRecruitDao;
+
+        public RecruitLastUpdateAsyncTask(RecruitDao recruitDao){
+            this.mRecruitDao = recruitDao;
+        }
+
+        @Override
+        protected List<String> doInBackground(Void... voids) {
+            return mRecruitDao.getLastUpdated();
+        }
+
+    }
+
+    public static class CertifiLastUpdateAsyncTask extends AsyncTask<Void, Void, List<String>> {
+        private RecruitCertificateDao mRecruitCertifiDao;
+
+        public  CertifiLastUpdateAsyncTask(RecruitCertificateDao recruitCertificateDao){
+            this.mRecruitCertifiDao = recruitCertificateDao;
+        }
+
+        @Override
+        protected List<String> doInBackground(Void... voids) {
+            return mRecruitCertifiDao.getLastUpdated();
+        }
+    }
+
+    // 메인스레드에서 데이터베이스에 접근할 수 없으므로 AsyncTask 사용 - INSERT
+    public static class RecruitInsertAsyncTask extends AsyncTask<Recruit, Void, Void> {
+        private RecruitDao mRecruitDao;
+
+        public  RecruitInsertAsyncTask(RecruitDao recruitDao){
+            this.mRecruitDao = recruitDao;
+        }
+
+        @Override // 백그라운드작업(메인스레드 X)
+        protected Void doInBackground(Recruit... recruits) {
+            mRecruitDao.insertNewRecruit(recruits[0]);
+            return null;
+        }
+    }
+
+    public static class CertifiInsertAsyncTask extends AsyncTask<RecruitCertificate, Void, Void> {
+        private RecruitCertificateDao mRecruitCertifiDao;
+
+        public  CertifiInsertAsyncTask(RecruitCertificateDao recruitCertificateDao){
+            this.mRecruitCertifiDao = recruitCertificateDao;
+        }
+
+        @Override // 백그라운드작업(메인스레드 X)
+        protected Void doInBackground(RecruitCertificate... recruits) {
+            mRecruitCertifiDao.insertNewRecruit(recruits[0]);
+            return null;
+        }
+    }
+
+    // 메인스레드에서 데이터베이스에 접근할 수 없으므로 AsyncTask 사용 - DELETE
+    public static class RecruitDeleteAsyncTask extends AsyncTask<String, Void, Void> {
+        private RecruitDao mRecruitDao;
+
+        public  RecruitDeleteAsyncTask(RecruitDao recruitDao){
+            this.mRecruitDao = recruitDao;
+        }
+
+        @Override // 백그라운드작업(메인스레드 X)
+        protected Void doInBackground(String... strings) {
+            mRecruitDao.deleteGoneRecruit(strings[0]);
+            return null;
+        }
+    }
+
+    public static class CertifiDeleteAsyncTask extends AsyncTask<RecruitCertificate, Void, Void> {
+        private RecruitCertificateDao mRecruitCertifiDao;
+
+        public  CertifiDeleteAsyncTask(RecruitCertificateDao recruitCertificateDao){
+            this.mRecruitCertifiDao = recruitCertificateDao;
+        }
+
+        @Override // 백그라운드작업(메인스레드 X)
+        protected Void doInBackground(RecruitCertificate... recruitCertificates) {
+            mRecruitCertifiDao.deleteGoneRecruit(recruitCertificates[0]);
+            return null;
         }
     }
 
     private void loadListData() {
         ArrayList<Recommendation> items = new ArrayList<>();
-        String _uId = "3";  // 유저 아이디
+        String _uId = getResources().getString(R.string.user_id);  // 유저 아이디
         String recoPhp = getResources().getString(R.string.serverIP)+"reco_list.php?user_id=" + _uId;
         URLConnector urlConnector = new URLConnector(recoPhp);
 
-        HashMap<String, Integer> summary = new HashMap<String, Integer>(){{}};
-        String firstDist = "0";
-        String firstCorp = "0";
-        String firstJob = "";
-
         // 북마크 테이블 읽어오기
         ArrayList<HashMap<String, String>> arrayList = new ArrayList<>();
-        String bookmarkPhp = context.getResources().getString(R.string.serverIP)+"bookmark_read.php";
+        String bookmarkPhp = context.getResources().getString(R.string.serverIP)+"bookmark_read.php?user_id="+_uId;
         URLConnector urlConnectorBookmark = new URLConnector(bookmarkPhp);
         urlConnectorBookmark.start();
         try {
@@ -188,15 +482,22 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         try {
             JSONObject jsonObject = new JSONObject(result);
             JSONArray jsonArray = jsonObject.getJSONArray("result");
-            itemNum.setText(jsonObject.getString("rownum"));
+            int count = 0;
 
             for (int i=0; i<jsonArray.length(); i++) {
                 JSONObject jsonObject1 = jsonArray.getJSONObject(i);
 
                 String recruit_id = jsonObject1.getString("recruit_id");
-                List<Recruit> recruit = db.RecruitDao().getList(recruit_id);
-                int flag = 0;
+                List<Recruit> recruit = null;
+                try {
+                    recruit = new RecruitGetListAsyncTask(db.RecruitDao()).execute(recruit_id).get();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
 
+                int flag = 0;
                 String salaryType = new String();
                 switch (recruit.get(0).salary_type_code) {     // 급여 타입에 알맞은 단어
                     case "H":
@@ -224,63 +525,57 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 }
                 DistanceCalculator distance =  new DistanceCalculator("127.12934", "35.84688", recruit.get(0).x_coordinate, recruit.get(0).y_coordinate);
                 Double dist = distance.getStraightDist();   // 직선거리 구하는 함수
+                if(dist>15000){
+                    continue;
+                }else{
+                    // 북마크 확인하는 코드
+                    for (int j=0; j<arrayList.size(); j++) {
+                        HashMap<String ,String> hashMap = arrayList.get(j);
+                        String uId = hashMap.get("user_id");
+                        String rId = hashMap.get("recruit_id");
 
-                // 북마크 확인하는 코드
-                for (int j=0; j<arrayList.size(); j++) {
-                    HashMap<String ,String> hashMap = arrayList.get(j);
-                    String uId = hashMap.get("user_id");
-                    String rId = hashMap.get("recruit_id");
-
-                    // 유저 아이디 = 3
-                    if (uId.equals("3") && rId.equals(recruit.get(0).recruit_id)) {
-                        flag = 1;
+                        // 유저 아이디 = 3
+                        if (uId.equals(getResources().getString(R.string.user_id)) && rId.equals(recruit.get(0).recruit_id)) {
+                            flag = 1;
+                        }
                     }
-                }
 
-                if (flag == 1) {    // 북마크가 되어 있을 때
-                    items.add(new Recommendation(recruit.get(0).recruit_id, recruit.get(0).organization, recruit.get(0).recruit_title, salaryType, sal, dist, true));
-                } else {    // 북마크가 안 되어 있을 때
-                    items.add(new Recommendation(recruit.get(0).recruit_id, recruit.get(0).organization, recruit.get(0).recruit_title, salaryType, sal, dist, false));
+                    if (flag == 1) {    // 북마크가 되어 있을 때
+                        items.add(new Recommendation(recruit.get(0).recruit_id, recruit.get(0).organization, recruit.get(0).recruit_title, salaryType, sal, dist, true));
+                    } else {    // 북마크가 안 되어 있을 때
+                        items.add(new Recommendation(recruit.get(0).recruit_id, recruit.get(0).organization, recruit.get(0).recruit_title, salaryType, sal, dist, false));
+                    }
+                    count++;
+                }
+                if(count==100){
+                    break;
                 }
 
                 String jobNm = db.jobCategoryDao().getCategoryName(recruit.get(0).job_code);
-
-                if(i == 0) { // 가장 먼저 추천된 공고일 때
-                    firstDist = dist.toString();
-                    firstCorp = recruit.get(0).organization;
-                    firstJob = jobNm;
-                }
-
-                if(summary.containsKey(jobNm)) {
-                    Integer n = summary.get(jobNm);
-                    n += 1;
-                    summary.put(jobNm, n);
-                } else {
-                    summary.put(jobNm, 1);
-                }
-
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        if(Integer.parseInt(itemNum.getText().toString()) > 0) {
-            List<Map.Entry<String, Integer>> entryList = new LinkedList<>(summary.entrySet());
-
-            Collections.sort(entryList, new Comparator<Map.Entry<String, Integer>>() {
-                @Override
-                public int compare(Map.Entry<String, Integer> obj1, Map.Entry<String, Integer> obj2) {
-                    return obj2.getValue().compareTo(obj1.getValue());
-                }
-            });
-            msg = "추천된 공고는 총" + itemNum.getText().toString() + ", 건 입니다." +
-                    "첫 번째로 추천된 공고는 " + firstCorp + "에서 모집하는, " + firstJob + ", 공고입니다." + "근무지는 현재 위치에서 " + firstDist + "km 떨어져 있습니다." +
-                    "가장 많이 추천된 공고는 " + entryList.get(0).getKey() + ", " + entryList.get(0).getValue() + "건 입니다.";
-        } else {
-
-        }
-
+        itemNum.setText(String.valueOf(items.size()));
         adapter.setItems(items);
+
+        if(Integer.parseInt(itemNum.getText().toString()) > 0) {
+            msg = "추천된 공고는 총" + itemNum.getText().toString() + " 건 입니다.";
+            if(Integer.parseInt(itemNum.getText().toString()) >= 3) {
+                msg += "첫 번째로 추천된 공고는 " + items.get(0).getTitle() + "입니다. " +
+                        "두 번째로 추천된 공고는 " + items.get(1).getTitle() + "입니다. " +
+                        "세 번째로 추천된 공고는 " + items.get(2).getTitle() + "입니다.";
+            } else if (Integer.parseInt(itemNum.getText().toString()) >= 2) {
+                msg += "첫 번째로 추천된 공고는 " + items.get(0).getTitle() + "입니다. " +
+                        "두 번째로 추천된 공고는 " + items.get(1).getTitle() + "입니다. ";
+            } else if (Integer.parseInt(itemNum.getText().toString()) >= 1) {
+                msg += "첫 번째로 추천된 공고는 " + items.get(0).getTitle() + "입니다.";
+            } else {
+                msg = "추천된 공고가 없습니다.";
+            }
+        } else {
+        }
     }
 
     // 음성 메세지 출력용
@@ -293,20 +588,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         tts.speak(msg, TextToSpeech.QUEUE_FLUSH,null, null);
     }
 
+    @Override
     public void onDestroy() {
         super.onDestroy();
-        TextToSpeechManager.getInstance().finalizeLibrary();
     }
-
-    private TextToSpeechListener ttsListener = new TextToSpeechListener() {
-        @Override
-        public void onFinished() {
-
-        }
-
-        @Override
-        public void onError(int code, String message) {
-
-        }
-    };
 }

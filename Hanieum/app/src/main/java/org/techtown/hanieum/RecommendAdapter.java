@@ -101,7 +101,7 @@ public class RecommendAdapter extends RecyclerView.Adapter<RecommendAdapter.View
                         item.setBookmark(false);
                         bookmark.setImageResource(R.drawable.star);
 
-                        String uId = "3";   // 유저 아이디
+                        String uId = context.getString(R.string.user_id);   // 유저 아이디
                         String rId = item.getId();
                         String bookmarkPhp = context.getResources().getString(R.string.serverIP)+"bookmark_del.php?user_id="+uId+"&recruit_id="+rId;
                         URLConnector urlConnectorBookmark = new URLConnector(bookmarkPhp);
@@ -114,7 +114,7 @@ public class RecommendAdapter extends RecyclerView.Adapter<RecommendAdapter.View
                         item.setBookmark(true);
                         bookmark.setImageResource(R.drawable.bookmark);
 
-                        String uId = "3";   // 유저 아이디
+                        String uId = context.getString(R.string.user_id);   // 유저 아이디
                         String rId = item.getId();
                         String bookmarkPhp = context.getResources().getString(R.string.serverIP)+"bookmark_save.php?user_id="+uId+"&recruit_id="+rId;
                         URLConnector urlConnectorBookmark = new URLConnector(bookmarkPhp);

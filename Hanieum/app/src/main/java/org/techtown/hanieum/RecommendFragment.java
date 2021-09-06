@@ -1,6 +1,7 @@
 package org.techtown.hanieum;
 
 import android.Manifest;
+import android.content.AsyncQueryHandler;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -54,6 +55,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class RecommendFragment extends Fragment implements View.OnClickListener {
     RecyclerView recyclerView; // 추천 목록 리사이클러뷰
@@ -174,6 +176,10 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
     @Override
     public void onResume() {
         super.onResume();
+
+        checkLastUpdated();     // 최신 업데이트 일시 확인(일치 -> 유지, 불일치 -> 데이터 가져오기)
+        checkCertifiLastUpdated();
+
         ArrayList<ChipList> regions = pref.getArrayPref(SharedPreference.REGION_LIST);
         ArrayList<ChipList> jobs = pref.getArrayPref(SharedPreference.JOB_LIST);
         Log.d("recruit", "onResume: jobs : " + jobs.toString());
@@ -238,14 +244,12 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
                 certificate.add(i);
             }
         }
-        List<Recruit> result = new ArrayList<>();
+//        List<Recruit> result = new ArrayList<>();
 
         if(careerStatus == 0 && licenseStatus == 0){    //경력, 자격증 적용안함
             if(bDongCode.size() == 0){  //지역 선택 안했을 때 -> 전체 지역
                 if(jobs.size() == 0){   //직종 선택 안했을 때 -> 전체 직종
                     if(workform.equals("A")){   //근무형태 전체 선택
-                        checkLastUpdated();     // 최신 업데이트 일시 확인(일치 -> 유지, 불일치 -> 데이터 가져오기)
-                        checkCertifiLastUpdated();
                         db.RecruitDao().getAll().observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
                             @Override
                             public void onChanged(List<Recruit> recruits) {
@@ -253,25 +257,38 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
                             }
                         });
                     }else{  //근무형태 선택했을 때 (정규직 or 계약직)
-                        result = db.RecruitDao().getFilteredList1(workform);
-                        Log.d("recruit", "onResume: dao1" + result.toString());
-                        loadListData(result);
+                        db.RecruitDao().getFilteredList1(workform).observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
+                            @Override
+                            public void onChanged(List<Recruit> recruits) {
+                                Log.d("recruit", "onResume: dao1" + recruits.toString());
+                                loadListData(recruits);
+                            }
+                        });
                     }
                 }else{  //직종 선택했을 때
                     if(workform.equals("A")){   //근무형태 전체 선택
-                        result = db.RecruitDao().getFilteredList2(jobCode);
-                        Log.d("recruit", "onResume: dao2" + result.toString());
-                        loadListData(result);
+                        db.RecruitDao().getFilteredList2(jobCode).observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
+                            @Override
+                            public void onChanged(List<Recruit> recruits) {
+                                Log.d("recruit", "onResume: dao2" + recruits.toString());
+                                loadListData(recruits);
+                            }
+                        });
                     }else{  //근무형태 선택했을 때 (정규직 or 계약직)
-                        result = db.RecruitDao().getFilteredList3(jobCode, workform);
-                        Log.d("recruit", "onResume: dao3" + result.toString());
-                        loadListData(result);
+                        db.RecruitDao().getFilteredList3(jobCode, workform).observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
+                            @Override
+                            public void onChanged(List<Recruit> recruits) {
+                                Log.d("recruit", "onResume: dao3" + recruits.toString());
+                                loadListData(recruits);
+                            }
+                      });
                     }
                 }
             }else{  //지역 선택 했을 때
                 if(jobs.size() == 0){   //직종 선택 안했을 때 -> 전체 지역
                     if(workform.equals("A")){   //근무형태 전체 선택
                         if(bDongCode.size()>999){
+                            List<Recruit> result = new ArrayList<>();
                             int n = bDongCode.size()/999;
                             for(int i = 0;i<=n;i++){
                                 List<String> tmp;
@@ -280,18 +297,30 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
                                 }else{
                                     tmp = bDongCode.subList(i*999,i*999 + 999);
                                 }
-                                result.addAll(db.RecruitDao().getFilteredList4(tmp));
+                                db.RecruitDao().getFilteredList4(tmp).observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
+                                    @Override
+                                    public void onChanged(List<Recruit> recruits) {
+                                        result.addAll(recruits);
+                                    }
+                                });
                             }
-
+                            Log.d("recruit", "onResume: dao4" + result.toString());
+                            loadListData(result);
                         }else{
-                            result = db.RecruitDao().getFilteredList4(bDongCode);
+                            db.RecruitDao().getFilteredList4(bDongCode).observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
+                                @Override
+                                public void onChanged(List<Recruit> recruits) {
+                                    Log.d("recruit", "onResume: dao4" + recruits.toString());
+                                    loadListData(recruits);
+                                }
+                            });
                         }
 //                        result = db.RecruitDao().getFilteredList4(bDongCode);
-                        Log.d("recruit", "onResume: dao4" + result.toString());
-                        loadListData(result);
+
 
                     }else{  //근무형태 선택했을 때 (정규직 or 계약직)
                         if(bDongCode.size()>998){
+                            List<Recruit> result = new ArrayList<>();
                             int n = bDongCode.size()/998;
                             for(int i = 0;i<=n;i++){
                                 List<String> tmp;
@@ -301,20 +330,32 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
                                     tmp = bDongCode.subList(i*998,i*998 + 998);
                                 }
                                 Log.d("many", "onResume: " + tmp.size());
-                                result.addAll(db.RecruitDao().getFilteredList5(tmp,workform));
+                                db.RecruitDao().getFilteredList5(tmp,workform).observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
+                                    @Override
+                                    public void onChanged(List<Recruit> recruits) {
+                                        result.addAll(recruits);
+                                    }
+                                });
                             }
-
+                            Log.d("recruit", "onResume: dao5" + result.toString());
+                            loadListData(result);
                         }else{
-                            result = db.RecruitDao().getFilteredList5(bDongCode,workform);
+                            db.RecruitDao().getFilteredList5(bDongCode,workform).observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
+                                @Override
+                                public void onChanged(List<Recruit> recruits) {
+                                    Log.d("recruit", "onResume: dao5" + recruits.toString());
+                                    loadListData(recruits);
+                                }
+                            });
                         }
 //                        result = db.RecruitDao().getFilteredList5(bDongCode,workform);
-                        Log.d("recruit", "onResume: dao5" + result.toString());
-                        loadListData(result);
+
                     }
 
                 }else{  //직종 선택 했을 때
                     if(workform.equals("A")){   //근무형태 전체 선택
                         if(bDongCode.size()>(999-jobCode.size())){
+                            List<Recruit> result = new ArrayList<>();
                             int n = bDongCode.size()/(999-jobCode.size());
                             for(int i = 0;i<=n;i++){
                                 List<String> tmp;
@@ -323,18 +364,31 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
                                 }else{
                                     tmp = bDongCode.subList(i*(999-jobCode.size()),i*(999-jobCode.size()) + (999-jobCode.size()));
                                 }
-                                result.addAll(db.RecruitDao().getFilteredList6(tmp,jobCode));
+                                db.RecruitDao().getFilteredList6(tmp,jobCode).observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
+                                    @Override
+                                    public void onChanged(List<Recruit> recruits) {
+                                        result.addAll(recruits);
+                                    }
+                                });
                             }
+                            Log.d("recruit", "onResume: dao6" + result.toString());
+                            loadListData(result);
 
                         }else{
-                            result = db.RecruitDao().getFilteredList6(bDongCode,jobCode);
+                            db.RecruitDao().getFilteredList6(bDongCode,jobCode).observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
+                                @Override
+                                public void onChanged(List<Recruit> recruits) {
+                                    Log.d("recruit", "onResume: dao6" + recruits.toString());
+                                    loadListData(recruits);
+                                }
+                            });
                         }
 //                        result = db.RecruitDao().getFilteredList6(bDongCode,jobCode);
-                        Log.d("recruit", "onResume: dao6" + result.toString());
-                        loadListData(result);
+
 
                     }else{  //근무형태 선택했을 때 (정규직 or 계약직)
                         if(bDongCode.size()>(998-jobCode.size())){
+                            List<Recruit> result = new ArrayList<>();
                             int n = bDongCode.size()/(998-jobCode.size());
                             for(int i = 0;i<=n;i++){
                                 List<String> tmp;
@@ -343,15 +397,27 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
                                 }else{
                                     tmp = bDongCode.subList(i*(998-jobCode.size()),i*(998-jobCode.size()) + (998-jobCode.size()));
                                 }
-                                result.addAll(db.RecruitDao().getFilteredList7(tmp,jobCode,workform));
+                                db.RecruitDao().getFilteredList7(tmp,jobCode,workform).observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
+                                    @Override
+                                    public void onChanged(List<Recruit> recruits) {
+                                        result.addAll(recruits);
+                                    }
+                                });
                             }
+                            Log.d("recruit", "onResume: dao7" + result.toString());
+                            loadListData(result);
 
                         }else{
-                            result = db.RecruitDao().getFilteredList7(bDongCode,jobCode,workform);
+                            db.RecruitDao().getFilteredList7(bDongCode,jobCode,workform).observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
+                                @Override
+                                public void onChanged(List<Recruit> recruits) {
+                                    Log.d("recruit", "onResume: dao7" + recruits.toString());
+                                    loadListData(recruits);
+                                }
+                            });
                         }
 //                        result = db.RecruitDao().getFilteredList7(bDongCode,jobCode,workform);
-                        Log.d("recruit", "onResume: dao7" + result.toString());
-                        loadListData(result);
+
                     }
 
                 }
@@ -361,29 +427,50 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
             if(bDongCode.size() == 0){  //지역 선택 안했을 때 -> 전체 지역
                 if(jobs.size() == 0){   //직종 선택 안했을 때 -> 전체 직종
                     if(workform.equals("A")){   //근무형태 전체 선택
-                        result = db.RecruitDao().getFilteredList8(careerJobCode, career);
-                        Log.d("recruit", "onResume: dao8" + result.toString());
-                        loadListData(result);
+                        db.RecruitDao().getFilteredList8(careerJobCode, career).observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
+                            @Override
+                            public void onChanged(List<Recruit> recruits) {
+                                Log.d("recruit", "onResume: dao8" + recruits.toString());
+                                loadListData(recruits);
+                            }
+                        });
+
                     }else{  //근무형태 선택했을 때 (정규직 or 계약직)
-                        result = db.RecruitDao().getFilteredList9(careerJobCode, career, workform);
-                        Log.d("recruit", "onResume: dao9" + result.toString());
-                        loadListData(result);
+                        db.RecruitDao().getFilteredList9(careerJobCode, career, workform).observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
+                            @Override
+                            public void onChanged(List<Recruit> recruits) {
+                                Log.d("recruit", "onResume: dao9" + recruits.toString());
+                                loadListData(recruits);
+                            }
+                        });
+
                     }
                 }else{  //직종 선택했을 때
                     if(workform.equals("A")){   //근무형태 전체 선택
-                        result = db.RecruitDao().getFilteredList10(jobCode, careerJobCode, career);
-                        Log.d("recruit", "onResume: dao10" + result.toString());
-                        loadListData(result);
+                        db.RecruitDao().getFilteredList10(jobCode, careerJobCode, career).observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
+                            @Override
+                            public void onChanged(List<Recruit> recruits) {
+                                Log.d("recruit", "onResume: dao10" + recruits.toString());
+                                loadListData(recruits);
+                            }
+                        });
+
                     }else{  //근무형태 선택했을 때 (정규직 or 계약직)
-                        result = db.RecruitDao().getFilteredList11(jobCode, careerJobCode, career, workform);
-                        Log.d("recruit", "onResume: dao11" + result.toString());
-                        loadListData(result);
+                        db.RecruitDao().getFilteredList11(jobCode, careerJobCode, career, workform).observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
+                            @Override
+                            public void onChanged(List<Recruit> recruits) {
+                                Log.d("recruit", "onResume: dao11" + recruits.toString());
+                                loadListData(recruits);
+                            }
+                        });
+
                     }
                 }
             }else{  //지역 선택 했을 때
                 if(jobs.size() == 0){   //직종 선택 안했을 때 -> 전체 지역
                     if(workform.equals("A")){   //근무형태 전체 선택
                         if(bDongCode.size()>997){
+                            List<Recruit> result = new ArrayList<>();
                             int n = bDongCode.size()/997;
                             for(int i = 0;i<=n;i++){
                                 List<String> tmp;
@@ -392,17 +479,30 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
                                 }else{
                                     tmp = bDongCode.subList(i*997,i*997 + 997);
                                 }
-                                result.addAll(db.RecruitDao().getFilteredList12(tmp,careerJobCode,career));
+                                db.RecruitDao().getFilteredList12(tmp,careerJobCode,career).observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
+                                    @Override
+                                    public void onChanged(List<Recruit> recruits) {
+                                        result.addAll(recruits);
+                                    }
+                                });
                             }
+                            Log.d("recruit", "onResume: dao12" + result.toString());
+                            loadListData(result);
 
                         }else{
-                            result = db.RecruitDao().getFilteredList12(bDongCode,careerJobCode,career);
+                            db.RecruitDao().getFilteredList12(bDongCode,careerJobCode,career).observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
+                                @Override
+                                public void onChanged(List<Recruit> recruits) {
+                                    Log.d("recruit", "onResume: dao12" + recruits.toString());
+                                    loadListData(recruits);
+                                }
+                            });
                         }
 //                        result = db.RecruitDao().getFilteredList12(bDongCode, careerJobCode, career);
-                        Log.d("recruit", "onResume: dao12" + result.toString());
-                        loadListData(result);
+
                     }else{  //근무형태 선택했을 때 (정규직 or 계약직)
                         if(bDongCode.size()>996){
+                            List<Recruit> result = new ArrayList<>();
                             int n = bDongCode.size()/996;
                             for(int i = 0;i<=n;i++){
                                 List<String> tmp;
@@ -411,20 +511,33 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
                                 }else{
                                     tmp = bDongCode.subList(i*996,i*996 + 996);
                                 }
-                                result.addAll(db.RecruitDao().getFilteredList13(tmp,careerJobCode,career,workform));
+                                db.RecruitDao().getFilteredList13(tmp,careerJobCode,career,workform).observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
+                                    @Override
+                                    public void onChanged(List<Recruit> recruits) {
+                                        result.addAll(recruits);
+                                    }
+                                });
                             }
+                            Log.d("recruit", "onResume: dao13" + result.toString());
+                            loadListData(result);
 
                         }else{
-                            result = db.RecruitDao().getFilteredList13(bDongCode,careerJobCode,career,workform);
+                            db.RecruitDao().getFilteredList13(bDongCode,careerJobCode,career,workform).observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
+                                @Override
+                                public void onChanged(List<Recruit> recruits) {
+                                    Log.d("recruit", "onResume: dao13" + recruits.toString());
+                                    loadListData(recruits);
+                                }
+                            });
                         }
 //                        result = db.RecruitDao().getFilteredList13(bDongCode, careerJobCode, career, workform);
-                        Log.d("recruit", "onResume: dao13" + result.toString());
-                        loadListData(result);
+
                     }
 
                 }else{  //직종 선택 했을 때
                     if(workform.equals("A")){   //근무형태 전체 선택
                         if(bDongCode.size()>(997-jobCode.size())){
+                            List<Recruit> result = new ArrayList<>();
                             int n = bDongCode.size()/(997-jobCode.size());
                             for(int i = 0;i<=n;i++){
                                 List<String> tmp;
@@ -433,17 +546,30 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
                                 }else{
                                     tmp = bDongCode.subList(i*(997-jobCode.size()),i*(997-jobCode.size()) + (997-jobCode.size()));
                                 }
-                                result.addAll(db.RecruitDao().getFilteredList14(tmp,jobCode,careerJobCode,career));
+                                db.RecruitDao().getFilteredList14(tmp,jobCode,careerJobCode,career).observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
+                                    @Override
+                                    public void onChanged(List<Recruit> recruits) {
+                                        result.addAll(recruits);
+                                    }
+                                });
                             }
+                            Log.d("recruit", "onResume: dao14" + result.toString());
+                            loadListData(result);
 
                         }else{
-                            result = db.RecruitDao().getFilteredList14(bDongCode,jobCode,careerJobCode,career);
+                            db.RecruitDao().getFilteredList14(bDongCode,jobCode,careerJobCode,career).observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
+                                @Override
+                                public void onChanged(List<Recruit> recruits) {
+                                    Log.d("recruit", "onResume: dao14" + recruits.toString());
+                                    loadListData(recruits);
+                                }
+                            });
                         }
 //                        result = db.RecruitDao().getFilteredList14(bDongCode, jobCode, careerJobCode, career);
-                        Log.d("recruit", "onResume: dao14" + result.toString());
-                        loadListData(result);
+
                     }else{  //근무형태 선택했을 때 (정규직 or 계약직)
                         if(bDongCode.size()>(996-jobCode.size())){
+                            List<Recruit> result = new ArrayList<>();
                             int n = bDongCode.size()/(996-jobCode.size());
                             for(int i = 0;i<=n;i++){
                                 List<String> tmp;
@@ -452,15 +578,27 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
                                 }else{
                                     tmp = bDongCode.subList(i*(996-jobCode.size()),i*(996-jobCode.size()) + (996-jobCode.size()));
                                 }
-                                result.addAll(db.RecruitDao().getFilteredList15(tmp,jobCode,careerJobCode,career,workform));
+                                db.RecruitDao().getFilteredList15(tmp,jobCode,careerJobCode,career,workform).observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
+                                    @Override
+                                    public void onChanged(List<Recruit> recruits) {
+                                        result.addAll(recruits);
+                                    }
+                                });
                             }
+                            Log.d("recruit", "onResume: dao15" + result.toString());
+                            loadListData(result);
 
                         }else{
-                            result = db.RecruitDao().getFilteredList15(bDongCode,jobCode,careerJobCode,career,workform);
+                            db.RecruitDao().getFilteredList15(bDongCode,jobCode,careerJobCode,career,workform).observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
+                                @Override
+                                public void onChanged(List<Recruit> recruits) {
+                                    Log.d("recruit", "onResume: dao15" + recruits.toString());
+                                    loadListData(recruits);
+                                }
+                            });
                         }
 //                        result = db.RecruitDao().getFilteredList15(bDongCode, jobCode, careerJobCode, career, workform);
-                        Log.d("recruit", "onResume: dao15" + result.toString());
-                        loadListData(result);
+
                     }
 
                 }
@@ -471,29 +609,50 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
             if(bDongCode.size() == 0){  //지역 선택 안했을 때 -> 전체 지역
                 if(jobs.size() == 0){   //직종 선택 안했을 때 -> 전체 직종
                     if(workform.equals("A")){   //근무형태 전체 선택
-                        result = db.RecruitDao().getFilteredList16(certificate);
-                        Log.d("recruit", "onResume: dao16" + result.toString());
-                        loadListData(result);
+                        db.RecruitDao().getFilteredList16(certificate).observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
+                            @Override
+                            public void onChanged(List<Recruit> recruits) {
+                                Log.d("recruit", "onResume: dao16" + recruits.toString());
+                                loadListData(recruits);
+                            }
+                        });
+
                     }else{  //근무형태 선택했을 때 (정규직 or 계약직)
-                        result = db.RecruitDao().getFilteredList17(certificate, workform);
-                        Log.d("recruit", "onResume: dao17" + result.toString());
-                        loadListData(result);
+                        db.RecruitDao().getFilteredList17(certificate, workform).observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
+                            @Override
+                            public void onChanged(List<Recruit> recruits) {
+                                Log.d("recruit", "onResume: dao17" + recruits.toString());
+                                loadListData(recruits);
+                            }
+                        });
+
                     }
                 }else{  //직종 선택했을 때
                     if(workform.equals("A")){   //근무형태 전체 선택
-                        result = db.RecruitDao().getFilteredList18(jobCode, certificate);
-                        Log.d("recruit", "onResume: dao18" + result.toString());
-                        loadListData(result);
+                        db.RecruitDao().getFilteredList18(jobCode, certificate).observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
+                            @Override
+                            public void onChanged(List<Recruit> recruits) {
+                                Log.d("recruit", "onResume: dao18" + recruits.toString());
+                                loadListData(recruits);
+                            }
+                        });
+
                     }else{  //근무형태 선택했을 때 (정규직 or 계약직)
-                        result = db.RecruitDao().getFilteredList19(jobCode, workform, certificate);
-                        Log.d("recruit", "onResume: dao19" + result.toString());
-                        loadListData(result);
+                        db.RecruitDao().getFilteredList19(jobCode, workform, certificate).observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
+                            @Override
+                            public void onChanged(List<Recruit> recruits) {
+                                Log.d("recruit", "onResume: dao19" + recruits.toString());
+                                loadListData(recruits);
+                            }
+                        });
+
                     }
                 }
             }else{  //지역 선택 했을 때
                 if(jobs.size() == 0){   //직종 선택 안했을 때 -> 전체 지역
                     if(workform.equals("A")){   //근무형태 전체 선택
                         if(bDongCode.size()>(999-certificate.size())){
+                            List<Recruit> result = new ArrayList<>();
                             int n = bDongCode.size()/(999-certificate.size());
                             for(int i = 0;i<=n;i++){
                                 List<String> tmp;
@@ -502,17 +661,29 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
                                 }else{
                                     tmp = bDongCode.subList(i*(999-certificate.size()),i*(999-certificate.size()) + (999-certificate.size()));
                                 }
-                                result.addAll(db.RecruitDao().getFilteredList20(tmp,certificate));
+                                db.RecruitDao().getFilteredList20(tmp,certificate).observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
+                                    @Override
+                                    public void onChanged(List<Recruit> recruits) {
+                                        result.addAll(recruits);
+                                    }
+                                });
                             }
-
+                            Log.d("recruit", "onResume: dao20" + result.toString());
+                            loadListData(result);
                         }else{
-                            result = db.RecruitDao().getFilteredList20(bDongCode,certificate);
+                            db.RecruitDao().getFilteredList20(bDongCode,certificate).observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
+                                @Override
+                                public void onChanged(List<Recruit> recruits) {
+                                    Log.d("recruit", "onResume: dao20" + recruits.toString());
+                                    loadListData(recruits);
+                                }
+                            });
                         }
 //                        result = db.RecruitDao().getFilteredList20(bDongCode, certificate);
-                        Log.d("recruit", "onResume: dao20" + result.toString());
-                        loadListData(result);
+
                     }else{  //근무형태 선택했을 때 (정규직 or 계약직)
                         if(bDongCode.size()>(998-certificate.size())){
+                            List<Recruit> result = new ArrayList<>();
                             int n = bDongCode.size()/(998-certificate.size());
                             for(int i = 0;i<=n;i++){
                                 List<String> tmp;
@@ -521,20 +692,33 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
                                 }else{
                                     tmp = bDongCode.subList(i*(998-certificate.size()),i*(998-certificate.size()) + (998-certificate.size()));
                                 }
-                                result.addAll(db.RecruitDao().getFilteredList21(tmp,workform,certificate));
+                                db.RecruitDao().getFilteredList21(tmp,workform,certificate).observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
+                                    @Override
+                                    public void onChanged(List<Recruit> recruits) {
+                                        result.addAll(recruits);
+                                    }
+                                });
                             }
+                            Log.d("recruit", "onResume: dao21" + result.toString());
+                            loadListData(result);
 
                         }else{
-                            result = db.RecruitDao().getFilteredList21(bDongCode,workform,certificate);
+                            db.RecruitDao().getFilteredList21(bDongCode,workform,certificate).observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
+                                @Override
+                                public void onChanged(List<Recruit> recruits) {
+                                    Log.d("recruit", "onResume: dao21" + recruits.toString());
+                                    loadListData(recruits);
+                                }
+                            });
                         }
 //                        result = db.RecruitDao().getFilteredList21(bDongCode, workform, certificate);
-                        Log.d("recruit", "onResume: dao21" + result.toString());
-                        loadListData(result);
+
                     }
 
                 }else{  //직종 선택 했을 때
                     if(workform.equals("A")){   //근무형태 전체 선택
                         if(bDongCode.size()>(999-jobCode.size()-certificate.size())){
+                            List<Recruit> result = new ArrayList<>();
                             int n = bDongCode.size()/(999-jobCode.size()-certificate.size());
                             for(int i = 0;i<=n;i++){
                                 List<String> tmp;
@@ -543,17 +727,29 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
                                 }else{
                                     tmp = bDongCode.subList(i*(999-jobCode.size()-certificate.size()),i*(999-jobCode.size()-certificate.size()) + (999-jobCode.size()-certificate.size()));
                                 }
-                                result.addAll(db.RecruitDao().getFilteredList22(tmp,jobCode,certificate));
+                                db.RecruitDao().getFilteredList22(tmp,jobCode,certificate).observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
+                                    @Override
+                                    public void onChanged(List<Recruit> recruits) {
+                                        result.addAll(recruits);
+                                    }
+                                });
                             }
-
+                            Log.d("recruit", "onResume: dao22" + result.toString());
+                            loadListData(result);
                         }else{
-                            result = db.RecruitDao().getFilteredList22(bDongCode,jobCode,certificate);
+                            db.RecruitDao().getFilteredList22(bDongCode,jobCode,certificate).observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
+                                @Override
+                                public void onChanged(List<Recruit> recruits) {
+                                    Log.d("recruit", "onResume: dao22" + recruits.toString());
+                                    loadListData(recruits);
+                                }
+                            });
                         }
 //                        result = db.RecruitDao().getFilteredList22(bDongCode, jobCode, certificate);
-                        Log.d("recruit", "onResume: dao22" + result.toString());
-                        loadListData(result);
+
                     }else{  //근무형태 선택했을 때 (정규직 or 계약직)
                         if(bDongCode.size()>(998-jobCode.size()-certificate.size())){
+                            List<Recruit> result = new ArrayList<>();
                             int n = bDongCode.size()/(998-jobCode.size()-certificate.size());
                             for(int i = 0;i<=n;i++){
                                 List<String> tmp;
@@ -562,15 +758,25 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
                                 }else{
                                     tmp = bDongCode.subList(i*(998-jobCode.size()-certificate.size()),i*(998-jobCode.size()-certificate.size()) + (998-jobCode.size()-certificate.size()));
                                 }
-                                result.addAll(db.RecruitDao().getFilteredList23(tmp,jobCode,workform,certificate));
+                                db.RecruitDao().getFilteredList23(tmp,jobCode,workform,certificate).observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
+                                    @Override
+                                    public void onChanged(List<Recruit> recruits) {
+                                        result.addAll(recruits);
+                                    }
+                                });
                             }
 
                         }else{
-                            result = db.RecruitDao().getFilteredList23(bDongCode,jobCode,workform,certificate);
+                            db.RecruitDao().getFilteredList23(bDongCode,jobCode,workform,certificate).observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
+                                @Override
+                                public void onChanged(List<Recruit> recruits) {
+                                    Log.d("recruit", "onResume: dao23" + recruits.toString());
+                                    loadListData(recruits);
+                                }
+                            });
                         }
 //                        result = db.RecruitDao().getFilteredList23(bDongCode, jobCode, workform, certificate);
-                        Log.d("recruit", "onResume: dao23" + result.toString());
-                        loadListData(result);
+
                     }
 
                 }
@@ -581,29 +787,50 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
             if(bDongCode.size() == 0){  //지역 선택 안했을 때 -> 전체 지역
                 if(jobs.size() == 0){   //직종 선택 안했을 때 -> 전체 직종
                     if(workform.equals("A")){   //근무형태 전체 선택
-                        result = db.RecruitDao().getFilteredList24(careerJobCode, career, certificate);
-                        Log.d("recruit", "onResume: dao24" + result.toString());
-                        loadListData(result);
+                        db.RecruitDao().getFilteredList24(careerJobCode, career, certificate).observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
+                            @Override
+                            public void onChanged(List<Recruit> recruits) {
+                                Log.d("recruit", "onResume: dao24" + recruits.toString());
+                                loadListData(recruits);
+                            }
+                        });
+
                     }else{  //근무형태 선택했을 때 (정규직 or 계약직)
-                        result = db.RecruitDao().getFilteredList25(careerJobCode, career, workform, certificate);
-                        Log.d("recruit", "onResume: dao25" + result.toString());
-                        loadListData(result);
+                        db.RecruitDao().getFilteredList25(careerJobCode, career, workform, certificate).observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
+                            @Override
+                            public void onChanged(List<Recruit> recruits) {
+                                Log.d("recruit", "onResume: dao25" + recruits.toString());
+                                loadListData(recruits);
+                            }
+                        });
+
                     }
                 }else{  //직종 선택했을 때
                     if(workform.equals("A")){   //근무형태 전체 선택
-                        result = db.RecruitDao().getFilteredList26(jobCode, careerJobCode, career, certificate);
-                        Log.d("recruit", "onResume: dao26" + result.toString());
-                        loadListData(result);
+                        db.RecruitDao().getFilteredList26(jobCode, careerJobCode, career, certificate).observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
+                            @Override
+                            public void onChanged(List<Recruit> recruits) {
+                                Log.d("recruit", "onResume: dao26" + recruits.toString());
+                                loadListData(recruits);
+                            }
+                        });
+
                     }else{  //근무형태 선택했을 때 (정규직 or 계약직)
-                        result = db.RecruitDao().getFilteredList27(jobCode, careerJobCode, career, workform, certificate);
-                        Log.d("recruit", "onResume: dao27" + result.toString());
-                        loadListData(result);
+                        db.RecruitDao().getFilteredList27(jobCode, careerJobCode, career, workform, certificate).observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
+                            @Override
+                            public void onChanged(List<Recruit> recruits) {
+                                Log.d("recruit", "onResume: dao27" + recruits.toString());
+                                loadListData(recruits);
+                            }
+                        });
+
                     }
                 }
             }else{  //지역 선택 했을 때
                 if(jobs.size() == 0){   //직종 선택 안했을 때 -> 전체 지역
                     if(workform.equals("A")){   //근무형태 전체 선택
                         if(bDongCode.size()>(997-certificate.size())){
+                            List<Recruit> result = new ArrayList<>();
                             int n = bDongCode.size()/(997-certificate.size());
                             for(int i = 0;i<=n;i++){
                                 List<String> tmp;
@@ -612,17 +839,30 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
                                 }else{
                                     tmp = bDongCode.subList(i*(997-certificate.size()),i*(997-certificate.size()) + (997-certificate.size()));
                                 }
-                                result.addAll(db.RecruitDao().getFilteredList28(tmp,careerJobCode,career,certificate));
+                                db.RecruitDao().getFilteredList28(tmp,careerJobCode,career,certificate).observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
+                                    @Override
+                                    public void onChanged(List<Recruit> recruits) {
+                                        result.addAll(recruits);
+                                    }
+                                });
                             }
+                            Log.d("recruit", "onResume: dao28" + result.toString());
+                            loadListData(result);
 
                         }else{
-                            result = db.RecruitDao().getFilteredList28(bDongCode,careerJobCode,career,certificate);
+                            db.RecruitDao().getFilteredList28(bDongCode,careerJobCode,career,certificate).observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
+                                @Override
+                                public void onChanged(List<Recruit> recruits) {
+                                    Log.d("recruit", "onResume: dao28" + recruits.toString());
+                                    loadListData(recruits);
+                                }
+                            });
                         }
 //                        result = db.RecruitDao().getFilteredList28(bDongCode, careerJobCode, career, certificate);
-                        Log.d("recruit", "onResume: dao28" + result.toString());
-                        loadListData(result);
+
                     }else{  //근무형태 선택했을 때 (정규직 or 계약직)
                         if(bDongCode.size()>(996-certificate.size())){
+                            List<Recruit> result = new ArrayList<>();
                             int n = bDongCode.size()/(996-certificate.size());
                             for(int i = 0;i<=n;i++){
                                 List<String> tmp;
@@ -631,20 +871,33 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
                                 }else{
                                     tmp = bDongCode.subList(i*(996-certificate.size()),i*(996-certificate.size()) + (996-certificate.size()));
                                 }
-                                result.addAll(db.RecruitDao().getFilteredList29(tmp,careerJobCode,career,workform,certificate));
+                                db.RecruitDao().getFilteredList29(tmp,careerJobCode,career,workform,certificate).observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
+                                    @Override
+                                    public void onChanged(List<Recruit> recruits) {
+                                        result.addAll(recruits);
+                                    }
+                                });
                             }
+                            Log.d("recruit", "onResume: dao" + result.toString());
+                            loadListData(result);
 
                         }else{
-                            result = db.RecruitDao().getFilteredList29(bDongCode,careerJobCode,career,workform,certificate);
+                            db.RecruitDao().getFilteredList29(bDongCode,careerJobCode,career,workform,certificate).observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
+                                @Override
+                                public void onChanged(List<Recruit> recruits) {
+                                    Log.d("recruit", "onResume: dao" + recruits.toString());
+                                    loadListData(recruits);
+                                }
+                            });
                         }
 //                        result = db.RecruitDao().getFilteredList29(bDongCode, careerJobCode, career, workform, certificate);
-                        Log.d("recruit", "onResume: dao" + result.toString());
-                        loadListData(result);
+
                     }
 
                 }else{  //직종 선택 했을 때
                     if(workform.equals("A")){   //근무형태 전체 선택
                         if(bDongCode.size()>(997-jobCode.size()-certificate.size())){
+                            List<Recruit> result = new ArrayList<>();
                             int n = bDongCode.size()/(997-jobCode.size()-certificate.size());
                             for(int i = 0;i<=n;i++){
                                 List<String> tmp;
@@ -653,17 +906,30 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
                                 }else{
                                     tmp = bDongCode.subList(i*(997-jobCode.size()-certificate.size()),i*(997-jobCode.size()-certificate.size()) + (997-jobCode.size()-certificate.size()));
                                 }
-                                result.addAll(db.RecruitDao().getFilteredList30(tmp,jobCode,careerJobCode,career,certificate));
+                                db.RecruitDao().getFilteredList30(tmp,jobCode,careerJobCode,career,certificate).observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
+                                    @Override
+                                    public void onChanged(List<Recruit> recruits) {
+                                        result.addAll(recruits);
+                                    }
+                                });
                             }
+                            Log.d("recruit", "onResume: dao30" + result.toString());
+                            loadListData(result);
 
                         }else{
-                            result = db.RecruitDao().getFilteredList30(bDongCode,jobCode,careerJobCode,career,certificate);
+                            db.RecruitDao().getFilteredList30(bDongCode,jobCode,careerJobCode,career,certificate).observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
+                                @Override
+                                public void onChanged(List<Recruit> recruits) {
+                                    Log.d("recruit", "onResume: dao30" + recruits.toString());
+                                    loadListData(recruits);
+                                }
+                            });
                         }
 //                        result = db.RecruitDao().getFilteredList30(bDongCode, jobCode, careerJobCode, career, certificate);
-                        Log.d("recruit", "onResume: dao30" + result.toString());
-                        loadListData(result);
+
                     }else{  //근무형태 선택했을 때 (정규직 or 계약직)
                         if(bDongCode.size()>(996-jobCode.size()-certificate.size())){
+                            List<Recruit> result = new ArrayList<>();
                             int n = bDongCode.size()/(996-jobCode.size()-certificate.size());
                             for(int i = 0;i<=n;i++){
                                 List<String> tmp;
@@ -672,15 +938,27 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
                                 }else{
                                     tmp = bDongCode.subList(i*(996-jobCode.size()-certificate.size()),i*(996-jobCode.size()-certificate.size()) + (996-jobCode.size()-certificate.size()));
                                 }
-                                result.addAll(db.RecruitDao().getFilteredList31(tmp,jobCode,careerJobCode,career,workform,certificate));
+                                db.RecruitDao().getFilteredList31(tmp,jobCode,careerJobCode,career,workform,certificate).observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
+                                    @Override
+                                    public void onChanged(List<Recruit> recruits) {
+                                        result.addAll(recruits);
+                                    }
+                                });
                             }
+                            Log.d("recruit", "onResume: dao31" + result.toString());
+                            loadListData(result);
 
                         }else{
-                            result = db.RecruitDao().getFilteredList31(bDongCode,jobCode,careerJobCode,career,workform,certificate);
+                            db.RecruitDao().getFilteredList31(bDongCode,jobCode,careerJobCode,career,workform,certificate).observe((LifecycleOwner) this.getContext(), new Observer<List<Recruit>>() {
+                                @Override
+                                public void onChanged(List<Recruit> recruits) {
+                                    Log.d("recruit", "onResume: dao31" + recruits.toString());
+                                    loadListData(recruits);
+                                }
+                            });
                         }
 //                        result = db.RecruitDao().getFilteredList31(bDongCode, jobCode, careerJobCode, career, workform, certificate);
-                        Log.d("recruit", "onResume: dao31" + result.toString());
-                        loadListData(result);
+
                     }
 
                 }
@@ -782,7 +1060,14 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
     }
 
     private void checkLastUpdated() { // 기기의 업데이트 일시와 DB의 업데이트 일시를 확인
-        List<String> rows = db.RecruitDao().getLastUpdated();
+        List<String> rows = null;//db.RecruitDao().getLastUpdated();
+        try {
+            rows = new RecruitLastUpdateAsyncTask(db.RecruitDao()).execute().get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         String lastUpdated = rows.get(0);
         Log.d("date: ", "recruit: "+lastUpdated);
         String dbLastUpdated = "";
@@ -848,7 +1133,8 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
 
             // 북마크 업데이트 (삭제된 공고 제거)
             ArrayList<HashMap<String, String>> arrayList = new ArrayList<>();
-            String bookmarkPhp = context.getResources().getString(R.string.serverIP)+"bookmark_read.php";
+            String _uId = getResources().getString(R.string.user_id);  // 유저 아이디
+            String bookmarkPhp = context.getResources().getString(R.string.serverIP)+"bookmark_read.php?user_id="+_uId;
             URLConnector urlConnectorBookmark = new URLConnector(bookmarkPhp);
             urlConnectorBookmark.start();
             try {
@@ -881,9 +1167,17 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
                 HashMap<String ,String> hashMap = arrayList.get(j);
                 String uId = hashMap.get("user_id");
                 String rId = hashMap.get("recruit_id");
+                List<Recruit> recruits = null;
+                try {
+                    recruits = new RecruitGetListAsyncTask(db.RecruitDao()).execute(rId).get();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
 
-                if (db.RecruitDao().getList(rId).size() == 0) { // 삭제된 공고면 북마크 테이블에서 해당 공고 삭제
-                    String bookmarkDelPhp = context.getResources().getString(R.string.serverIP)+"bookmark_del.php?user_id="+uId+"&recruit_id="+rId;
+                if (recruits.size() == 0) { // 삭제된 공고면 북마크 테이블에서 해당 공고 삭제
+                    String bookmarkDelPhp = context.getResources().getString(R.string.serverIP)+"bookmark_del.php?user_id="+_uId+"&recruit_id="+rId;
                     URLConnector urlConnectorBookmarkDel = new URLConnector(bookmarkDelPhp);
                     urlConnectorBookmarkDel.start();
                     try {
@@ -896,7 +1190,15 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
    }
 
     private void checkCertifiLastUpdated() { // 기기의 업데이트 일시와 DB의 업데이트 일시를 확인
-        List<String> rows = db.recruitCertificateDao().getLastUpdated();
+        List<String> rows = null;
+        try {
+            rows = new CertifiLastUpdateAsyncTask(db.recruitCertificateDao()).execute().get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+//        db.recruitCertificateDao().getLastUpdated();
         String lastUpdated = rows.get(0);
         Log.d("date: ", "certifi: "+lastUpdated);
         String dbLastUpdated = "";
@@ -952,6 +1254,46 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    public static class RecruitGetListAsyncTask extends AsyncTask<String,Void,List<Recruit>>{
+        private RecruitDao mRecruitDao;
+
+        public RecruitGetListAsyncTask(RecruitDao recruitDao){
+            this.mRecruitDao = recruitDao;
+        }
+
+        @Override
+        protected List<Recruit> doInBackground(String... strings) {
+            return mRecruitDao.getList(strings[0]);
+        }
+    }
+
+    public static class RecruitLastUpdateAsyncTask extends AsyncTask<Void,Void,List<String>>{
+        private RecruitDao mRecruitDao;
+
+        public RecruitLastUpdateAsyncTask(RecruitDao recruitDao){
+            this.mRecruitDao = recruitDao;
+        }
+
+        @Override
+        protected List<String> doInBackground(Void... voids) {
+            return mRecruitDao.getLastUpdated();
+        }
+
+    }
+
+    public static class CertifiLastUpdateAsyncTask extends AsyncTask<Void, Void, List<String>> {
+        private RecruitCertificateDao mRecruitCertifiDao;
+
+        public  CertifiLastUpdateAsyncTask(RecruitCertificateDao recruitCertificateDao){
+            this.mRecruitCertifiDao = recruitCertificateDao;
+        }
+
+        @Override
+        protected List<String> doInBackground(Void... voids) {
+            return mRecruitCertifiDao.getLastUpdated();
         }
     }
 
@@ -1023,7 +1365,8 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
 
         // 북마크 테이블 읽어오기
         ArrayList<HashMap<String, String>> arrayList = new ArrayList<>();
-        String bookmarkPhp = context.getResources().getString(R.string.serverIP)+"bookmark_read.php";
+        String _uId = getResources().getString(R.string.user_id);  // 유저 아이디
+        String bookmarkPhp = context.getResources().getString(R.string.serverIP)+"bookmark_read.php?user_id="+_uId;
         URLConnector urlConnectorBookmark = new URLConnector(bookmarkPhp);
         urlConnectorBookmark.start();
         try {
@@ -1090,7 +1433,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
                 String rId = hashMap.get("recruit_id");
 
                 // 유저 아이디 = 3
-                if (uId.equals("3") && rId.equals(row.recruit_id)) {
+                if (uId.equals(getResources().getString(R.string.user_id)) && rId.equals(row.recruit_id)) {
                     flag = 1;
                 }
             }

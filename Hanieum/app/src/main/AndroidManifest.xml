@@ -3,11 +3,9 @@
     package="org.techtown.hanieum">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <!-- 음성인식에 필요함 -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> <!-- 음성인식에 필요함 -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.BLUETOOTH" />
+
     <queries>
         <intent>
             <action android:name="android.speech.RecognitionService" />
@@ -22,7 +20,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Hanieum"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ApplyActivity"></activity>
+        <activity android:name=".ApplyActivity" />
         <activity android:name=".DetailActivity" />
         <activity android:name=".JobActivity" />
         <activity android:name=".RegionSearchActivity" />

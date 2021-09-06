@@ -1,3 +1,4 @@
+import subprocess
 import sys
 import html
 import re
@@ -35,7 +36,6 @@ def check_total():  # 가져올 데이터의 개수 확인
             quote_plus('startPage'): '1',
             quote_plus('display'): '1',
             quote_plus('pfPreferential'): 'B'   # 시니어 공고: B
-            # , quote_plus('regDate'): 'D-0' # 첫 수집 이후 반복 시 주석 제거 후 사용(오늘 업로드 된 데이터만 가져오도록 함)
         }
     )
     response = requests.get(url + queryParams).text.encode('utf-8')
@@ -517,9 +517,14 @@ def db_check_deleted():
 
         if delList:
             # API에서 지워진 공고에 삭제 표시 업데이트
-            sql = f"""UPDATE `recruit`
-                    SET deleted = '1'
-                    WHERE recruit_id in {delList};"""
+            if len(delList) == 1:
+                sql = f"""UPDATE `recruit`
+                        SET deleted = '1'
+                        WHERE recruit_id = '{delList[0]}';"""
+            else:
+                sql = f"""UPDATE `recruit`
+                        SET deleted = '1'
+                        WHERE recruit_id in {delList};"""
             cursor.execute(sql)
             db.commit()
 
@@ -557,6 +562,7 @@ if __name__ == '__main__':
     db_select_certificate()  # db에서 자격증 테이블 읽어오기
     processing()
     db_check_constraint()
+
     # 리스트 합치기
     rowsLen = len(rowList)
     for i in range(0, rowsLen):
@@ -565,4 +571,7 @@ if __name__ == '__main__':
     db_insert()
     db.close()
     print("db closed")
+
+    # 데이터 업데이트가 끝나면, csv 파일 생성
+    subprocess.call(['python3', '/home/ubuntu/workspace/recruit_data_process.py'])
 
