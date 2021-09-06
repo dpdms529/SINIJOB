@@ -41,7 +41,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     ImageButton helpButton; // 도움말 버튼
     TextView itemNum;
     String msg; // 음성 요약 메세지
-    String summary;
 
     AppDatabase db;
 
@@ -56,7 +55,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        summary = "";
     }
 
     @Override
