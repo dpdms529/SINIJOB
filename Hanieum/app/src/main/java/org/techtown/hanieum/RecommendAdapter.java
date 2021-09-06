@@ -10,10 +10,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 
 public class RecommendAdapter extends RecyclerView.Adapter<RecommendAdapter.ViewHolder> implements
@@ -103,7 +99,7 @@ public class RecommendAdapter extends RecyclerView.Adapter<RecommendAdapter.View
 
                         String uId = context.getString(R.string.user_id);   // 유저 아이디
                         String rId = item.getId();
-                        String bookmarkPhp = context.getResources().getString(R.string.serverIP)+"bookmark_del.php?user_id="+uId+"&recruit_id="+rId;
+                        String bookmarkPhp = context.getResources().getString(R.string.serverIP) + "bookmark_del.php?user_id=" + uId + "&recruit_id=" + rId;
                         URLConnector urlConnectorBookmark = new URLConnector(bookmarkPhp);
                         urlConnectorBookmark.start();
                         try {
@@ -116,7 +112,7 @@ public class RecommendAdapter extends RecyclerView.Adapter<RecommendAdapter.View
 
                         String uId = context.getString(R.string.user_id);   // 유저 아이디
                         String rId = item.getId();
-                        String bookmarkPhp = context.getResources().getString(R.string.serverIP)+"bookmark_save.php?user_id="+uId+"&recruit_id="+rId;
+                        String bookmarkPhp = context.getResources().getString(R.string.serverIP) + "bookmark_save.php?user_id=" + uId + "&recruit_id=" + rId;
                         URLConnector urlConnectorBookmark = new URLConnector(bookmarkPhp);
                         urlConnectorBookmark.start();
                         try {

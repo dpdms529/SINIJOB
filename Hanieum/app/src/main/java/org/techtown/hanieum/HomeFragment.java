@@ -529,7 +529,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         itemNum.setText(String.valueOf(items.size()));
         adapter.setItems(items);
 
-        if (Integer.parseInt(itemNum.getText().toString()) > 0) {
+        if (Integer.parseInt(itemNum.getText().toString()) > 0) {    // 추천 공고가 있을 경우 최대 3건까지 요약
             msg = "추천된 공고는 총" + itemNum.getText().toString() + " 건 입니다.";
             if (Integer.parseInt(itemNum.getText().toString()) >= 3) {
                 msg += "첫 번째로 추천된 공고는 " + items.get(0).getTitle() + "입니다. " +
@@ -541,6 +541,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             } else if (Integer.parseInt(itemNum.getText().toString()) >= 1) {
                 msg += "추천된 공고는 " + items.get(0).getTitle() + "입니다.";
             } else {
+                // 추천 공고가 없을 경우 "추천된 일자리가 없습니다" 출력
             }
         } else {
         }

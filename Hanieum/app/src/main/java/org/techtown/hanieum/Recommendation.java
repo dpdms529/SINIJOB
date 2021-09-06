@@ -1,8 +1,6 @@
 package org.techtown.hanieum;
 
-import android.widget.ImageButton;
-
-public class Recommendation implements Comparable<Recommendation>{
+public class Recommendation implements Comparable<Recommendation> {
     private String id;
     private String companyName;
     private String title;
@@ -62,9 +60,13 @@ public class Recommendation implements Comparable<Recommendation>{
         this.salary = salary;
     }
 
-    public Double getDistance() { return distance; }
+    public Double getDistance() {
+        return distance;
+    }
 
-    public void setDistance(Double distance) { this.distance = distance; }
+    public void setDistance(Double distance) {
+        this.distance = distance;
+    }
 
     public boolean getBookmark() {
         return bookmark;

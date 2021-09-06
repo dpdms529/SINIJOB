@@ -20,7 +20,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -64,7 +63,7 @@ public class ApplyActivity extends AppCompatActivity implements View.OnClickList
         // 음성인식
         intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getPackageName());
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE,"ko-KR");   //한국어 사용
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ko-KR");   //한국어 사용
         speechRecognizer = SpeechRecognizer.createSpeechRecognizer(context);
         speechRecognizer.setRecognitionListener(listener);
 
@@ -72,7 +71,7 @@ public class ApplyActivity extends AppCompatActivity implements View.OnClickList
         tts = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
-                if (status != android.speech.tts.TextToSpeech.ERROR){
+                if (status != android.speech.tts.TextToSpeech.ERROR) {
                     tts.setLanguage(Locale.KOREAN);
                 }
             }
@@ -90,11 +89,11 @@ public class ApplyActivity extends AppCompatActivity implements View.OnClickList
             System.out.println("음성인식 시작!");
             // 권한을 허용하지 않는 경우
             if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(ApplyActivity.this, new String[]{Manifest.permission.RECORD_AUDIO},1);
+                ActivityCompat.requestPermissions(ApplyActivity.this, new String[]{Manifest.permission.RECORD_AUDIO}, 1);
             } else { // 권한을 허용한 경우
                 try {
                     speechRecognizer.startListening(intent);
-                } catch (SecurityException e){
+                } catch (SecurityException e) {
                     e.printStackTrace();
                 }
             }
@@ -113,7 +112,7 @@ public class ApplyActivity extends AppCompatActivity implements View.OnClickList
                 startActivity(intent);
             } else {    // email
                 String uriText = "mailto:" + "?subject=" +
-                        Uri.encode(i.getStringExtra("company")+"에 지원합니다.") + "&body=" + Uri.encode(textMsg.getText().toString());
+                        Uri.encode(i.getStringExtra("company") + "에 지원합니다.") + "&body=" + Uri.encode(textMsg.getText().toString());
                 Uri uri = Uri.parse(uriText);
 
                 Intent intent = new Intent(Intent.ACTION_SENDTO);
@@ -157,9 +156,9 @@ public class ApplyActivity extends AppCompatActivity implements View.OnClickList
 
         @Override
         public void onResults(Bundle results) {
-            String key= "";
+            String key = "";
             key = SpeechRecognizer.RESULTS_RECOGNITION;
-            ArrayList<String> mResult =results.getStringArrayList(key);
+            ArrayList<String> mResult = results.getStringArrayList(key);
             String[] rs = new String[mResult.size()];
             mResult.toArray(rs);
             textMsg.setText(textMsg.getText() + " " + rs[0]);
@@ -184,7 +183,7 @@ public class ApplyActivity extends AppCompatActivity implements View.OnClickList
             tts.shutdown();
             tts = null;
         }
-        if (speechRecognizer != null){
+        if (speechRecognizer != null) {
             speechRecognizer.destroy();
             speechRecognizer.cancel();
             speechRecognizer = null;
@@ -192,12 +191,12 @@ public class ApplyActivity extends AppCompatActivity implements View.OnClickList
     }
 
     // 음성 메세지 출력용
-    private void voiceOut(String msg){
+    private void voiceOut(String msg) {
         if (msg.length() < 1) return;
 
         // 음성 출력
         tts.setPitch(0.8f); //목소리 톤1.0
         tts.setSpeechRate(0.9f);    //목소리 속도
-        tts.speak(msg, TextToSpeech.QUEUE_FLUSH,null, null);
+        tts.speak(msg, TextToSpeech.QUEUE_FLUSH, null, null);
     }
 }
