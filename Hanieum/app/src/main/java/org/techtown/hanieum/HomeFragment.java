@@ -1,16 +1,9 @@
 package org.techtown.hanieum;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -24,7 +17,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -35,18 +27,10 @@ import org.techtown.hanieum.db.dao.RecruitDao;
 import org.techtown.hanieum.db.entity.Recruit;
 import org.techtown.hanieum.db.entity.RecruitCertificate;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public class HomeFragment extends Fragment implements View.OnClickListener {
@@ -64,7 +48,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     Context context;
 
     TextToSpeech tts;
-
 
     public HomeFragment() {
         // Required empty public constructor
@@ -539,8 +522,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 if(count==100){
                     break;
                 }
-
-                String jobNm = db.jobCategoryDao().getCategoryName(recruit.get(0).job_code);
             }
         } catch (JSONException e) {
             e.printStackTrace();
