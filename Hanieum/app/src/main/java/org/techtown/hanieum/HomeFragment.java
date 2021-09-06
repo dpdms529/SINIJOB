@@ -54,7 +54,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     RecommendAdapter adapter; // 추천 목록 어댑터
     Button changeButton; // 조건 변경 화면으로 이동하는 버튼
     Button summaryButton; // 음성 요약 버튼
-    ImageButton searchButton; // 검색 버튼
+    ImageButton helpButton; // 도움말 버튼
     TextView itemNum;
     String msg; // 음성 요약 메세지
     String summary;
@@ -85,7 +85,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         recyclerView = view.findViewById(R.id.recommendView);
         changeButton = view.findViewById(R.id.changeButton);
         summaryButton = view.findViewById(R.id.voice_summary_rec);
-        searchButton = view.findViewById(R.id.searchButton);
+        helpButton = view.findViewById(R.id.helpButton);
         itemNum = view.findViewById(R.id.itemNum);
         msg = "추천된 일자리가 없습니다.";
 
@@ -119,8 +119,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             }
         });
 
-        searchButton.setOnClickListener(this);
         summaryButton.setOnClickListener(this);
+        helpButton.setOnClickListener(this);
 
         checkLastUpdated();
         checkCertifiLastUpdated();
@@ -132,8 +132,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-        if (v == searchButton) {
-            Toast.makeText(getContext(), "검색", Toast.LENGTH_SHORT).show();
+        if (v == helpButton) {
+            Intent intent = new Intent(this.getContext(), HelpActivity.class);
+            intent.putExtra("from", "HomeFragment");
+            startActivity(intent);
         } else if (v == summaryButton) {
             voiceOut(msg);
         }
@@ -437,13 +439,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     private void loadListData() {
         ArrayList<Recommendation> items = new ArrayList<>();
-        String _uId = getResources().getString(R.string.user_id);  // 유저 아이디
-        String recoPhp = getResources().getString(R.string.serverIP)+"reco_list.php?user_id=" + _uId;
+        String recoPhp = getResources().getString(R.string.serverIP)+"reco_list.php?user_id=" + getResources().getString(R.string.user_id);
         URLConnector urlConnector = new URLConnector(recoPhp);
 
         // 북마크 테이블 읽어오기
-        ArrayList<HashMap<String, String>> arrayList = new ArrayList<>();
-        String bookmarkPhp = context.getResources().getString(R.string.serverIP)+"bookmark_read.php?user_id="+_uId;
+        ArrayList<String> arrayList = new ArrayList<>();
+        String bookmarkPhp = context.getResources().getString(R.string.serverIP)+"bookmark_read.php?user_id="+getResources().getString(R.string.user_id);
         URLConnector urlConnectorBookmark = new URLConnector(bookmarkPhp);
         urlConnectorBookmark.start();
         try {
@@ -458,15 +459,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
             for (int i=0; i<jsonArray.length(); i++) {
                 JSONObject jsonObject1 = jsonArray.getJSONObject(i);
-
-                HashMap<String, String> hashMap = new HashMap<>();
-                String user_id = jsonObject1.getString("user_id");
                 String recruit_id = jsonObject1.getString("recruit_id");
-
-                hashMap.put("user_id", user_id);
-                hashMap.put("recruit_id", recruit_id);
-
-                arrayList.add(hashMap);
+                arrayList.add(recruit_id);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -530,16 +524,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 }else{
                     // 북마크 확인하는 코드
                     for (int j=0; j<arrayList.size(); j++) {
-                        HashMap<String ,String> hashMap = arrayList.get(j);
-                        String uId = hashMap.get("user_id");
-                        String rId = hashMap.get("recruit_id");
-
-                        // 유저 아이디 = 3
-                        if (uId.equals(getResources().getString(R.string.user_id)) && rId.equals(recruit.get(0).recruit_id)) {
+                        String rId = arrayList.get(j);
+                        if (rId.equals(recruit.get(0).recruit_id)) {
                             flag = 1;
                         }
                     }
-
                     if (flag == 1) {    // 북마크가 되어 있을 때
                         items.add(new Recommendation(recruit.get(0).recruit_id, recruit.get(0).organization, recruit.get(0).recruit_title, salaryType, sal, dist, true));
                     } else {    // 북마크가 안 되어 있을 때

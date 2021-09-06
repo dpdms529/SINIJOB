@@ -37,6 +37,7 @@ public class ApplyActivity extends AppCompatActivity implements View.OnClickList
     //음성 출력용
     TextToSpeech tts;
 
+    ImageButton helpButton; // 도움말 버튼
     ImageButton micButton;
     Switch voiceTf;
     EditText textMsg;
@@ -49,6 +50,7 @@ public class ApplyActivity extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.activity_apply);
 
         context = this;
+        helpButton = findViewById(R.id.helpButton);
         micButton = findViewById(R.id.micButton);
         voiceTf = findViewById(R.id.voiceTf);
         textMsg = findViewById(R.id.textMsg);
@@ -76,6 +78,7 @@ public class ApplyActivity extends AppCompatActivity implements View.OnClickList
             }
         });
 
+        helpButton.setOnClickListener(this);
         micButton.setOnClickListener(this);
         textMsg.setOnClickListener(this);
         finishButton.setOnClickListener(this);
@@ -117,6 +120,10 @@ public class ApplyActivity extends AppCompatActivity implements View.OnClickList
                 intent.setData(uri);
                 startActivity(Intent.createChooser(intent, "이메일 앱을 선택하세요"));
             }
+        } else if (v == helpButton) {
+            Intent intent = new Intent(this, HelpActivity.class);
+            intent.putExtra("from", "ApplyActivity");
+            startActivity(intent);
         }
     }
 
@@ -155,7 +162,7 @@ public class ApplyActivity extends AppCompatActivity implements View.OnClickList
             ArrayList<String> mResult =results.getStringArrayList(key);
             String[] rs = new String[mResult.size()];
             mResult.toArray(rs);
-            textMsg.setText(textMsg.getText() + rs[0]);
+            textMsg.setText(textMsg.getText() + " " + rs[0]);
             textSys.setText("");
         }
 

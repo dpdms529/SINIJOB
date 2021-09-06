@@ -35,7 +35,7 @@ public class RegionActivity extends AppCompatActivity implements View.OnClickLis
     RecyclerView regionView2; // 지역 분류(구/군/시) 리사이클러뷰
     RecyclerView regionView3; // 지역 분류(동/읍/면) 리사이클러뷰
     RegionAdapter adapter1; // 지역 분류(시/도) 어댑터
-    RegionAdapter adapter2; // 지역 분류(구/군/시) 어댑터
+    static RegionAdapter adapter2; // 지역 분류(구/군/시) 어댑터
     static RegionAdapter adapter3; // 지역 분류(동/읍/면) 어댑터
     static ChipGroup chipGroup; // 선택한 지역을 나타내기 위한 ChipGroup
     Context context;
@@ -93,12 +93,11 @@ public class RegionActivity extends AppCompatActivity implements View.OnClickLis
                     region2.add(new Region(region1.getRegion1(), item2.get(i), null, "0" , Code.ViewType.REGION2));
                 }
 
+                RegionAdapter.lastSelectedPosition2 = -1;
                 for(int i=0;i<chipList.size();i++) {
                     if(chipList.get(i).getName().equals(region2.get(0).getRegion1() + " " + region2.get(0).getRegion2())) { // 칩리스트에 전체 항목이 있으면
                         region2.get(0).setSelected(true); // region2의 전체 항목에 색칠
                         RegionAdapter.lastSelectedPosition2 = 0;
-                    } else {
-                        RegionAdapter.lastSelectedPosition2 = -1;
                     }
                 }
 
@@ -234,15 +233,35 @@ public class RegionActivity extends AppCompatActivity implements View.OnClickLis
             chip.setOnCloseIconClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    int flag = 0;
                     //아이템 삭제
                     for(int i=0;i<chipList.size();i++) {
                         if(chipList.get(i).getName().equals(name)) {
                             chipList.remove(i);
-                            if((adapter3.getItemCount() != 0) && name.contains(adapter3.getItem(position).getRegion3())) {
+                            if((adapter3.getItemCount() != 0) && name.contains(adapter3.getItem(position).getRegion3()) && name.contains(adapter3.getItem(position).getRegion2())
+                                    && name.contains(adapter3.getItem(position).getRegion1())) {
                                 adapter3.getItem(position).setSelected(false);
                                 pref.setArrayPref(chipList, SharedPreference.REGION_TMP);
                                 adapter3.notifyItemChanged(position);
-                            } else {
+                                flag = 1;
+                            } else if (adapter3.getItemCount() != 0) {  // position을 모를 때
+                                for (int j=0; j<adapter3.getItemCount(); j++) {
+                                    if (name.contains(adapter3.getItem(j).getRegion3()) && name.contains(adapter3.getItem(j).getRegion2()) && name.contains(adapter3.getItem(position).getRegion1())) {
+                                        adapter3.getItem(j).setSelected(false);
+                                        pref.setArrayPref(chipList, SharedPreference.REGION_TMP);
+                                        adapter3.notifyItemChanged(j);
+                                        flag = 1;
+                                        break;
+                                    }
+                                }
+                            } else if (adapter2.getItemCount() != 0 && name.contains(adapter2.getItem(position).getRegion1())) {
+                                adapter2.getItem(position).setSelected(false);
+                                pref.setArrayPref(chipList, SharedPreference.REGION_TMP);
+                                adapter2.notifyItemChanged(position);
+                                RegionAdapter.lastSelectedPosition2 = -1;
+                                flag = 1;
+                            }
+                            if (flag == 0) {
                                 pref.setArrayPref(chipList, SharedPreference.REGION_TMP);
                             }
                         }

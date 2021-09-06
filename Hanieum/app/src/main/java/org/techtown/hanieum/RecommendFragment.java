@@ -63,6 +63,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
     Button changeButton; // 조건 변경 화면으로 이동하는 버튼
     ImageButton searchButton; // 검색 버튼
     ImageButton micButton; // 마이크 버튼
+    ImageButton helpButton; // 도움말 버튼
     TextView itemNum;
     TextView title; //화면 제목
     EditText editSearch;  //검색창
@@ -100,6 +101,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
         changeButton = view.findViewById(R.id.changeButton);
         searchButton = view.findViewById(R.id.searchButton);
         micButton = view.findViewById(R.id.micButton);
+        helpButton = view.findViewById(R.id.helpButton);
         itemNum = view.findViewById(R.id.itemNum);
         title = view.findViewById(R.id.title);
         editSearch = view.findViewById(R.id.editSearch);
@@ -136,6 +138,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
         changeButton.setOnClickListener(this);
         searchButton.setOnClickListener(this);
         micButton.setOnClickListener(this);
+        helpButton.setOnClickListener(this);
 
         editSearch.addTextChangedListener(new TextWatcher() {   // 공고 검색
             @Override
@@ -977,16 +980,17 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
         } else if (v == searchButton) {
             if(title.getVisibility()==View.VISIBLE){
                 title.setVisibility(View.GONE);
+                helpButton.setVisibility(View.GONE);
                 editSearch.setVisibility(View.VISIBLE);
                 micButton.setVisibility(View.VISIBLE);
             }else{
                 title.setVisibility(View.VISIBLE);
+                helpButton.setVisibility(View.VISIBLE);
                 editSearch.setVisibility(View.GONE);
                 micButton.setVisibility(View.GONE);
                 imm.hideSoftInputFromWindow(editSearch.getWindowToken(),0);
             }
         } else if (v == micButton) {
-//            Toast.makeText(v.getContext(), "메뉴 버튼 눌림", Toast.LENGTH_LONG).show();
             System.out.println("음성인식 시작!");
             // 권한을 허용하지 않는 경우
             if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
@@ -998,6 +1002,10 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
                     e.printStackTrace();
                 }
             }
+        } else if (v == helpButton) {
+            Intent intent = new Intent(this.getContext(), HelpActivity.class);
+            intent.putExtra("from", "RecommendFragment");
+            startActivity(intent);
         }
     }
 
@@ -1132,9 +1140,8 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
             }
 
             // 북마크 업데이트 (삭제된 공고 제거)
-            ArrayList<HashMap<String, String>> arrayList = new ArrayList<>();
-            String _uId = getResources().getString(R.string.user_id);  // 유저 아이디
-            String bookmarkPhp = context.getResources().getString(R.string.serverIP)+"bookmark_read.php?user_id="+_uId;
+            ArrayList<String> arrayList = new ArrayList<>();
+            String bookmarkPhp = context.getResources().getString(R.string.serverIP)+"bookmark_read.php?user_id="+getResources().getString(R.string.user_id);
             URLConnector urlConnectorBookmark = new URLConnector(bookmarkPhp);
             urlConnectorBookmark.start();
             try {
@@ -1149,24 +1156,15 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
 
                 for (int i=0; i<jsonArray.length(); i++) {
                     JSONObject jsonObject1 = jsonArray.getJSONObject(i);
-
-                    HashMap<String, String> hashMap = new HashMap<>();
-                    String user_id = jsonObject1.getString("user_id");
                     String recruit_id = jsonObject1.getString("recruit_id");
-
-                    hashMap.put("user_id", user_id);
-                    hashMap.put("recruit_id", recruit_id);
-
-                    arrayList.add(hashMap);
+                    arrayList.add(recruit_id);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
 
             for (int j=0; j<arrayList.size(); j++) {
-                HashMap<String ,String> hashMap = arrayList.get(j);
-                String uId = hashMap.get("user_id");
-                String rId = hashMap.get("recruit_id");
+                String rId = arrayList.get(j);
                 List<Recruit> recruits = null;
                 try {
                     recruits = new RecruitGetListAsyncTask(db.RecruitDao()).execute(rId).get();
@@ -1177,7 +1175,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
                 }
 
                 if (recruits.size() == 0) { // 삭제된 공고면 북마크 테이블에서 해당 공고 삭제
-                    String bookmarkDelPhp = context.getResources().getString(R.string.serverIP)+"bookmark_del.php?user_id="+_uId+"&recruit_id="+rId;
+                    String bookmarkDelPhp = context.getResources().getString(R.string.serverIP)+"bookmark_del.php?user_id="+getResources().getString(R.string.user_id)+"&recruit_id="+rId;
                     URLConnector urlConnectorBookmarkDel = new URLConnector(bookmarkDelPhp);
                     urlConnectorBookmarkDel.start();
                     try {
@@ -1364,9 +1362,8 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
         itemNum.setText(String.valueOf(rows.size()));
 
         // 북마크 테이블 읽어오기
-        ArrayList<HashMap<String, String>> arrayList = new ArrayList<>();
-        String _uId = getResources().getString(R.string.user_id);  // 유저 아이디
-        String bookmarkPhp = context.getResources().getString(R.string.serverIP)+"bookmark_read.php?user_id="+_uId;
+        ArrayList<String> arrayList = new ArrayList<>();
+        String bookmarkPhp = context.getResources().getString(R.string.serverIP)+"bookmark_read.php?user_id="+getResources().getString(R.string.user_id);
         URLConnector urlConnectorBookmark = new URLConnector(bookmarkPhp);
         urlConnectorBookmark.start();
         try {
@@ -1381,15 +1378,8 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
 
             for (int i=0; i<jsonArray.length(); i++) {
                 JSONObject jsonObject1 = jsonArray.getJSONObject(i);
-
-                HashMap<String, String> hashMap = new HashMap<>();
-                String user_id = jsonObject1.getString("user_id");
                 String recruit_id = jsonObject1.getString("recruit_id");
-
-                hashMap.put("user_id", user_id);
-                hashMap.put("recruit_id", recruit_id);
-
-                arrayList.add(hashMap);
+                arrayList.add(recruit_id);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -1428,12 +1418,8 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
 
             // 북마크 확인하는 코드
             for (int j=0; j<arrayList.size(); j++) {
-                HashMap<String ,String> hashMap = arrayList.get(j);
-                String uId = hashMap.get("user_id");
-                String rId = hashMap.get("recruit_id");
-
-                // 유저 아이디 = 3
-                if (uId.equals(getResources().getString(R.string.user_id)) && rId.equals(row.recruit_id)) {
+                String rId = arrayList.get(j);
+                if (rId.equals(row.recruit_id)) {
                     flag = 1;
                 }
             }

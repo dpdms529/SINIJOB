@@ -31,6 +31,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.SeekBar;
@@ -61,8 +62,9 @@ import java.text.ParseException;
 
 public class DetailActivity extends AppCompatActivity implements View.OnClickListener, SeekBar.OnSeekBarChangeListener,
         MapView.POIItemEventListener, MapView.MapViewEventListener {
-    Toolbar toolbar;
+//    Toolbar toolbar;
     MapView mapView;
+    ImageButton helpButton; // 도움말 버튼
     Button applyButton;
     Button findWay;
     Button goWorknetBtn;
@@ -187,7 +189,8 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
         context = this;
 
-        toolbar = findViewById(R.id.toolbar0201);
+//        toolbar = findViewById(R.id.toolbar0201);
+        helpButton = findViewById(R.id.helpButton);
         applyButton = findViewById(R.id.applyButton);
         findWay = findViewById(R.id.findWay);
         goWorknetBtn = findViewById(R.id.goWorknetBtn);
@@ -286,20 +289,26 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         String id = intent.getStringExtra("id");
         loadData(id);
 
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowCustomEnabled(true);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+//        setSupportActionBar(toolbar);
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        getSupportActionBar().setDisplayShowCustomEnabled(true);
+//        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         mapView.setMapViewEventListener(this);
         mapView.setPOIItemEventListener(this);
 
+        helpButton.setOnClickListener(this);
         applyButton.setOnClickListener(this);
         findWay.setOnClickListener(this);
         goWorknetBtn.setOnClickListener(this);
         goWorknetImg.setOnClickListener(this);
         shareButton.setOnClickListener(this);
         summaryButton.setOnClickListener(this);
+        companyNameDetail.setOnClickListener(this);
+        titleDetail.setOnClickListener(this);
+        workFormDetail.setOnClickListener(this);
+        schoolDetail.setOnClickListener(this);
+        careerDetail.setOnClickListener(this);
         address.get("addressDetail").setOnClickListener(this);
         for (int i=0; i<recruitStr.length; i++) {
             recruitCd.get(recruitStr[i]).setOnClickListener(this);
@@ -334,7 +343,6 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     public void onClick(View v) {
         if (v == applyButton) {
-
             // 접수 방법 알림 다이얼로그
             AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
             alertDialog.setTitle("접수 방법을 확인해주세요\n");
@@ -416,28 +424,59 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         } else if (v == summaryButton){
             String date = apply.get(applyStr[0]).getText().toString(); // 지원 마감일
             String dueDate = date.replaceAll("[^0-9]",""); // 지원 마감일 yymmdd 형태로 바꿈
+            String msg; // 음성출력 메세지
 
-            try{
+            try{ // 지원 마감일 yyyy년 mm월 dd일 형태로 바꿈
                 SimpleDateFormat sdf = new SimpleDateFormat("yymmdd");
                 SimpleDateFormat sdfVoice = new SimpleDateFormat("yyyy년 mm월 dd일");
 
                 Date formatDate = sdf.parse(dueDate);
-                // dueDate = sdf.format(formatDate);
                 dueDate = sdfVoice.format(formatDate);
             } catch (Exception e) {
             }
 
-            String msg =  corp.get(corpStr[0]).getText().toString() + ", 에서," +
-                    recruitCd.get("jobsNm").getText().toString() + "룰 모집합니다." +
-                    "근무지는 " + address.get("addressDetail").getText().toString() + " 입니다." +
-                    "임금은 " + workCd.get(workStr[0]).getText().toString() + " " + workCd.get(workStr[1]).getText().toString() + " 입니다." +
-                    "근무형태는 " + workCd.get("workDay").getText().toString() + " 입니다." +
-                    "지원 마감일은 " + dueDate + ", 입니다.";
+            if(workCd.get("workDay").getText().toString().equals("")) { // 근무형태 정보가 존재하지 않는 경우
+                msg =  corp.get(corpStr[0]).getText().toString() + ", 에서," +
+                        recruitCd.get("jobsNm").getText().toString() + "룰 모집합니다." +
+                        "근무지는 " + address.get("addressDetail").getText().toString() + " 입니다." +
+                        "임금은 " + workCd.get(workStr[0]).getText().toString() + " " + workCd.get(workStr[1]).getText().toString() + " 입니다." +
+                        "지원 마감일은 " + dueDate + ", 입니다.";
+            } else {
+                msg =  corp.get(corpStr[0]).getText().toString() + ", 에서," +
+                        recruitCd.get("jobsNm").getText().toString() + "룰 모집합니다." +
+                        "근무지는 " + address.get("addressDetail").getText().toString() + " 입니다." +
+                        "임금은 " + workCd.get(workStr[0]).getText().toString() + " " + workCd.get(workStr[1]).getText().toString() + " 입니다." +
+                        "근무형태는 " + workCd.get("workDay").getText().toString() + " 입니다." +
+                        "지원 마감일은 " + dueDate + ", 입니다.";
+            }
 
             voiceOut(msg);
-
+        } else if (v == helpButton) {
+            Intent intent = new Intent(this, HelpActivity.class);
+            intent.putExtra("from", "DetailActivity");
+            startActivity(intent);
         }
         if (voiceTf.isChecked()) {
+            if (v == companyNameDetail) {
+                String msg = companyNameDetail.getText().toString();
+                voiceOut(msg);
+            }
+            if (v == titleDetail) {
+                String msg = titleDetail.getText().toString();
+                voiceOut(msg);
+            }
+            if (v == workFormDetail) {
+                String msg = workFormDetail.getText().toString();
+                voiceOut(msg);
+            }
+            if (v == schoolDetail) {
+                String msg = schoolDetail.getText().toString();
+                voiceOut(msg);
+            }
+            if (v == careerDetail) {
+                String msg = careerDetail.getText().toString();
+                voiceOut(msg);
+            }
             if (v == address.get("addressDetail")) {
                 String msg = address.get("addressDetail").getText().toString();
                 voiceOut(msg);
