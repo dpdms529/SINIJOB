@@ -5,7 +5,6 @@ import androidx.room.Query;
 
 import org.techtown.hanieum.db.entity.Bdong;
 
-import java.util.HashMap;
 import java.util.List;
 
 @Dao

@@ -11,18 +11,17 @@
         android:id="@+id/myPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1">
-    </androidx.viewpager2.widget.ViewPager2>
+        android:layout_weight="1"></androidx.viewpager2.widget.ViewPager2>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:background="#82b3c9">
+        android:background="#82b3c9"
+        android:orientation="horizontal">
 
         <Button
-            style="?android:attr/borderlessButtonStyle"
             android:id="@+id/prevButton"
+            style="?android:attr/borderlessButtonStyle"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -38,8 +37,7 @@
             android:layout_weight="2"
             app:tabBackground="@drawable/tab_selector"
             app:tabGravity="center"
-            app:tabIndicatorHeight="0dp">
-        </com.google.android.material.tabs.TabLayout>
+            app:tabIndicatorHeight="0dp"></com.google.android.material.tabs.TabLayout>
 
         <Button
             android:id="@+id/nextButton"

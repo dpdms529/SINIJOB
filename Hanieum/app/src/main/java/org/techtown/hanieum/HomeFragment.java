@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,9 +18,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.google.gson.JsonArray;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,18 +31,23 @@ import org.techtown.hanieum.db.entity.RecruitCertificate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 
 public class HomeFragment extends Fragment implements View.OnClickListener {
     RecyclerView recyclerView; // 추천 목록 리사이클러뷰
     RecommendAdapter adapter; // 추천 목록 어댑터
     Button changeButton; // 조건 변경 화면으로 이동하는 버튼
+    Button summaryButton; // 음성 요약 버튼
     ImageButton helpButton; // 도움말 버튼
     TextView itemNum;
+    String msg; // 음성 요약 메세지
 
     AppDatabase db;
 
     Context context;
+
+    TextToSpeech tts;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -63,10 +66,22 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         context = getContext();
         recyclerView = view.findViewById(R.id.recommendView);
         changeButton = view.findViewById(R.id.changeButton);
+        summaryButton = view.findViewById(R.id.voice_summary_rec);
         helpButton = view.findViewById(R.id.helpButton);
         itemNum = view.findViewById(R.id.itemNum);
+        msg = "추천된 일자리가 없습니다.";
 
         db = AppDatabase.getInstance(this.getContext());
+
+        // 음성출력 생성, 리스너 초기화
+        tts = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (status != android.speech.tts.TextToSpeech.ERROR) {
+                    tts.setLanguage(Locale.KOREAN);
+                }
+            }
+        });
 
         // 리사이클러뷰와 어댑터 연결
         LinearLayoutManager layoutManager = new LinearLayoutManager(view.getContext(),
@@ -86,6 +101,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             }
         });
 
+        summaryButton.setOnClickListener(this);
         helpButton.setOnClickListener(this);
 
         checkLastUpdated();
@@ -102,6 +118,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             Intent intent = new Intent(this.getContext(), HelpActivity.class);
             intent.putExtra("from", "HomeFragment");
             startActivity(intent);
+        } else if (v == summaryButton) {
+            voiceOut(msg);
         }
     }
 
@@ -115,10 +133,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             e.printStackTrace();
         }
         String lastUpdated = rows.get(0);
-        Log.d("date: ", "recruit: "+lastUpdated);
+        Log.d("date: ", "recruit: " + lastUpdated);
         String dbLastUpdated = "";
 
-        String php = getResources().getString(R.string.serverIP)+"recruit_lastupdated.php";
+        String php = getResources().getString(R.string.serverIP) + "recruit_lastupdated.php";
         URLConnector urlConnector = new URLConnector(php);
 
         urlConnector.start();
@@ -137,7 +155,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         }
 
         if (!lastUpdated.equals(dbLastUpdated)) {   // 최신 업데이트 일시 확인(불일치 -> 데이터 가져오기)
-            String recruitPhp = getResources().getString(R.string.serverIP)+"recruit_update.php?last_updated=" + lastUpdated;
+            String recruitPhp = getResources().getString(R.string.serverIP) + "recruit_update.php?last_updated=" + lastUpdated;
             URLConnector urlConnectorRecruit = new URLConnector(recruitPhp);
 
             urlConnectorRecruit.start();
@@ -150,7 +168,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             try {
                 JSONObject jsonObject = new JSONObject(recruitResult);
                 JSONArray jsonArray = jsonObject.getJSONArray("result");
-                for(int i = 0; i < jsonArray.length(); i++) {
+                for (int i = 0; i < jsonArray.length(); i++) {
                     JSONObject jsonObject1 = jsonArray.getJSONObject(i);
                     if (jsonObject1.getString("deleted").equals("0")) {     // 새로 생긴 데이터
                         String recruit_id = jsonObject1.getString("recruit_id");
@@ -180,7 +198,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             // 북마크 업데이트 (삭제된 공고 제거)
             ArrayList<HashMap<String, String>> arrayList = new ArrayList<>();
             String _uId = getResources().getString(R.string.user_id);  // 유저 아이디
-            String bookmarkPhp = context.getResources().getString(R.string.serverIP)+"bookmark_read.php?user_id="+_uId;
+            String bookmarkPhp = context.getResources().getString(R.string.serverIP) + "bookmark_read.php?user_id=" + _uId;
             URLConnector urlConnectorBookmark = new URLConnector(bookmarkPhp);
             urlConnectorBookmark.start();
             try {
@@ -193,7 +211,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 JSONObject jsonObject = new JSONObject(bookmarkResult);
                 JSONArray jsonArray = jsonObject.getJSONArray("result");
 
-                for (int i=0; i<jsonArray.length(); i++) {
+                for (int i = 0; i < jsonArray.length(); i++) {
                     JSONObject jsonObject1 = jsonArray.getJSONObject(i);
 
                     HashMap<String, String> hashMap = new HashMap<>();
@@ -209,8 +227,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 e.printStackTrace();
             }
 
-            for (int j=0; j<arrayList.size(); j++) {
-                HashMap<String ,String> hashMap = arrayList.get(j);
+            for (int j = 0; j < arrayList.size(); j++) {
+                HashMap<String, String> hashMap = arrayList.get(j);
                 String uId = hashMap.get("user_id");
                 String rId = hashMap.get("recruit_id");
                 List<Recruit> recruits = null;
@@ -223,7 +241,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 }
 
                 if (recruits.size() == 0) { // 삭제된 공고면 북마크 테이블에서 해당 공고 삭제
-                    String bookmarkDelPhp = context.getResources().getString(R.string.serverIP)+"bookmark_del.php?user_id="+_uId+"&recruit_id="+rId;
+                    String bookmarkDelPhp = context.getResources().getString(R.string.serverIP) + "bookmark_del.php?user_id=" + _uId + "&recruit_id=" + rId;
                     URLConnector urlConnectorBookmarkDel = new URLConnector(bookmarkDelPhp);
                     urlConnectorBookmarkDel.start();
                     try {
@@ -246,10 +264,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         }
 //        db.recruitCertificateDao().getLastUpdated();
         String lastUpdated = rows.get(0);
-        Log.d("date: ", "certifi: "+lastUpdated);
+        Log.d("date: ", "certifi: " + lastUpdated);
         String dbLastUpdated = "";
 
-        String php = getResources().getString(R.string.serverIP)+"recruit_lastupdated.php";
+        String php = getResources().getString(R.string.serverIP) + "recruit_lastupdated.php";
         URLConnector urlConnector = new URLConnector(php);
 
         urlConnector.start();
@@ -268,7 +286,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         }
 
         if (!lastUpdated.equals(dbLastUpdated)) {   // 최신 업데이트 일시 확인(불일치 -> 데이터 가져오기)
-            String recruitCertificatePhp = getResources().getString(R.string.serverIP)+"certificate_update.php?last_updated=" + lastUpdated;
+            String recruitCertificatePhp = getResources().getString(R.string.serverIP) + "certificate_update.php?last_updated=" + lastUpdated;
             URLConnector urlConnectorRecruitCertificate = new URLConnector(recruitCertificatePhp);
 
             urlConnectorRecruitCertificate.start();
@@ -281,7 +299,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             try {
                 JSONObject jsonObject = new JSONObject(recruitCertificateResult);
                 JSONArray jsonArray = jsonObject.getJSONArray("result");
-                for(int i = 0; i < jsonArray.length(); i++) {
+                for (int i = 0; i < jsonArray.length(); i++) {
                     JSONObject jsonObject1 = jsonArray.getJSONObject(i);
                     if (jsonObject1.getString("deleted").equals("0")) {     // 새로 생긴 데이터
                         String recruit_id = jsonObject1.getString("recruit_id");
@@ -303,10 +321,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    public static class RecruitGetListAsyncTask extends AsyncTask<String,Void,List<Recruit>>{
+    public static class RecruitGetListAsyncTask extends AsyncTask<String, Void, List<Recruit>> {
         private RecruitDao mRecruitDao;
 
-        public RecruitGetListAsyncTask(RecruitDao recruitDao){
+        public RecruitGetListAsyncTask(RecruitDao recruitDao) {
             this.mRecruitDao = recruitDao;
         }
 
@@ -316,10 +334,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    public static class RecruitLastUpdateAsyncTask extends AsyncTask<Void,Void,List<String>>{
+    public static class RecruitLastUpdateAsyncTask extends AsyncTask<Void, Void, List<String>> {
         private RecruitDao mRecruitDao;
 
-        public RecruitLastUpdateAsyncTask(RecruitDao recruitDao){
+        public RecruitLastUpdateAsyncTask(RecruitDao recruitDao) {
             this.mRecruitDao = recruitDao;
         }
 
@@ -333,7 +351,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     public static class CertifiLastUpdateAsyncTask extends AsyncTask<Void, Void, List<String>> {
         private RecruitCertificateDao mRecruitCertifiDao;
 
-        public  CertifiLastUpdateAsyncTask(RecruitCertificateDao recruitCertificateDao){
+        public CertifiLastUpdateAsyncTask(RecruitCertificateDao recruitCertificateDao) {
             this.mRecruitCertifiDao = recruitCertificateDao;
         }
 
@@ -347,7 +365,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     public static class RecruitInsertAsyncTask extends AsyncTask<Recruit, Void, Void> {
         private RecruitDao mRecruitDao;
 
-        public  RecruitInsertAsyncTask(RecruitDao recruitDao){
+        public RecruitInsertAsyncTask(RecruitDao recruitDao) {
             this.mRecruitDao = recruitDao;
         }
 
@@ -361,7 +379,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     public static class CertifiInsertAsyncTask extends AsyncTask<RecruitCertificate, Void, Void> {
         private RecruitCertificateDao mRecruitCertifiDao;
 
-        public  CertifiInsertAsyncTask(RecruitCertificateDao recruitCertificateDao){
+        public CertifiInsertAsyncTask(RecruitCertificateDao recruitCertificateDao) {
             this.mRecruitCertifiDao = recruitCertificateDao;
         }
 
@@ -376,7 +394,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     public static class RecruitDeleteAsyncTask extends AsyncTask<String, Void, Void> {
         private RecruitDao mRecruitDao;
 
-        public  RecruitDeleteAsyncTask(RecruitDao recruitDao){
+        public RecruitDeleteAsyncTask(RecruitDao recruitDao) {
             this.mRecruitDao = recruitDao;
         }
 
@@ -390,7 +408,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     public static class CertifiDeleteAsyncTask extends AsyncTask<RecruitCertificate, Void, Void> {
         private RecruitCertificateDao mRecruitCertifiDao;
 
-        public  CertifiDeleteAsyncTask(RecruitCertificateDao recruitCertificateDao){
+        public CertifiDeleteAsyncTask(RecruitCertificateDao recruitCertificateDao) {
             this.mRecruitCertifiDao = recruitCertificateDao;
         }
 
@@ -403,12 +421,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     private void loadListData() {
         ArrayList<Recommendation> items = new ArrayList<>();
-        String recoPhp = getResources().getString(R.string.serverIP)+"reco_list.php?user_id=" + getResources().getString(R.string.user_id);
+        String recoPhp = getResources().getString(R.string.serverIP) + "reco_list.php?user_id=" + getResources().getString(R.string.user_id);
         URLConnector urlConnector = new URLConnector(recoPhp);
 
         // 북마크 테이블 읽어오기
         ArrayList<String> arrayList = new ArrayList<>();
-        String bookmarkPhp = context.getResources().getString(R.string.serverIP)+"bookmark_read.php?user_id="+getResources().getString(R.string.user_id);
+        String bookmarkPhp = context.getResources().getString(R.string.serverIP) + "bookmark_read.php?user_id=" + getResources().getString(R.string.user_id);
         URLConnector urlConnectorBookmark = new URLConnector(bookmarkPhp);
         urlConnectorBookmark.start();
         try {
@@ -421,7 +439,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             JSONObject jsonObject = new JSONObject(bookmarkResult);
             JSONArray jsonArray = jsonObject.getJSONArray("result");
 
-            for (int i=0; i<jsonArray.length(); i++) {
+            for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonObject1 = jsonArray.getJSONObject(i);
                 String recruit_id = jsonObject1.getString("recruit_id");
                 arrayList.add(recruit_id);
@@ -442,7 +460,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             JSONArray jsonArray = jsonObject.getJSONArray("result");
             int count = 0;
 
-            for (int i=0; i<jsonArray.length(); i++) {
+            for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonObject1 = jsonArray.getJSONObject(i);
 
                 String recruit_id = jsonObject1.getString("recruit_id");
@@ -481,13 +499,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     String[] tmp3 = tmp[1].split("만원|원");
                     sal = tmp2[0] + " ~ " + tmp3[0];
                 }
-                DistanceCalculator distance =  new DistanceCalculator("127.12934", "35.84688", recruit.get(0).x_coordinate, recruit.get(0).y_coordinate);
+                DistanceCalculator distance = new DistanceCalculator("127.12934", "35.84688", recruit.get(0).x_coordinate, recruit.get(0).y_coordinate);
                 Double dist = distance.getStraightDist();   // 직선거리 구하는 함수
-                if(dist>15000){
+                if (dist > 15000) {
                     continue;
-                }else{
+                } else {
                     // 북마크 확인하는 코드
-                    for (int j=0; j<arrayList.size(); j++) {
+                    for (int j = 0; j < arrayList.size(); j++) {
                         String rId = arrayList.get(j);
                         if (rId.equals(recruit.get(0).recruit_id)) {
                             flag = 1;
@@ -500,15 +518,47 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     }
                     count++;
                 }
-                if(count==100){
+                if (count == 100) {
                     break;
                 }
-
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
         itemNum.setText(String.valueOf(items.size()));
         adapter.setItems(items);
+
+        if (Integer.parseInt(itemNum.getText().toString()) > 0) {    // 추천 공고가 있을 경우 최대 3건까지 요약
+            msg = "추천된 공고는 총" + itemNum.getText().toString() + " 건 입니다.";
+            if (Integer.parseInt(itemNum.getText().toString()) >= 3) {
+                msg += "첫 번째로 추천된 공고는 " + items.get(0).getTitle() + "입니다. " +
+                        "두 번째로 추천된 공고는 " + items.get(1).getTitle() + "입니다. " +
+                        "세 번째로 추천된 공고는 " + items.get(2).getTitle() + "입니다.";
+            } else if (Integer.parseInt(itemNum.getText().toString()) >= 2) {
+                msg += "첫 번째로 추천된 공고는 " + items.get(0).getTitle() + "입니다. " +
+                        "두 번째로 추천된 공고는 " + items.get(1).getTitle() + "입니다. ";
+            } else if (Integer.parseInt(itemNum.getText().toString()) >= 1) {
+                msg += "추천된 공고는 " + items.get(0).getTitle() + "입니다.";
+            } else {
+                // 추천 공고가 없을 경우 "추천된 일자리가 없습니다" 출력
+            }
+        } else {
+        }
+    }
+
+    // 음성 메세지 출력용
+    private void voiceOut(String msg) {
+        if (msg.length() < 1) return;
+
+        // 음성 출력
+        tts.setPitch(0.8f); //목소리 톤1.0
+        tts.setSpeechRate(0.9f);    //목소리 속도
+        tts.speak(msg, TextToSpeech.QUEUE_FLUSH, null, null);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
     }
 }

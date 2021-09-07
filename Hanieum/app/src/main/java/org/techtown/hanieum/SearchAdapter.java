@@ -4,14 +4,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-public class SearchAdapter extends  RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     ArrayList<Search> items = new ArrayList<Search>();
     SharedPreference pref;
 
@@ -82,7 +81,7 @@ public class SearchAdapter extends  RecyclerView.Adapter<RecyclerView.ViewHolder
 
                     if (items.get(position).isChecked()) { // 이미 클릭된 상태이면
                         // 아이템 삭제 코드
-                        for (int i=0; i<chipList.size(); i++) {
+                        for (int i = 0; i < chipList.size(); i++) {
                             if (chipList.get(i).getName().equals(items.get(position).getTitle())) {
                                 chipList.remove(i);
                             }
@@ -90,7 +89,7 @@ public class SearchAdapter extends  RecyclerView.Adapter<RecyclerView.ViewHolder
 
                         items.get(position).setChecked(false);
                     } else {
-                        for (int i=0; i<chipList.size(); i++) {
+                        for (int i = 0; i < chipList.size(); i++) {
                             // 선택한 아이템이 1차 직종 전체에 해당하면
                             if (items.get(position).getCode().contains(chipList.get(i).getCode())) {
                                 chipList.remove(i);
@@ -99,7 +98,7 @@ public class SearchAdapter extends  RecyclerView.Adapter<RecyclerView.ViewHolder
                         }
 
                         items.get(position).setChecked(true);
-                        chipList.add(new ChipList(items.get(position).getTitle(),items.get(position).getCode(), position));
+                        chipList.add(new ChipList(items.get(position).getTitle(), items.get(position).getCode(), position));
                     }
                     pref.setArrayPref(chipList, SharedPreference.JOB_TMP);
                     notifyItemChanged(position);
@@ -133,7 +132,7 @@ public class SearchAdapter extends  RecyclerView.Adapter<RecyclerView.ViewHolder
 
                     if (items.get(position).isChecked()) { // 이미 클릭된 상태이면
                         // 아이템 삭제 코드
-                        for (int i=0; i<chipList.size(); i++) {
+                        for (int i = 0; i < chipList.size(); i++) {
                             if (chipList.get(i).getName().equals(items.get(position).getTitle())) {
                                 chipList.remove(i);
                             }
@@ -141,7 +140,7 @@ public class SearchAdapter extends  RecyclerView.Adapter<RecyclerView.ViewHolder
 
                         items.get(position).setChecked(false);
                     } else { // 선택되지 않은 아이템을 선택하면
-                        for (int i=0; i<chipList.size(); i++) {
+                        for (int i = 0; i < chipList.size(); i++) {
                             // 선택한 아이템이 1차 직종 전체에 해당하면
                             if (chipList.get(i).getName().contains("전체") && items.get(position).getCode().contains(chipList.get(i).getCode())) {
                                 chipList.remove(i);
@@ -150,7 +149,7 @@ public class SearchAdapter extends  RecyclerView.Adapter<RecyclerView.ViewHolder
                         }
 
                         items.get(position).setChecked(true);
-                        chipList.add(new ChipList(items.get(position).getTitle(),items.get(position).getCode(), position));
+                        chipList.add(new ChipList(items.get(position).getTitle(), items.get(position).getCode(), position));
                     }
                     pref.setArrayPref(chipList, SharedPreference.REGION_TMP);
                     notifyItemChanged(position);

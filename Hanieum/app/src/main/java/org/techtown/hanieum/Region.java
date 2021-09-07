@@ -40,9 +40,13 @@ public class Region {
         this.region3 = region3;
     }
 
-    public String getBDongCode() { return bDongCode; }
+    public String getBDongCode() {
+        return bDongCode;
+    }
 
-    public void setBDongCode(String bDongCode) { this.bDongCode = bDongCode; }
+    public void setBDongCode(String bDongCode) {
+        this.bDongCode = bDongCode;
+    }
 
     public int getViewType() {
         return viewType;

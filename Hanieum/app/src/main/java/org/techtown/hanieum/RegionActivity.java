@@ -87,15 +87,15 @@ public class RegionActivity extends AppCompatActivity implements View.OnClickLis
                 ArrayList<ChipList> chipList = pref.getArrayPref(SharedPreference.REGION_TMP);
                 String sidoTotalCode = db.BdongDao().getTotalSidoCode(region1.getRegion1());
 
-                region2.add(new Region(region1.getRegion1(), "전체","", sidoTotalCode,Code.ViewType.REGION2));
+                region2.add(new Region(region1.getRegion1(), "전체", "", sidoTotalCode, Code.ViewType.REGION2));
                 List<String> item2 = db.BdongDao().getsigungu(region1.getRegion1());
-                for(int i=0;i<item2.size();i++) {
-                    region2.add(new Region(region1.getRegion1(), item2.get(i), null, "0" , Code.ViewType.REGION2));
+                for (int i = 0; i < item2.size(); i++) {
+                    region2.add(new Region(region1.getRegion1(), item2.get(i), null, "0", Code.ViewType.REGION2));
                 }
 
                 RegionAdapter.lastSelectedPosition2 = -1;
-                for(int i=0;i<chipList.size();i++) {
-                    if(chipList.get(i).getName().equals(region2.get(0).getRegion1() + " " + region2.get(0).getRegion2())) { // 칩리스트에 전체 항목이 있으면
+                for (int i = 0; i < chipList.size(); i++) {
+                    if (chipList.get(i).getName().equals(region2.get(0).getRegion1() + " " + region2.get(0).getRegion2())) { // 칩리스트에 전체 항목이 있으면
                         region2.get(0).setSelected(true); // region2의 전체 항목에 색칠
                         RegionAdapter.lastSelectedPosition2 = 0;
                     }
@@ -118,7 +118,7 @@ public class RegionActivity extends AppCompatActivity implements View.OnClickLis
 
                 List<String> item3 = db.BdongDao().geteupmyeondong(item.getRegion1(), item.getRegion2());
                 String totalSigunguCode = db.BdongDao().getTotalSigunguCode(item.getRegion1(), item.getRegion2());
-                if(item3.size() == 0) { // 전체를 선택했을 때
+                if (item3.size() == 0) { // 전체를 선택했을 때
                     adapter3.setItems(new ArrayList<Region>()); // 어댑터 3을 빈 상태로 둠
                 } else {
                     items3.add(new Region(item.getRegion1(), item.getRegion2(), "전체", totalSigunguCode, Code.ViewType.REGION3));
@@ -128,11 +128,11 @@ public class RegionActivity extends AppCompatActivity implements View.OnClickLis
                     }
                 }
 
-                for(int i=0;i< items3.size();i++) {
-                    for(int j=0;j<chipList.size();j++) {
+                for (int i = 0; i < items3.size(); i++) {
+                    for (int j = 0; j < chipList.size(); j++) {
                         String tmp = items3.get(i).getRegion1() + " " + items3.get(i).getRegion2() + " " +
                                 items3.get(i).getRegion3();
-                        if(tmp.equals(chipList.get(j).getName())) {
+                        if (tmp.equals(chipList.get(j).getName())) {
                             items3.get(i).setSelected(true);
                         }
                     }
@@ -188,7 +188,7 @@ public class RegionActivity extends AppCompatActivity implements View.OnClickLis
             new ActivityResultCallback<ActivityResult>() {
                 @Override
                 public void onActivityResult(ActivityResult result) {
-                    if(result.getResultCode() == Activity.RESULT_OK) {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
                         loadChip(context, chipGroup);
                         loadListData();
                     }
@@ -206,8 +206,8 @@ public class RegionActivity extends AppCompatActivity implements View.OnClickLis
         RegionAdapter.lastSelectedPosition1 = -1;
         RegionAdapter.lastSelectedPosition2 = -1;
 
-        for(int i=0;i<item1.size();i++) {
-            items1.add(new Region(item1.get(i), null, null, "0" , Code.ViewType.REGION1));
+        for (int i = 0; i < item1.size(); i++) {
+            items1.add(new Region(item1.get(i), null, null, "0", Code.ViewType.REGION1));
         }
 
         adapter1.setItems(items1);
@@ -220,7 +220,7 @@ public class RegionActivity extends AppCompatActivity implements View.OnClickLis
         chipGroup.removeAllViews(); //칩그룹 초기화
         ArrayList<ChipList> chipList = pref.getArrayPref(SharedPreference.REGION_TMP);
 
-        for(int i=chipList.size()-1;i>=0;i--) { // chipList에 있는 것을 추가가
+        for (int i = chipList.size() - 1; i >= 0; i--) { // chipList에 있는 것을 추가가
             String name = chipList.get(i).getName();
             int position = chipList.get(i).getPosition();
 
@@ -235,17 +235,17 @@ public class RegionActivity extends AppCompatActivity implements View.OnClickLis
                 public void onClick(View view) {
                     int flag = 0;
                     //아이템 삭제
-                    for(int i=0;i<chipList.size();i++) {
-                        if(chipList.get(i).getName().equals(name)) {
+                    for (int i = 0; i < chipList.size(); i++) {
+                        if (chipList.get(i).getName().equals(name)) {
                             chipList.remove(i);
-                            if((adapter3.getItemCount() != 0) && name.contains(adapter3.getItem(position).getRegion3()) && name.contains(adapter3.getItem(position).getRegion2())
+                            if ((adapter3.getItemCount() != 0) && name.contains(adapter3.getItem(position).getRegion3()) && name.contains(adapter3.getItem(position).getRegion2())
                                     && name.contains(adapter3.getItem(position).getRegion1())) {
                                 adapter3.getItem(position).setSelected(false);
                                 pref.setArrayPref(chipList, SharedPreference.REGION_TMP);
                                 adapter3.notifyItemChanged(position);
                                 flag = 1;
                             } else if (adapter3.getItemCount() != 0) {  // position을 모를 때
-                                for (int j=0; j<adapter3.getItemCount(); j++) {
+                                for (int j = 0; j < adapter3.getItemCount(); j++) {
                                     if (name.contains(adapter3.getItem(j).getRegion3()) && name.contains(adapter3.getItem(j).getRegion2()) && name.contains(adapter3.getItem(position).getRegion1())) {
                                         adapter3.getItem(j).setSelected(false);
                                         pref.setArrayPref(chipList, SharedPreference.REGION_TMP);

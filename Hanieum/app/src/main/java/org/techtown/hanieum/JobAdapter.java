@@ -131,16 +131,16 @@ public class JobAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> im
 
                     if (items.get(position).isSelected()) { // 이미 클릭된 상태이면
                         // 아이템 삭제 코드
-                        for (int i=0; i<chipList.size(); i++) {
+                        for (int i = 0; i < chipList.size(); i++) {
                             if (chipList.get(i).getName().equals(items.get(position).getJob2())) {
                                 chipList.remove(i);
                             }
                         }
                         items.get(position).setSelected(false);
                     } else {
-                        for (int i=0; i<items.size(); i++) {
+                        for (int i = 0; i < items.size(); i++) {
                             if (items.get(i).getJob2().contains("전체") && items.get(i).isSelected()) { // 전체가 선택되어 있으면
-                                for (int j=0; j<chipList.size(); j++) {
+                                for (int j = 0; j < chipList.size(); j++) {
                                     if (chipList.get(j).getName().equals(items.get(i).getJob2())) {
                                         chipList.remove(j);
                                     }
@@ -149,7 +149,7 @@ public class JobAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> im
                                 break;
                             } else if (items.get(position).getJob2().contains("전체") && items.get(i).isSelected()) {
                                 // 현재 선택한 항목이 전체이고 다른 항목이 선택되어 있으면
-                                for (int j=0; j<chipList.size(); j++) {
+                                for (int j = 0; j < chipList.size(); j++) {
                                     if (chipList.get(j).getName().equals(items.get(i).getJob2())) {
                                         chipList.remove(j);
                                     }

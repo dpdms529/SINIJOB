@@ -24,32 +24,32 @@ public class MainActivity extends AppCompatActivity {
 
         bottomNavigationView.setOnNavigationItemSelectedListener( // 아이템 선택시 실행
                 new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.listItem :
-                        getSupportFragmentManager().beginTransaction().replace(R.id.mainFrame,
-                                new RecommendFragment()).commit();
-                        break;
-                    case R.id.resumeItem :
-                        getSupportFragmentManager().beginTransaction().replace(R.id.mainFrame,
-                                new ResumeFragment()).commit();
-                        break;
-                    case R.id.recommendItem :
-                        getSupportFragmentManager().beginTransaction().replace(R.id.mainFrame,
-                                new HomeFragment()).commit();
-                        break;
-                    case R.id.starItem :
-                        getSupportFragmentManager().beginTransaction().replace(R.id.mainFrame,
-                                new BookmarkFragment()).commit();
-                        break;
-                    case R.id.myItem :
-                        getSupportFragmentManager().beginTransaction().replace(R.id.mainFrame,
-                                new InformationFragment()).commit();
-                        break;
-                }
-                return true;
-            }
-        });
+                    @Override
+                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.listItem:
+                                getSupportFragmentManager().beginTransaction().replace(R.id.mainFrame,
+                                        new RecommendFragment()).commit();
+                                break;
+                            case R.id.resumeItem:
+                                getSupportFragmentManager().beginTransaction().replace(R.id.mainFrame,
+                                        new ResumeFragment()).commit();
+                                break;
+                            case R.id.recommendItem:
+                                getSupportFragmentManager().beginTransaction().replace(R.id.mainFrame,
+                                        new HomeFragment()).commit();
+                                break;
+                            case R.id.starItem:
+                                getSupportFragmentManager().beginTransaction().replace(R.id.mainFrame,
+                                        new BookmarkFragment()).commit();
+                                break;
+                            case R.id.myItem:
+                                getSupportFragmentManager().beginTransaction().replace(R.id.mainFrame,
+                                        new InformationFragment()).commit();
+                                break;
+                        }
+                        return true;
+                    }
+                });
     }
 }

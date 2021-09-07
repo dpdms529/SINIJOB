@@ -1,14 +1,8 @@
 package org.techtown.hanieum;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -19,7 +13,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.text.util.Linkify;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,7 +24,6 @@ import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import net.daum.mf.map.api.MapPOIItem;
 import net.daum.mf.map.api.MapPoint;
@@ -42,7 +34,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -51,11 +42,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import java.text.SimpleDateFormat;
-import java.text.ParseException;
 
 public class DetailActivity extends AppCompatActivity implements View.OnClickListener, SeekBar.OnSeekBarChangeListener,
         MapView.POIItemEventListener, MapView.MapViewEventListener {
-//    Toolbar toolbar;
+    //    Toolbar toolbar;
     MapView mapView;
     ImageButton helpButton; // 도움말 버튼
     Button applyButton;
@@ -86,86 +76,86 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
     ArrayList<TextView> attachFileUrl = new ArrayList<>(); //접수방법_제출서류양식
 
-    HashMap<String,TextView> address = new HashMap<String,TextView>(){{ //근무예정지
+    HashMap<String, TextView> address = new HashMap<String, TextView>() {{ //근무예정지
         put("addressT", null);
-        put("addressDetailT",null);
-        put("addressDetail",null);  //주소
+        put("addressDetailT", null);
+        put("addressDetail", null);  //주소
     }};
 
-    HashMap<String,TextView> recruitCd = new HashMap<String,TextView>(){{   //모집조건
-        put("recruitCdT",null);
-        put("jobsNmT",null);
-        put("jobsNm",null); //모집직종
-        put("jobsContT",null);
-        put("jobCont",null); //직무내용
-        put("enterTpNmT",null);
-        put("enterTpNm",null); //경력조건
-        put("eduNmT",null);
-        put("eduNm",null); //학력조건
-        put("empTpNmT",null);
-        put("empTpNm",null); //고용형태
-        put("collectPsncntT",null);
-        put("collectPsncnt",null); //모집인원
-        put("etcHopeContT",null);
-        put("etcHopeCont",null); //기타안내
+    HashMap<String, TextView> recruitCd = new HashMap<String, TextView>() {{   //모집조건
+        put("recruitCdT", null);
+        put("jobsNmT", null);
+        put("jobsNm", null); //모집직종
+        put("jobsContT", null);
+        put("jobCont", null); //직무내용
+        put("enterTpNmT", null);
+        put("enterTpNm", null); //경력조건
+        put("eduNmT", null);
+        put("eduNm", null); //학력조건
+        put("empTpNmT", null);
+        put("empTpNm", null); //고용형태
+        put("collectPsncntT", null);
+        put("collectPsncnt", null); //모집인원
+        put("etcHopeContT", null);
+        put("etcHopeCont", null); //기타안내
     }};
 
-    HashMap<String,TextView> workCd = new HashMap<String,TextView>(){{  //근무조건
-        put("workCdT",null);
-        put("salaryT",null);
-        put("salaryTypeCode",null); //임금조건(연,월,일,시)
-        put("salary",null); //임금조건(금액)
-        put("workTimeT",null);
-        put("workTime",null); //근무시간
-        put("workDayT",null);
-        put("workDay",null); //근무형태
-        put("retirepayT",null);
-        put("retirepay",null); //퇴직급여
-        put("fourInsT",null);
-        put("fourIns",null); //연금4대보험
-        put("etcWelfareT",null);
-        put("etcWelfare",null); //기타복리후생
+    HashMap<String, TextView> workCd = new HashMap<String, TextView>() {{  //근무조건
+        put("workCdT", null);
+        put("salaryT", null);
+        put("salaryTypeCode", null); //임금조건(연,월,일,시)
+        put("salary", null); //임금조건(금액)
+        put("workTimeT", null);
+        put("workTime", null); //근무시간
+        put("workDayT", null);
+        put("workDay", null); //근무형태
+        put("retirepayT", null);
+        put("retirepay", null); //퇴직급여
+        put("fourInsT", null);
+        put("fourIns", null); //연금4대보험
+        put("etcWelfareT", null);
+        put("etcWelfare", null); //기타복리후생
     }};
 
-    HashMap<String,TextView> apply = new HashMap<String,TextView>(){{   //접수방법
-        put("applyT",null);
-        put("receiptCloseDtT",null);
-        put("receiptCloseDt",null); //접수마감일
-        put("selMthdT",null);
-        put("selMthd",null); //전형방법
-        put("rcptMthdT",null);
-        put("rcptMthd",null); //접수방법
-        put("submitDocT",null);
-        put("submitDoc",null); //제출서류 준비물
-        put("attachFileUrlT",null);
+    HashMap<String, TextView> apply = new HashMap<String, TextView>() {{   //접수방법
+        put("applyT", null);
+        put("receiptCloseDtT", null);
+        put("receiptCloseDt", null); //접수마감일
+        put("selMthdT", null);
+        put("selMthd", null); //전형방법
+        put("rcptMthdT", null);
+        put("rcptMthd", null); //접수방법
+        put("submitDocT", null);
+        put("submitDoc", null); //제출서류 준비물
+        put("attachFileUrlT", null);
     }};
 
-    HashMap<String,TextView> prefer = new HashMap<String,TextView>(){{  //우대사항
-        put("preferT",null);
-        put("pfCondT",null);
-        put("pfCond",null); //우대조건
-        put("etcPfCondT",null);
-        put("etcPfCond",null); //기타우대사항
-        put("certificateT",null);
-        put("certificate",null); //자격면허
-        put("compAblT",null);
-        put("compAbl",null); //컴퓨터활용능력
+    HashMap<String, TextView> prefer = new HashMap<String, TextView>() {{  //우대사항
+        put("preferT", null);
+        put("pfCondT", null);
+        put("pfCond", null); //우대조건
+        put("etcPfCondT", null);
+        put("etcPfCond", null); //기타우대사항
+        put("certificateT", null);
+        put("certificate", null); //자격면허
+        put("compAblT", null);
+        put("compAbl", null); //컴퓨터활용능력
     }};
 
-    HashMap<String,TextView> corp = new HashMap<String,TextView>(){{    //기업정보
-        put("corpT",null);
-        put("corpNmT",null);
-        put("corpNm",null); //기업명
-        put("reperNmT",null);
-        put("reperNm",null); //대표자명
-        put("indTpCdNmT",null);
-        put("indTpCdNm",null); //업종
-        put("corpAddrT",null);
-        put("corpAddr",null); //주소
-        put("totPsncntT",null);
-        put("totPsncnt",null); //근로자수
-        put("yrSalesAmtT",null);
-        put("yrSalesAmt",null); //연매출액
+    HashMap<String, TextView> corp = new HashMap<String, TextView>() {{    //기업정보
+        put("corpT", null);
+        put("corpNmT", null);
+        put("corpNm", null); //기업명
+        put("reperNmT", null);
+        put("reperNm", null); //대표자명
+        put("indTpCdNmT", null);
+        put("indTpCdNm", null); //업종
+        put("corpAddrT", null);
+        put("corpAddr", null); //주소
+        put("totPsncntT", null);
+        put("totPsncnt", null); //근로자수
+        put("yrSalesAmtT", null);
+        put("yrSalesAmt", null); //연매출액
     }};
 
     String[] recruitStr = {"jobsNm", "jobCont", "enterTpNm", "eduNm", "empTpNm", "collectPsncnt", "etcHopeCont"};
@@ -206,72 +196,72 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         tts = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
-                if (status != android.speech.tts.TextToSpeech.ERROR){
+                if (status != android.speech.tts.TextToSpeech.ERROR) {
                     tts.setLanguage(Locale.KOREAN);
                 }
             }
         });
 
-        for(String key : address.keySet()){    //동적으로 ID부여
+        for (String key : address.keySet()) {    //동적으로 ID부여
             String addressId = key;
-            int resId = getResources().getIdentifier(addressId,"id",getApplicationContext().getPackageName());
-            address.replace(key,findViewById(resId));
+            int resId = getResources().getIdentifier(addressId, "id", getApplicationContext().getPackageName());
+            address.replace(key, findViewById(resId));
         }
-        for(String key : recruitCd.keySet()){    //동적으로 ID부여
+        for (String key : recruitCd.keySet()) {    //동적으로 ID부여
             String recruitCdId = key;
-            int resId = getResources().getIdentifier(recruitCdId,"id",getApplicationContext().getPackageName());
-            recruitCd.replace(key,findViewById(resId));
+            int resId = getResources().getIdentifier(recruitCdId, "id", getApplicationContext().getPackageName());
+            recruitCd.replace(key, findViewById(resId));
         }
-        for(String key : workCd.keySet()){    //동적으로 ID부여
+        for (String key : workCd.keySet()) {    //동적으로 ID부여
             String workCdId = key;
-            int resId = getResources().getIdentifier(workCdId,"id",getApplicationContext().getPackageName());
-            workCd.replace(key,findViewById(resId));
+            int resId = getResources().getIdentifier(workCdId, "id", getApplicationContext().getPackageName());
+            workCd.replace(key, findViewById(resId));
         }
-        for(String key : apply.keySet()){    //동적으로 ID부여
+        for (String key : apply.keySet()) {    //동적으로 ID부여
             String applyId = key;
-            int resId = getResources().getIdentifier(applyId,"id",getApplicationContext().getPackageName());
-            apply.replace(key,findViewById(resId));
+            int resId = getResources().getIdentifier(applyId, "id", getApplicationContext().getPackageName());
+            apply.replace(key, findViewById(resId));
         }
-        for(int i = 1;i<=5;i++){    //동적으로 ID부여
+        for (int i = 1; i <= 5; i++) {    //동적으로 ID부여
             String attachFileUrlId = "attachFileUrl" + i;
-            int resId = getResources().getIdentifier(attachFileUrlId,"id",getApplicationContext().getPackageName());
+            int resId = getResources().getIdentifier(attachFileUrlId, "id", getApplicationContext().getPackageName());
             attachFileUrl.add(findViewById(resId));
         }
-        for(String key : prefer.keySet()){    //동적으로 ID부여
+        for (String key : prefer.keySet()) {    //동적으로 ID부여
             String preferId = key;
-            int resId = getResources().getIdentifier(preferId,"id",getApplicationContext().getPackageName());
-            prefer.replace(key,findViewById(resId));
+            int resId = getResources().getIdentifier(preferId, "id", getApplicationContext().getPackageName());
+            prefer.replace(key, findViewById(resId));
         }
-        for(String key : corp.keySet()){    //동적으로 ID부여
+        for (String key : corp.keySet()) {    //동적으로 ID부여
             String corpId = key;
-            int resId = getResources().getIdentifier(corpId,"id",getApplicationContext().getPackageName());
-            corp.replace(key,findViewById(resId));
+            int resId = getResources().getIdentifier(corpId, "id", getApplicationContext().getPackageName());
+            corp.replace(key, findViewById(resId));
         }
 
         // 글씨 크기 설정
         int size = pref.preferences.getInt(SharedPreference.TEXT_SIZE, 20);
         textSizeChangeBar.setProgress(size);
         textSize.setText(String.valueOf(size));
-        for(String key : address.keySet()){
-            address.get(key).setTextSize(TypedValue.COMPLEX_UNIT_DIP,size);
+        for (String key : address.keySet()) {
+            address.get(key).setTextSize(TypedValue.COMPLEX_UNIT_DIP, size);
         }
-        for(String key : recruitCd.keySet()){
-            recruitCd.get(key).setTextSize(TypedValue.COMPLEX_UNIT_DIP,size);
+        for (String key : recruitCd.keySet()) {
+            recruitCd.get(key).setTextSize(TypedValue.COMPLEX_UNIT_DIP, size);
         }
-        for(String key : workCd.keySet()){
-            workCd.get(key).setTextSize(TypedValue.COMPLEX_UNIT_DIP,size);
+        for (String key : workCd.keySet()) {
+            workCd.get(key).setTextSize(TypedValue.COMPLEX_UNIT_DIP, size);
         }
-        for(String key : apply.keySet()){
-            apply.get(key).setTextSize(TypedValue.COMPLEX_UNIT_DIP,size);
+        for (String key : apply.keySet()) {
+            apply.get(key).setTextSize(TypedValue.COMPLEX_UNIT_DIP, size);
         }
-        for(int i = 0;i<attachFileUrl.size();i++){
-            attachFileUrl.get(i).setTextSize(TypedValue.COMPLEX_UNIT_DIP,size);
+        for (int i = 0; i < attachFileUrl.size(); i++) {
+            attachFileUrl.get(i).setTextSize(TypedValue.COMPLEX_UNIT_DIP, size);
         }
-        for(String key : prefer.keySet()){
-            prefer.get(key).setTextSize(TypedValue.COMPLEX_UNIT_DIP,size);
+        for (String key : prefer.keySet()) {
+            prefer.get(key).setTextSize(TypedValue.COMPLEX_UNIT_DIP, size);
         }
-        for(String key : corp.keySet()){
-            corp.get(key).setTextSize(TypedValue.COMPLEX_UNIT_DIP,size);
+        for (String key : corp.keySet()) {
+            corp.get(key).setTextSize(TypedValue.COMPLEX_UNIT_DIP, size);
         }
 
         mapView = new MapView(this);
@@ -303,24 +293,25 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         schoolDetail.setOnClickListener(this);
         careerDetail.setOnClickListener(this);
         address.get("addressDetail").setOnClickListener(this);
-        for (int i=0; i<recruitStr.length; i++) {
+        for (int i = 0; i < recruitStr.length; i++) {
             recruitCd.get(recruitStr[i]).setOnClickListener(this);
         }
-        for (int i=0; i<workStr.length; i++) {
+        for (int i = 0; i < workStr.length; i++) {
             workCd.get(workStr[i]).setOnClickListener(this);
         }
-        for (int i=0; i<applyStr.length; i++) {
+        for (int i = 0; i < applyStr.length; i++) {
             apply.get(applyStr[i]).setOnClickListener(this);
         }
-        for (int i=0; i<preferStr.length; i++) {
+        for (int i = 0; i < preferStr.length; i++) {
             prefer.get(preferStr[i]).setOnClickListener(this);
         }
-        for (int i=0; i<corpStr.length; i++) {
+        for (int i = 0; i < corpStr.length; i++) {
             corp.get(corpStr[i]).setOnClickListener(this);
         }
 
         textSizeChangeBar.setOnSeekBarChangeListener(this);
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -358,7 +349,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             if (charSequences[which] == "전화") {
-                                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("tel:"+contact));
+                                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("tel:" + contact));
                                 startActivity(intent);
                             } else if (charSequences[which] == "문자") {
 //                                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("tel:"));
@@ -395,7 +386,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             });
             alertDialog.show();
         } else if (v == findWay) {
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("kakaomap://route?sp=37.537229,127.005515&ep="+epY+","+epX+"&by=CAR"));
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("kakaomap://route?sp=37.537229,127.005515&ep=" + epY + "," + epX + "&by=CAR"));
             try {
                 startActivity(intent);
             } catch (ActivityNotFoundException e) {
@@ -407,43 +398,41 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         } else if (v == goWorknetImg) {
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.work.go.kr"));
             startActivity(intent);
-        } else if(v == shareButton){
+        } else if (v == shareButton) {
             Intent intent = new Intent(Intent.ACTION_SEND);
             String shareContent = "제목 : " + titleDetail.getText().toString() + "\n기업명 : " + companyNameDetail.getText().toString() + "\n접수마감일 : " + apply.get("receiptCloseDt").getText().toString() + "\n" + url;
-            intent.putExtra(Intent.EXTRA_TEXT,shareContent);
+            intent.putExtra(Intent.EXTRA_TEXT, shareContent);
             intent.setType("text/plain");
-            startActivity(Intent.createChooser(intent,null));
-        } else if (v == summaryButton){
+            startActivity(Intent.createChooser(intent, null));
+        } else if (v == summaryButton) {
             String date = apply.get(applyStr[0]).getText().toString(); // 지원 마감일
-            String dueDate = date.replaceAll("[^0-9]",""); // 지원 마감일 yymmdd 형태로 바꿈
-            Calendar today = Calendar.getInstance();
-            today.setTime(new Date());
-            long diffDays = 0;
+            String dueDate = date.replaceAll("[^0-9]", ""); // 지원 마감일 yymmdd 형태로 바꿈
+            String msg; // 음성출력 메세지
 
-            try{
+            try { // 지원 마감일 yyyy년 mm월 dd일 형태로 바꿈
                 SimpleDateFormat sdf = new SimpleDateFormat("yymmdd");
                 SimpleDateFormat sdfVoice = new SimpleDateFormat("yyyy년 mm월 dd일");
 
                 Date formatDate = sdf.parse(dueDate);
-                Date calDate = sdf.parse(dueDate);
-
-                Calendar dueDateCal = Calendar.getInstance();
-                dueDateCal.setTime(calDate);
-
-                long diffSec = (today.getTimeInMillis() - dueDateCal.getTimeInMillis()) / 1000;
-                diffDays = diffSec / (24*60*60);
-
                 dueDate = sdfVoice.format(formatDate);
             } catch (Exception e) {
             }
 
-            String msg =  corp.get(corpStr[0]).getText().toString() + ", 에서," +
-                    recruitCd.get("jobsNm").getText().toString() + "룰 모집합니다." +
-                    "근무지는 " + address.get("addressDetail").getText().toString() + " 입니다." +
-                    "임금은 " + workCd.get(workStr[0]).getText().toString() + " " + workCd.get(workStr[1]).getText().toString() + " 입니다." +
-                    "근무형태는 " + workCd.get("workDay").getText().toString() + " 입니다." +
-                    "지원 마감일은 " + dueDate + ", 입니다.";
-            //        "마감까지 " + Long.toString(diffDays) + "일 남았습니다.";
+            if (workCd.get("workDay").getText().toString().equals("")) { // 근무형태 정보가 존재하지 않는 경우
+                msg = corp.get(corpStr[0]).getText().toString() + ", 에서," +
+                        recruitCd.get("jobsNm").getText().toString() + "룰 모집합니다." +
+                        "근무지는 " + address.get("addressDetail").getText().toString() + " 입니다." +
+                        "임금은 " + workCd.get(workStr[0]).getText().toString() + " " + workCd.get(workStr[1]).getText().toString() + " 입니다." +
+                        "지원 마감일은 " + dueDate + ", 입니다.";
+            } else {
+                msg = corp.get(corpStr[0]).getText().toString() + ", 에서," +
+                        recruitCd.get("jobsNm").getText().toString() + "룰 모집합니다." +
+                        "근무지는 " + address.get("addressDetail").getText().toString() + " 입니다." +
+                        "임금은 " + workCd.get(workStr[0]).getText().toString() + " " + workCd.get(workStr[1]).getText().toString() + " 입니다." +
+                        "근무형태는 " + workCd.get("workDay").getText().toString() + " 입니다." +
+                        "지원 마감일은 " + dueDate + ", 입니다.";
+            }
+
             voiceOut(msg);
         } else if (v == helpButton) {
             Intent intent = new Intent(this, HelpActivity.class);
@@ -475,31 +464,31 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 String msg = address.get("addressDetail").getText().toString();
                 voiceOut(msg);
             }
-            for (int i=0; i<recruitStr.length; i++) {
+            for (int i = 0; i < recruitStr.length; i++) {
                 if (v == recruitCd.get(recruitStr[i])) {
                     String msg = recruitCd.get(recruitStr[i]).getText().toString();
                     voiceOut(msg);
                 }
             }
-            for (int i=0; i<workStr.length; i++) {
+            for (int i = 0; i < workStr.length; i++) {
                 if (v == workCd.get(workStr[i])) {
                     String msg = workCd.get(workStr[i]).getText().toString();
                     voiceOut(msg);
                 }
             }
-            for (int i=0; i<applyStr.length; i++) {
+            for (int i = 0; i < applyStr.length; i++) {
                 if (v == apply.get(applyStr[i])) {
                     String msg = apply.get(applyStr[i]).getText().toString();
                     voiceOut(msg);
                 }
             }
-            for (int i=0; i<preferStr.length; i++) {
+            for (int i = 0; i < preferStr.length; i++) {
                 if (v == prefer.get(preferStr[i])) {
                     String msg = prefer.get(preferStr[i]).getText().toString();
                     voiceOut(msg);
                 }
             }
-            for (int i=0; i<corpStr.length; i++) {
+            for (int i = 0; i < corpStr.length; i++) {
                 if (v == corp.get(corpStr[i])) {
                     String msg = corp.get(corpStr[i]).getText().toString();
                     voiceOut(msg);
@@ -571,6 +560,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
         if (tts != null) {
             tts.stop();
             tts.shutdown();
@@ -579,20 +569,20 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     // 음성 메세지 출력용
-    private void voiceOut(String msg){
+    private void voiceOut(String msg) {
         if (msg.length() < 1) return;
 
         // 음성 출력
         tts.setPitch(0.8f); //목소리 톤1.0
         tts.setSpeechRate(0.9f);    //목소리 속도
-        tts.speak(msg, TextToSpeech.QUEUE_FLUSH,null, null);
+        tts.speak(msg, TextToSpeech.QUEUE_FLUSH, null, null);
     }
 
     public void loadData(String id) {
-        String detailPhp = getResources().getString(R.string.serverIP)+"detail.php?recruit_id=" + id;
-        String certificatePhp = getResources().getString(R.string.serverIP)+"certificate.php?recruit_id=" + id;
-        String recruitFilesPhp = getResources().getString(R.string.serverIP)+"recruit_files.php?recruit_id=" + id;
-        String recruitAddrPhp = getResources().getString(R.string.serverIP)+"recruit_address.php?recruit_id=" + id;
+        String detailPhp = getResources().getString(R.string.serverIP) + "detail.php?recruit_id=" + id;
+        String certificatePhp = getResources().getString(R.string.serverIP) + "certificate.php?recruit_id=" + id;
+        String recruitFilesPhp = getResources().getString(R.string.serverIP) + "recruit_files.php?recruit_id=" + id;
+        String recruitAddrPhp = getResources().getString(R.string.serverIP) + "recruit_address.php?recruit_id=" + id;
         URLConnector urlConnectorDetail = new URLConnector(detailPhp);
         URLConnector urlConnectorCertificate = new URLConnector(certificatePhp);
         URLConnector urlConnectorRecruitFiles = new URLConnector(recruitFilesPhp);
@@ -718,7 +708,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
             String certificate_name = "";
 
-            for (int i=0; i<jsonArray.length(); i++) {
+            for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonObject1 = jsonArray.getJSONObject(i);
 
                 if (i == 0) {
@@ -746,11 +736,11 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             JSONObject jsonObject = new JSONObject(recruitFilesResult);
             JSONArray jsonArray = jsonObject.getJSONArray("result");
 
-           for (int i=0; i<jsonArray.length(); i++) {
+            for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonObject1 = jsonArray.getJSONObject(i);
                 TextView item = attachFileUrl.get(i);
                 item.setVisibility(View.VISIBLE);
-                Linkify.TransformFilter tf = new Linkify.TransformFilter(){
+                Linkify.TransformFilter tf = new Linkify.TransformFilter() {
                     @Override
                     public String transformUrl(Matcher matcher, String s) {
                         try {
@@ -762,8 +752,8 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                     }
                 };
                 Pattern pattern = Pattern.compile(item.getText().toString());
-                Linkify.addLinks(item,pattern,"",null,tf);
-           }
+                Linkify.addLinks(item, pattern, "", null, tf);
+            }
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -809,26 +799,26 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         pref.editor.putInt(SharedPreference.TEXT_SIZE, progress);
         pref.editor.commit();
         textSize.setText(String.valueOf(progress));
-        for(String key : address.keySet()){
-            address.get(key).setTextSize(TypedValue.COMPLEX_UNIT_DIP,progress);
+        for (String key : address.keySet()) {
+            address.get(key).setTextSize(TypedValue.COMPLEX_UNIT_DIP, progress);
         }
-        for(String key : recruitCd.keySet()){
-            recruitCd.get(key).setTextSize(TypedValue.COMPLEX_UNIT_DIP,progress);
+        for (String key : recruitCd.keySet()) {
+            recruitCd.get(key).setTextSize(TypedValue.COMPLEX_UNIT_DIP, progress);
         }
-        for(String key : workCd.keySet()){
-            workCd.get(key).setTextSize(TypedValue.COMPLEX_UNIT_DIP,progress);
+        for (String key : workCd.keySet()) {
+            workCd.get(key).setTextSize(TypedValue.COMPLEX_UNIT_DIP, progress);
         }
-        for(String key : apply.keySet()){
-            apply.get(key).setTextSize(TypedValue.COMPLEX_UNIT_DIP,progress);
+        for (String key : apply.keySet()) {
+            apply.get(key).setTextSize(TypedValue.COMPLEX_UNIT_DIP, progress);
         }
-        for(int i = 0;i<attachFileUrl.size();i++){
-            attachFileUrl.get(i).setTextSize(TypedValue.COMPLEX_UNIT_DIP,progress);
+        for (int i = 0; i < attachFileUrl.size(); i++) {
+            attachFileUrl.get(i).setTextSize(TypedValue.COMPLEX_UNIT_DIP, progress);
         }
-        for(String key : prefer.keySet()){
-            prefer.get(key).setTextSize(TypedValue.COMPLEX_UNIT_DIP,progress);
+        for (String key : prefer.keySet()) {
+            prefer.get(key).setTextSize(TypedValue.COMPLEX_UNIT_DIP, progress);
         }
-        for(String key : corp.keySet()){
-            corp.get(key).setTextSize(TypedValue.COMPLEX_UNIT_DIP,progress);
+        for (String key : corp.keySet()) {
+            corp.get(key).setTextSize(TypedValue.COMPLEX_UNIT_DIP, progress);
         }
 
     }

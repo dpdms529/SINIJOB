@@ -8,7 +8,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.room.Dao;
 
 import android.app.Activity;
 import android.content.Context;
@@ -25,9 +24,7 @@ import com.google.android.material.chip.ChipGroup;
 
 import org.techtown.hanieum.db.AppDatabase;
 import org.techtown.hanieum.db.dao.JobCategoryDao;
-import org.techtown.hanieum.db.dao.RecruitDao;
 import org.techtown.hanieum.db.entity.JobCategory;
-import org.techtown.hanieum.db.entity.Recruit;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +51,7 @@ public class JobActivity extends AppCompatActivity implements View.OnClickListen
         pref = new SharedPreference(getApplicationContext());
 
         AppDatabase db = AppDatabase.getInstance(this);
-        Log.e("JobDatabase","job data 조회");
+        Log.e("JobDatabase", "job data 조회");
         List<JobCategory> category = null;
         try {
             category = new JobGetCategoryAsyncTask(db.jobCategoryDao()).execute().get();
@@ -94,16 +91,16 @@ public class JobActivity extends AppCompatActivity implements View.OnClickListen
                 ArrayList<Job> items = new ArrayList<>();
                 ArrayList<ChipList> chipList = pref.getArrayPref(SharedPreference.JOB_TMP);
 
-                items.add(new Job(job.getCode(), job.getJob1()+" 전체", job.getCode(), Code.ViewType.JOB2));
-                for (int i = 0; i< finalCategory.size(); i++) {
+                items.add(new Job(job.getCode(), job.getJob1() + " 전체", job.getCode(), Code.ViewType.JOB2));
+                for (int i = 0; i < finalCategory.size(); i++) {
                     if (job.getJob2().equals(finalCategory.get(i).primary_cate_code)) {
                         items.add(new Job(finalCategory.get(i).primary_cate_code, finalCategory.get(i).category_name, finalCategory.get(i).category_code, Code.ViewType.JOB2));
                     }
                 }
 
                 // 아이템과 선택된 칩의 이름이 같으면 아이템의 setSelected를 true로 설정
-                for (int i=0; i<items.size(); i++) {
-                    for (int j=0; j<chipList.size(); j++) {
+                for (int i = 0; i < items.size(); i++) {
+                    for (int j = 0; j < chipList.size(); j++) {
                         if (items.get(i).getJob2().equals(chipList.get(j).getName())) {
                             items.get(i).setSelected(true);
                         }
@@ -183,7 +180,7 @@ public class JobActivity extends AppCompatActivity implements View.OnClickListen
 //        db.jobCategoryDao().getCategory();
 
         JobAdapter.lastSelectedPosition1 = -1;
-        for (int i=0; i<category.size(); i++) {
+        for (int i = 0; i < category.size(); i++) {
             if (category.get(i).category_code.length() == 2) {
                 items1.add(new Job(category.get(i).category_name, category.get(i).category_code, category.get(i).category_code, Code.ViewType.JOB1));
             }
@@ -198,7 +195,7 @@ public class JobActivity extends AppCompatActivity implements View.OnClickListen
         chipGroup.removeAllViews(); // 칩그룹 초기화
         ArrayList<ChipList> chipList = pref.getArrayPref(SharedPreference.JOB_TMP);
 
-        for (int i=chipList.size()-1;i>=0;i--) { // chipList에 있는 것을 추가
+        for (int i = chipList.size() - 1; i >= 0; i--) { // chipList에 있는 것을 추가
             String name = chipList.get(i).getName();
             int position = chipList.get(i).getPosition();
 
@@ -213,17 +210,17 @@ public class JobActivity extends AppCompatActivity implements View.OnClickListen
                 public void onClick(View v) {
                     int flag = 0;
                     // 아이템 삭제 코드
-                    for (int i=0; i<chipList.size(); i++) {
+                    for (int i = 0; i < chipList.size(); i++) {
                         if (chipList.get(i).getName().equals(name)) {
                             chipList.remove(i);
                             // 1차 직종이 선택된 상태이고 삭제되는 칩 이름과 현재 표시된 2차 직종(position)의 이름이 같으면
-                            if ((adapter2.getItemCount()!=0) && name.equals(adapter2.getItem(position).getJob2())) {
+                            if ((adapter2.getItemCount() != 0) && name.equals(adapter2.getItem(position).getJob2())) {
                                 adapter2.getItem(position).setSelected(false);
                                 pref.setArrayPref(chipList, SharedPreference.JOB_TMP);
                                 adapter2.notifyItemChanged(position);
                                 flag = 1;
                             } else if (adapter2.getItemCount() != 0) {
-                                for (int j=0; j<adapter2.getItemCount(); j++) {
+                                for (int j = 0; j < adapter2.getItemCount(); j++) {
                                     if (adapter2.getItem(j).getJob2().equals(name)) {
                                         adapter2.getItem(j).setSelected(false);
                                         pref.setArrayPref(chipList, SharedPreference.JOB_TMP);
@@ -244,10 +241,10 @@ public class JobActivity extends AppCompatActivity implements View.OnClickListen
         }
     }
 
-    public static class JobGetCategoryAsyncTask extends AsyncTask<Void,Void,List<JobCategory>> {
+    public static class JobGetCategoryAsyncTask extends AsyncTask<Void, Void, List<JobCategory>> {
         private JobCategoryDao mJobCategoryDao;
 
-        public JobGetCategoryAsyncTask(JobCategoryDao jobCategoryDao){
+        public JobGetCategoryAsyncTask(JobCategoryDao jobCategoryDao) {
             this.mJobCategoryDao = jobCategoryDao;
         }
 

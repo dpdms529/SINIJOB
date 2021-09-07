@@ -19,7 +19,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.DrawableImageViewTarget;
-//import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 
 import java.util.Locale;
 
@@ -62,7 +61,7 @@ public class HelpFragment extends Fragment implements View.OnClickListener {
         tts = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
-                if (status != android.speech.tts.TextToSpeech.ERROR){
+                if (status != android.speech.tts.TextToSpeech.ERROR) {
                     tts.setLanguage(Locale.KOREAN);
                 }
             }
@@ -189,12 +188,12 @@ public class HelpFragment extends Fragment implements View.OnClickListener {
     }
 
     // 음성 메세지 출력용
-    private void voiceOut(String msg){
+    private void voiceOut(String msg) {
         if (msg.length() < 1) return;
 
         // 음성 출력
         tts.setPitch(0.8f); //목소리 톤1.0
         tts.setSpeechRate(0.9f);    //목소리 속도
-        tts.speak(msg, TextToSpeech.QUEUE_FLUSH,null, null);
+        tts.speak(msg, TextToSpeech.QUEUE_FLUSH, null, null);
     }
 }
