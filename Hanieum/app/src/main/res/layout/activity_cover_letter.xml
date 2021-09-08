@@ -42,7 +42,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@+id/toolbar">
@@ -68,17 +68,25 @@
                     android:textSize="20dp"
                     android:textStyle="bold" />
 
-                <EditText
-                    android:id="@+id/selfIntroCont1"
+                <androidx.core.widget.NestedScrollView
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/border"
-                    android:ems="10"
-                    android:gravity="start|top"
-                    android:hint="자기 소개를 작성해주세요."
-                    android:inputType="textMultiLine"
-                    android:minHeight="200dp"
-                    android:padding="5dp" />
+                    android:layout_height="200dp"
+                    android:background="@drawable/border">
+
+                    <EditText
+                        android:id="@+id/selfIntroCont1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:ems="10"
+                        android:gravity="start|top"
+                        android:hint="자기 소개를 작성해주세요."
+                        android:inputType="textMultiLine"
+                        android:minHeight="200dp"
+                        android:padding="5dp" />
+
+                </androidx.core.widget.NestedScrollView>
+
             </LinearLayout>
 
             <LinearLayout
@@ -97,17 +105,26 @@
                     android:textSize="20dp"
                     android:textStyle="bold" />
 
-                <EditText
-                    android:id="@+id/selfIntroCont2"
+                <androidx.core.widget.NestedScrollView
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/border"
-                    android:ems="10"
-                    android:gravity="start|top"
-                    android:hint="지원 동기를 작성해주세요."
-                    android:inputType="textMultiLine"
-                    android:minHeight="200dp"
-                    android:padding="5dp" />
+                    android:layout_height="200dp"
+                    android:background="@drawable/border">
+
+                    <EditText
+                        android:id="@+id/selfIntroCont2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:ems="10"
+                        android:gravity="start|top"
+                        android:hint="지원 동기를 작성해주세요."
+                        android:inputType="textMultiLine"
+                        android:minHeight="200dp"
+                        android:padding="5dp" />
+
+                </androidx.core.widget.NestedScrollView>
+
+
             </LinearLayout>
 
             <LinearLayout
@@ -126,17 +143,26 @@
                     android:textSize="20dp"
                     android:textStyle="bold" />
 
-                <EditText
-                    android:id="@+id/selfIntroCont3"
+                <androidx.core.widget.NestedScrollView
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/border"
-                    android:ems="10"
-                    android:gravity="start|top"
-                    android:hint="경험 및 경력을 작성해주세요."
-                    android:inputType="textMultiLine"
-                    android:minHeight="200dp"
-                    android:padding="5dp" />
+                    android:layout_height="200dp"
+                    android:background="@drawable/border">
+
+                    <EditText
+                        android:id="@+id/selfIntroCont3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:ems="10"
+                        android:gravity="start|top"
+                        android:hint="경험 및 경력을 작성해주세요."
+                        android:inputType="textMultiLine"
+                        android:minHeight="200dp"
+                        android:padding="5dp" />
+
+                </androidx.core.widget.NestedScrollView>
+
+
             </LinearLayout>
 
             <Space
@@ -146,6 +172,6 @@
         </LinearLayout>
 
 
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
