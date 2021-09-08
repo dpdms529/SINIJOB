@@ -1,34 +1,29 @@
 package org.techtown.hanieum;
 
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 
+import androidx.annotation.Dimension;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
-import java.util.ArrayList;
+public class ResumeFragment extends Fragment implements View.OnClickListener {
 
-public class ResumeFragment extends Fragment {
-    EditText job_code_1;
-    EditText job_code_2;
-    EditText job_code_3;
-    EditText career_period_1;
-    EditText career_period_2;
-    EditText career_period_3;
-    EditText certificate_id_1;
-    EditText certificate_id_2;
-    EditText certificate_id_3;
-    Button button;
-    ArrayList<String> job_code;
-    ArrayList<String> career_period;
-    ArrayList<String> certificate_id;
+    private static final float FONT_SIZE = 16;
 
-    SharedPreference pref;
+    LinearLayout schoolLayout;
+    LinearLayout careerLayout;
+    LinearLayout certifiLayout;
+    LinearLayout selfIntroLayout;
+
+    Context context;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -39,88 +34,57 @@ public class ResumeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_resume, container, false);
+        context = getContext();
 
-        job_code_1 = view.findViewById(R.id.job_code_1);
-        job_code_2 = view.findViewById(R.id.job_code_2);
-        job_code_3 = view.findViewById(R.id.job_code_3);
-        career_period_1 = view.findViewById(R.id.career_period_1);
-        career_period_2 = view.findViewById(R.id.career_period_2);
-        career_period_3 = view.findViewById(R.id.career_period_3);
-        certificate_id_1 = view.findViewById(R.id.certificate_id_1);
-        certificate_id_2 = view.findViewById(R.id.certificate_id_2);
-        certificate_id_3 = view.findViewById(R.id.certificate_id_3);
-        button = view.findViewById(R.id.button);
+        schoolLayout = view.findViewById(R.id.schoolLayout);
+        careerLayout = view.findViewById(R.id.careerLayout);
+        certifiLayout = view.findViewById(R.id.certifiLayout);
+        selfIntroLayout = view.findViewById(R.id.selfIntroLayout);
 
-        pref = new SharedPreference(view.getContext());
+        textview("웹 개발자 / 팀장 / xx회사 / 5년 6개월");
+        textview("웹 개발자 / 팀장 / oo회사 / 3년");
 
-        job_code = new ArrayList<String>();
-        career_period = new ArrayList<String>();
-        certificate_id = new ArrayList<String>();
-
-        job_code = pref.getStringArrayPref(SharedPreference.CAREER_JOB_CODE);
-        career_period = pref.getStringArrayPref(SharedPreference.CAREER_PERIOD);
-        certificate_id = pref.getStringArrayPref(SharedPreference.CERTIFICATE_CODE);
-
-        if (job_code.size() > 0) {
-            job_code_1.setText(job_code.get(0));
-            job_code_2.setText(job_code.get(1));
-            job_code_3.setText(job_code.get(2));
-        }
-        if (career_period.size() > 0) {
-            career_period_1.setText(career_period.get(0));
-            career_period_2.setText(career_period.get(1));
-            career_period_3.setText(career_period.get(2));
-        }
-        if (certificate_id.size() > 0) {
-            certificate_id_1.setText(certificate_id.get(0));
-            certificate_id_2.setText(certificate_id.get(1));
-            certificate_id_3.setText(certificate_id.get(2));
-        }
-
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ArrayList<String> job_code_tmp = new ArrayList<String>();
-                ArrayList<String> career_period_tmp = new ArrayList<String>();
-                ArrayList<String> certificate_id_tmp = new ArrayList<String>();
-                // 경력 직종
-                if (!job_code_1.getText().equals("")) {
-                    job_code_tmp.add(String.valueOf(job_code_1.getText()));
-                }
-                if (!job_code_2.getText().equals("")) {
-                    job_code_tmp.add(String.valueOf(job_code_2.getText()));
-                }
-                if (!job_code_3.getText().equals("")) {
-                    job_code_tmp.add(String.valueOf(job_code_3.getText()));
-                }
-                // 경력 기간
-                if (!career_period_1.getText().equals("")) {
-                    career_period_tmp.add(String.valueOf(career_period_1.getText()));
-                }
-                if (!career_period_2.getText().equals("")) {
-                    career_period_tmp.add(String.valueOf(career_period_2.getText()));
-                }
-                if (!career_period_3.getText().equals("")) {
-                    career_period_tmp.add(String.valueOf(career_period_3.getText()));
-                }
-                // 보유 자격증
-                if (!certificate_id_1.getText().equals("")) {
-                    certificate_id_tmp.add(String.valueOf(certificate_id_1.getText()));
-                }
-                if (!certificate_id_2.getText().equals("")) {
-                    certificate_id_tmp.add(String.valueOf(certificate_id_2.getText()));
-                }
-                if (!certificate_id_3.getText().equals("")) {
-                    certificate_id_tmp.add(String.valueOf(certificate_id_3.getText()));
-                }
-
-                pref.setStringArrayPref(job_code_tmp, SharedPreference.CAREER_JOB_CODE);
-                pref.setStringArrayPref(career_period_tmp, SharedPreference.CAREER_PERIOD);
-                pref.setStringArrayPref(certificate_id_tmp, SharedPreference.CERTIFICATE_CODE);
-                Toast.makeText(view.getContext(), "SharedPreference에 저장됨", Toast.LENGTH_LONG).show();
-            }
-        });
+        schoolLayout.setOnClickListener(this);
+        careerLayout.setOnClickListener(this);
+        certifiLayout.setOnClickListener(this);
+        selfIntroLayout.setOnClickListener(this);
 
         return view;
     }
+
+    @Override
+    public void onClick(View v) {
+        if (v == schoolLayout) {
+            Intent intent = new Intent(getContext(), SchoolActivity.class);
+            startActivity(intent);
+        } else if (v == careerLayout) {
+            Intent intent = new Intent(getContext(), CarCerActivity.class);
+            intent.putExtra("type", "career");
+            startActivity(intent);
+        } else if (v == certifiLayout) {
+            Intent intent = new Intent(getContext(), CarCerActivity.class);
+            intent.putExtra("type", "certificate");
+            startActivity(intent);
+        } else if (v == selfIntroLayout) {
+            Intent intent = new Intent(getContext(), SelfInfoActivity.class);
+            startActivity(intent);
+        }
+    }
+
+    public void textview(String a){
+        //TextView 생성
+        TextView view1 = new TextView(context);
+        view1.setText(a);
+        view1.setTextSize(Dimension.SP, FONT_SIZE);
+        view1.setTextColor(Color.BLACK);
+
+        //layout_width, layout_height, gravity 설정
+//        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+//        lp.gravity = Gravity.CENTER;
+//        view1.setLayoutParams(lp);
+
+        //부모 뷰에 추가
+        careerLayout.addView(view1);
+    }
+
 }
