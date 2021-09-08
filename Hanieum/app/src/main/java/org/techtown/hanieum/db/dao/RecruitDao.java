@@ -247,5 +247,4 @@ public interface RecruitDao {
     LiveData<List<Recruit>> getFilteredList31(List<String> b_dong_code, List<String> primary_cate_code, String job_code, int career, String enrollment_code, List<String> certificate_id);
 
 
-
 }
