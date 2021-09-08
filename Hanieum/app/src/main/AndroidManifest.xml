@@ -20,7 +20,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Hanieum"
         android:usesCleartextTraffic="true">
-        <activity android:name=".HelpActivity"></activity>
+        <activity android:name=".CoverLetterActivity"></activity>
+        <activity android:name=".HelpActivity" />
         <activity android:name=".ApplyActivity" />
         <activity android:name=".DetailActivity" />
         <activity android:name=".JobActivity" />
