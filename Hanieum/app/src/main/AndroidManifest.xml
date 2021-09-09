@@ -20,7 +20,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Hanieum"
         android:usesCleartextTraffic="true">
-        <activity android:name=".HelpActivity"></activity>
+
+        <activity android:name=".CoverLetterActivity" android:windowSoftInputMode="adjustResize"></activity>
+        <activity android:name=".SelfInfoActivity"></activity>
+        <activity android:name=".CarCerActivity" />
+        <activity android:name=".SchoolActivity" />
+        <activity android:name=".HelpActivity" />
         <activity android:name=".ApplyActivity" />
         <activity android:name=".DetailActivity" />
         <activity android:name=".JobActivity" />

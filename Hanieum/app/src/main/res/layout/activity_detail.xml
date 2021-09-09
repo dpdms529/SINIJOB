@@ -176,7 +176,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="비정규직"
+                    android:text="-"
                     android:textAlignment="center"
                     android:textColor="@color/black"
                     android:textSize="17dp" />
@@ -186,7 +186,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="학력무관"
+                    android:text="-"
                     android:textAlignment="center"
                     android:textColor="@color/black"
                     android:textSize="17dp" />
@@ -196,7 +196,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="경력무관"
+                    android:text="-"
                     android:textAlignment="center"
                     android:textColor="@color/black"
                     android:textSize="17dp" />
