@@ -6,6 +6,7 @@ public class Job {
     private boolean isSelected = false; // 선택되었는지
     private int viewType; // 1차, 2차 직종을 구분하기 위한 viewType
     private String code;
+
     public Job(String job1, String job2, String code, int viewType) {
         this.job1 = job1;
         this.job2 = job2;

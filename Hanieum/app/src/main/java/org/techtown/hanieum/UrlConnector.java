@@ -13,7 +13,7 @@ class URLConnector extends Thread {
     private String result;
     private String URL;
 
-    public URLConnector(String url){
+    public URLConnector(String url) {
         URL = url;
     }
 
@@ -23,7 +23,7 @@ class URLConnector extends Thread {
         result = output;
     }
 
-    public String getResult(){
+    public String getResult() {
         return result;
     }
 
@@ -31,7 +31,7 @@ class URLConnector extends Thread {
         StringBuilder output = new StringBuilder();
         try {
             URL url = new URL(urlStr);
-            HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             if (conn != null) {
                 conn.setConnectTimeout(10000);
                 conn.setRequestMethod("GET");
@@ -40,9 +40,9 @@ class URLConnector extends Thread {
 
                 int resCode = conn.getResponseCode();
                 if (resCode == HttpURLConnection.HTTP_OK) {
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream())) ;
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
                     String line = null;
-                    while(true) {
+                    while (true) {
                         line = reader.readLine();
                         if (line == null) {
                             break;
@@ -54,7 +54,7 @@ class URLConnector extends Thread {
                     conn.disconnect();
                 }
             }
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             Log.e("SampleHTTP", "Exception in processing response.", ex);
             ex.printStackTrace();
         }

@@ -15,7 +15,7 @@
         android:theme="?attr/actionBarTheme"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" >
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:layout_width="wrap_content"
@@ -29,41 +29,53 @@
 
     </androidx.appcompat.widget.Toolbar>
 
+    <ImageButton
+        android:id="@+id/helpButton"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginStart="10dp"
+        android:background="#00ff0000"
+        app:layout_constraintBottom_toBottomOf="@+id/toolbar2"
+        app:layout_constraintStart_toStartOf="@+id/toolbar2"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/help" />
+
     <Button
         android:id="@+id/resetButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="#00ff0000"
-        android:drawableLeft="@drawable/reset"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/border_txt"
         android:text="초기화"
-        android:textSize="15dp"
+        android:textColor="#508ea8"
+        android:textSize="17dp"
+        app:backgroundTint="@null"
         app:layout_constraintBottom_toBottomOf="@+id/toolbar2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/saveButton"
-        android:layout_width="match_parent"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:background="#80cbc4"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/border_sec_color"
         android:text="저장"
-        android:textStyle="bold"
-        android:textSize="17dp"
+        android:textSize="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent" />
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/saveButton"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar2" >
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar2">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
             <TextView
                 android:layout_width="match_parent"
@@ -82,18 +94,19 @@
                 android:layout_marginHorizontal="25dp"
                 android:layout_marginTop="10dp"
                 android:background="@drawable/border"
+                android:drawableRight="@drawable/right"
                 android:stateListAnimator="@null"
                 android:text="지역을 선택하세요"
                 android:textAlignment="textStart"
-                android:textSize="15dp"
-                android:drawableRight="@drawable/right"
+                android:textColor="@color/black"
+                android:textSize="17dp"
                 app:backgroundTint="@null" />
 
             <com.google.android.material.chip.ChipGroup
                 android:id="@+id/regionFinalChipGroup"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginHorizontal="25dp" >
+                android:layout_marginHorizontal="25dp">
 
             </com.google.android.material.chip.ChipGroup>
 
@@ -120,18 +133,19 @@
                 android:layout_marginHorizontal="25dp"
                 android:layout_marginTop="10dp"
                 android:background="@drawable/border"
+                android:drawableRight="@drawable/right"
                 android:stateListAnimator="@null"
                 android:text="직종을 선택하세요"
-                android:textSize="15dp"
                 android:textAlignment="textStart"
-                android:drawableRight="@drawable/right"
-                app:backgroundTint="@null"/>
+                android:textColor="@color/black"
+                android:textSize="17dp"
+                app:backgroundTint="@null" />
 
             <com.google.android.material.chip.ChipGroup
                 android:id="@+id/jobFinalChipGroup"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginHorizontal="25dp" >
+                android:layout_marginHorizontal="25dp">
 
             </com.google.android.material.chip.ChipGroup>
 
@@ -155,21 +169,21 @@
                 android:id="@+id/careerGroup"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginHorizontal="25dp" >
+                android:layout_marginHorizontal="25dp">
 
                 <RadioButton
                     android:id="@+id/noCareer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="적용 안 함"
-                    android:textSize="15dp"/>
+                    android:textSize="17dp" />
 
                 <RadioButton
                     android:id="@+id/yesCareer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="나의 경력 적용 (이력서)"
-                    android:textSize="15dp" />
+                    android:textSize="17dp" />
 
             </RadioGroup>
 
@@ -194,28 +208,28 @@
                 android:id="@+id/workFormGroup"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginHorizontal="25dp" >
+                android:layout_marginHorizontal="25dp">
 
                 <RadioButton
                     android:id="@+id/allWorkFrom"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="전체"
-                    android:textSize="15dp" />
+                    android:textSize="17dp" />
 
                 <RadioButton
                     android:id="@+id/workForm1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="정규직"
-                    android:textSize="15dp" />
+                    android:textSize="17dp" />
 
                 <RadioButton
                     android:id="@+id/workForm2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="계약직"
-                    android:textSize="15dp" />
+                    android:textSize="17dp" />
 
             </RadioGroup>
 
@@ -239,22 +253,26 @@
                 android:id="@+id/licenseGroup"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginHorizontal="25dp" >
+                android:layout_marginHorizontal="25dp">
 
                 <RadioButton
                     android:id="@+id/noLicense"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="적용 안 함"
-                    android:textSize="15dp" />
+                    android:textSize="17dp" />
 
                 <RadioButton
                     android:id="@+id/yesLicense"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="나의 자격증 적용 (이력서)"
-                    android:textSize="15dp" />
+                    android:textSize="17dp" />
             </RadioGroup>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="140dp" />
 
         </LinearLayout>
     </ScrollView>

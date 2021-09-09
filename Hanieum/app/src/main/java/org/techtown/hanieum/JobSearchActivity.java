@@ -3,6 +3,7 @@ package org.techtown.hanieum;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -22,10 +23,12 @@ import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
 import org.techtown.hanieum.db.AppDatabase;
+import org.techtown.hanieum.db.dao.JobCategoryDao;
 import org.techtown.hanieum.db.entity.JobCategory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class JobSearchActivity extends AppCompatActivity {
     Toolbar toolbar;
@@ -45,8 +48,15 @@ public class JobSearchActivity extends AppCompatActivity {
         pref = new SharedPreference(getApplicationContext());
 
         AppDatabase db = AppDatabase.getInstance(this);
-        Log.e("JobDatabase","job data 조회");
-        category = db.jobCategoryDao().getCategory();
+        Log.e("JobDatabase", "job data 조회");
+        try {
+            category = new JobGetCategoryAsyncTask(db.jobCategoryDao()).execute().get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+//        db.jobCategoryDao().getCategory();
 
         toolbar = findViewById(R.id.toolbar4);
         recyclerView = findViewById(R.id.searchView);
@@ -61,7 +71,9 @@ public class JobSearchActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
 
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);  // 뒤로가기
+        getSupportActionBar().setDisplayShowCustomEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         loadChip(this, chipGroup);
 
@@ -83,13 +95,14 @@ public class JobSearchActivity extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.search_menu, menu);
 
-        SearchView searchView = (SearchView)menu.findItem(R.id.searchItem).getActionView();
-        ImageView icon = (ImageView)searchView.findViewById(androidx.appcompat.R.id.search_mag_icon);
+        SearchView searchView = (SearchView) menu.findItem(R.id.searchItem).getActionView();
+        ImageView icon = (ImageView) searchView.findViewById(androidx.appcompat.R.id.search_mag_icon);
         View v = searchView.findViewById(androidx.appcompat.R.id.search_plate);
 
         searchView.setMaxWidth(Integer.MAX_VALUE); // 최대 넓이
         searchView.setQueryHint("직종을 검색하세요"); // 검색 힌트
         searchView.setIconifiedByDefault(false); // 펼쳐서 보이기
+
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -101,7 +114,7 @@ public class JobSearchActivity extends AppCompatActivity {
                 ArrayList<Search> items = new ArrayList<>();
                 ArrayList<ChipList> chipList = pref.getArrayPref(SharedPreference.JOB_TMP);
 
-                for (int i=0; i<category.size(); i++) {
+                for (int i = 0; i < category.size(); i++) {
                     if (newText.equals("")) {
                         break;
                     } else if (category.get(i).category_code.length() != 2 && category.get(i).category_name.contains(newText)) {
@@ -110,8 +123,8 @@ public class JobSearchActivity extends AppCompatActivity {
                 }
 
                 // 아이템과 선택된 칩의 이름이 같으면 아이템의 setChecked true로 설정
-                for (int i=0; i<items.size(); i++) {
-                    for (int j=0; j<chipList.size(); j++) {
+                for (int i = 0; i < items.size(); i++) {
+                    for (int j = 0; j < chipList.size(); j++) {
                         if (items.get(i).getTitle().equals(chipList.get(j).getName())) {
                             items.get(i).setChecked(true);
                         }
@@ -139,11 +152,12 @@ public class JobSearchActivity extends AppCompatActivity {
         chipGroup.removeAllViews(); // 칩그룹 초기화
         ArrayList<ChipList> chipList = pref.getArrayPref(SharedPreference.JOB_TMP);
 
-        for (int i=chipList.size()-1;i>=0;i--) { // chipList에 있는 것을 추가
+        for (int i = chipList.size() - 1; i >= 0; i--) { // chipList에 있는 것을 추가
             String name = chipList.get(i).getName();
 
             Chip chip = new Chip(context);
             chip.setText(name);
+            chip.setTextSize(17);
             chip.setCloseIconResource(R.drawable.close);
             chip.setCloseIconVisible(true);
             chipGroup.addView(chip);
@@ -151,11 +165,11 @@ public class JobSearchActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     // 아이템 삭제 코드
-                    for (int i=0; i<chipList.size(); i++) {
+                    for (int i = 0; i < chipList.size(); i++) {
                         if (chipList.get(i).getName().equals(name)) {
                             chipList.remove(i);
 
-                            for (int j=0; j<adapter.getItemCount(); j++) {  // 검색된 항목이 있을 때
+                            for (int j = 0; j < adapter.getItemCount(); j++) {  // 검색된 항목이 있을 때
                                 if (name.equals(adapter.getItem(j).getTitle())) {   // 검색된 항목에 있을 때
                                     adapter.getItem(j).setChecked(false);
                                     pref.setArrayPref(chipList, SharedPreference.JOB_TMP);
@@ -172,6 +186,19 @@ public class JobSearchActivity extends AppCompatActivity {
                     chipGroup.removeView(chip);
                 }
             });
+        }
+    }
+
+    public static class JobGetCategoryAsyncTask extends AsyncTask<Void, Void, List<JobCategory>> {
+        private JobCategoryDao mJobCategoryDao;
+
+        public JobGetCategoryAsyncTask(JobCategoryDao jobCategoryDao) {
+            this.mJobCategoryDao = jobCategoryDao;
+        }
+
+        @Override
+        protected List<JobCategory> doInBackground(Void... voids) {
+            return mJobCategoryDao.getCategory();
         }
     }
 }

@@ -1,5 +1,6 @@
 package org.techtown.hanieum;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,12 +16,14 @@ public class RecommendAdapter extends RecyclerView.Adapter<RecommendAdapter.View
         OnRecoItemClickListener {
     static ArrayList<Recommendation> items = new ArrayList<Recommendation>();
     OnRecoItemClickListener listener;
+    Context context;
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
         View view = inflater.inflate(R.layout.recommendation_item, viewGroup, false);
+        context = viewGroup.getContext();
 
         return new ViewHolder(view, this);
     }
@@ -63,7 +66,7 @@ public class RecommendAdapter extends RecyclerView.Adapter<RecommendAdapter.View
         this.listener = listener;
     }
 
-    static class ViewHolder extends RecyclerView.ViewHolder {
+    class ViewHolder extends RecyclerView.ViewHolder {
         TextView companyName;
         TextView title;
         TextView salaryType;
@@ -90,12 +93,32 @@ public class RecommendAdapter extends RecyclerView.Adapter<RecommendAdapter.View
                 public void onClick(View v) {
                     int position = getLayoutPosition();
                     Recommendation item = items.get(position);
-                    if (item.getBookmark()) {
+                    if (item.getBookmark()) {   // 북마크 안 됨
                         item.setBookmark(false);
                         bookmark.setImageResource(R.drawable.star);
-                    } else {
+
+                        String uId = context.getString(R.string.user_id);   // 유저 아이디
+                        String rId = item.getId();
+                        String bookmarkPhp = context.getResources().getString(R.string.serverIP) + "bookmark_del.php?user_id=" + uId + "&recruit_id=" + rId;
+                        URLConnector urlConnectorBookmark = new URLConnector(bookmarkPhp);
+                        urlConnectorBookmark.start();
+                        try {
+                            urlConnectorBookmark.join();
+                        } catch (InterruptedException e) {
+                        }
+                    } else {    // 북마크 됨
                         item.setBookmark(true);
                         bookmark.setImageResource(R.drawable.bookmark);
+
+                        String uId = context.getString(R.string.user_id);   // 유저 아이디
+                        String rId = item.getId();
+                        String bookmarkPhp = context.getResources().getString(R.string.serverIP) + "bookmark_save.php?user_id=" + uId + "&recruit_id=" + rId;
+                        URLConnector urlConnectorBookmark = new URLConnector(bookmarkPhp);
+                        urlConnectorBookmark.start();
+                        try {
+                            urlConnectorBookmark.join();
+                        } catch (InterruptedException e) {
+                        }
                     }
                 }
             });

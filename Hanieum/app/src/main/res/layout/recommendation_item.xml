@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:layout_marginTop="15dp"
     android:layout_marginLeft="15dp"
+    android:layout_marginTop="15dp"
     android:layout_marginRight="15dp"
-    android:layout_marginBottom="3dp">
+    android:layout_marginBottom="3dp"
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -22,28 +21,28 @@
             android:layout_weight="1"
             android:text="무진장흑돼지푸드"
             android:textColor="@color/black"
-            android:textSize="15dp" />
+            android:textSize="17dp" />
 
         <TextView
             android:id="@+id/distance"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="0"
             android:layout_marginLeft="15dp"
+            android:layout_weight="0"
             android:text="253"
             android:textColor="#828282"
-            android:textSize="15dp"
+            android:textSize="17dp"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/measure"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="0"
             android:layout_marginHorizontal="3dp"
+            android:layout_weight="0"
             android:text="m"
             android:textColor="#828282"
-            android:textSize="13dp"
+            android:textSize="15dp"
             android:textStyle="bold" />
 
     </LinearLayout>
@@ -51,8 +50,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal"
-        android:layout_marginTop="5dp">
+        android:layout_marginTop="5dp"
+        android:orientation="horizontal">
 
         <TextView
             android:id="@+id/advertisementTitle"
@@ -61,7 +60,7 @@
             android:layout_weight="1"
             android:text="사무경리 여직원/생산직 구함"
             android:textColor="@color/black"
-            android:textSize="17dp"
+            android:textSize="20dp"
             android:textStyle="bold" />
 
     </LinearLayout>
@@ -69,8 +68,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal"
-        android:layout_marginTop="5dp">
+        android:layout_marginTop="5dp"
+        android:orientation="horizontal">
 
         <TextView
             android:id="@+id/salaryType"
@@ -80,19 +79,19 @@
             android:layout_weight="0"
             android:text="월"
             android:textColor="@color/black"
-            android:textSize="15dp" />
+            android:textSize="17dp" />
 
         <TextView
             android:id="@+id/salary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="1dp"
-            android:layout_gravity="center_vertical"
             android:layout_weight="0"
             android:text="250"
             android:textColor="#FF9800"
-            android:textSize="17dp"
+            android:textSize="20dp"
             android:textStyle="bold" />
 
         <TextView
@@ -103,7 +102,7 @@
             android:layout_weight="1"
             android:text="만"
             android:textColor="@color/black"
-            android:textSize="15dp" />
+            android:textSize="17dp" />
 
         <ImageButton
             android:id="@+id/bookmark"

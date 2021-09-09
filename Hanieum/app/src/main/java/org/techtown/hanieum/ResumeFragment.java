@@ -1,6 +1,5 @@
 package org.techtown.hanieum;
 
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -11,9 +10,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-
-import com.google.android.material.chip.Chip;
-import com.google.android.material.chip.ChipGroup;
 
 import java.util.ArrayList;
 

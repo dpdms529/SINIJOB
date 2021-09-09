@@ -29,6 +29,17 @@
 
     </androidx.appcompat.widget.Toolbar>
 
+    <ImageButton
+        android:id="@+id/helpButton"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginStart="10dp"
+        android:background="#00ff0000"
+        app:layout_constraintBottom_toBottomOf="@+id/toolbar0201"
+        app:layout_constraintStart_toStartOf="@+id/toolbar0201"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/help" />
+
     <Button
         android:id="@+id/shareButton"
         android:layout_width="wrap_content"
@@ -36,7 +47,8 @@
         android:background="#00ff0000"
         android:drawableLeft="@drawable/share"
         android:text="공유"
-        android:textSize="15dp"
+        android:textColor="#757575"
+        android:textSize="17dp"
         app:layout_constraintBottom_toBottomOf="@+id/toolbar0201"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -44,22 +56,21 @@
 
     <Button
         android:id="@+id/applyButton"
-        android:layout_width="match_parent"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:background="#80cbc4"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/border_sec_color"
         android:text="지원하기"
-        android:textSize="17dp"
-        android:textStyle="bold"
+        android:textSize="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent" />
 
     <ScrollView
         android:id="@+id/detailScrollView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/applyButton"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar0201">
 
         <LinearLayout
@@ -84,13 +95,13 @@
                         android:id="@+id/companyNameDetail"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="bottom"
                         android:layout_marginLeft="25dp"
                         android:layout_marginBottom="2dp"
                         android:layout_weight="1"
-                        android:layout_gravity="bottom"
                         android:text="㈜에이피티에스"
                         android:textColor="@color/black"
-                        android:textSize="15dp" />
+                        android:textSize="17dp" />
 
                     <TextView
                         android:id="@+id/titleDetail"
@@ -124,7 +135,6 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </LinearLayout>
-
 
 
             <LinearLayout
@@ -169,7 +179,7 @@
                     android:text="비정규직"
                     android:textAlignment="center"
                     android:textColor="@color/black"
-                    android:textSize="15dp" />
+                    android:textSize="17dp" />
 
                 <TextView
                     android:id="@+id/schoolDetail"
@@ -179,7 +189,7 @@
                     android:text="학력무관"
                     android:textAlignment="center"
                     android:textColor="@color/black"
-                    android:textSize="15dp" />
+                    android:textSize="17dp" />
 
                 <TextView
                     android:id="@+id/careerDetail"
@@ -189,7 +199,7 @@
                     android:text="경력무관"
                     android:textAlignment="center"
                     android:textColor="@color/black"
-                    android:textSize="15dp" />
+                    android:textSize="17dp" />
             </LinearLayout>
 
             <!--            <View-->
@@ -220,19 +230,19 @@
                     android:layout_marginLeft="25dp"
                     android:text="글씨 크기"
                     android:textColor="@color/black"
-                    android:textSize="17dp"
+                    android:textSize="20dp"
                     android:textStyle="bold" />
 
                 <SeekBar
                     android:id="@+id/textSizeChangeBar"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
                     android:layout_gravity="center"
+                    android:layout_marginLeft="5dp"
                     android:layout_weight="3"
-                    android:progress="17"
                     android:max="30"
-                    android:min="15" />
+                    android:min="15"
+                    android:progress="20" />
 
                 <TextView
                     android:id="@+id/textSize"
@@ -240,11 +250,43 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginRight="25dp"
-                    android:text="17"
+                    android:text="20"
                     android:textColor="@color/black"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
 
             </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <Switch
+                    android:id="@+id/voiceTf"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="25dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_weight="2"
+                    android:text="음성 출력"
+                    android:textSize="20dp" />
+
+                <Button
+                    android:id="@+id/voice_summary"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="25dp"
+                    android:layout_weight="3"
+                    android:background="@drawable/border_txt"
+                    android:text="요약해서 듣기"
+                    android:textColor="#508ea8"
+                    android:textSize="20dp" />
+
+            </LinearLayout>
+
 
             <View
                 android:layout_width="match_parent"
@@ -257,11 +299,11 @@
                 android:id="@+id/addressT"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
                 android:layout_marginLeft="25dp"
+                android:layout_marginTop="10dp"
                 android:text="근무예정지"
                 android:textColor="@color/black"
-                android:textSize="17dp"
+                android:textSize="20dp"
                 android:textStyle="bold" />
 
             <LinearLayout
@@ -277,7 +319,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="주소"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
 
                 <TextView
                     android:id="@+id/addressDetail"
@@ -286,7 +328,7 @@
                     android:layout_weight="2"
                     android:text="전북 전주시"
                     android:textColor="@color/black"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
             </LinearLayout>
 
             <RelativeLayout
@@ -314,9 +356,10 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="right"
                     android:layout_marginRight="10dp"
-                    android:backgroundTint="#E1E2E1"
+                    android:background="@drawable/border_txt"
                     android:text="길찾기"
-                    android:textSize="15dp" />
+                    android:textColor="#508ea8"
+                    android:textSize="17dp" />
             </LinearLayout>
 
             <View
@@ -330,11 +373,11 @@
                 android:id="@+id/recruitCdT"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
                 android:layout_marginLeft="25dp"
+                android:layout_marginTop="10dp"
                 android:text="모집조건"
                 android:textColor="@color/black"
-                android:textSize="17dp"
+                android:textSize="20dp"
                 android:textStyle="bold" />
 
             <LinearLayout
@@ -350,7 +393,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="모집직종"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
 
                 <TextView
                     android:id="@+id/jobsNm"
@@ -359,7 +402,7 @@
                     android:layout_weight="2"
                     android:text="공사현장 경비원"
                     android:textColor="@color/black"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
             </LinearLayout>
 
             <LinearLayout
@@ -375,7 +418,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="직무내용"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
 
                 <TextView
                     android:id="@+id/jobCont"
@@ -384,7 +427,7 @@
                     android:layout_weight="2"
                     android:text="공사현장 경비 업무 및 현장사무소 업무 지원"
                     android:textColor="@color/black"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
             </LinearLayout>
 
             <LinearLayout
@@ -400,7 +443,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="경력조건"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
 
                 <TextView
                     android:id="@+id/enterTpNm"
@@ -409,7 +452,7 @@
                     android:layout_weight="2"
                     android:text="경력 (최소1년6개월 이상) 우대"
                     android:textColor="@color/black"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
             </LinearLayout>
 
             <LinearLayout
@@ -425,7 +468,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="학력조건"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
 
                 <TextView
                     android:id="@+id/eduNm"
@@ -434,7 +477,7 @@
                     android:layout_weight="2"
                     android:text="학력무관"
                     android:textColor="@color/black"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
             </LinearLayout>
 
             <LinearLayout
@@ -450,7 +493,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="고용형태"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
 
                 <TextView
                     android:id="@+id/empTpNm"
@@ -459,7 +502,7 @@
                     android:layout_weight="2"
                     android:text="기간의 정함이 있는 근로계약 12개월 / 파견근로 희망"
                     android:textColor="@color/black"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
             </LinearLayout>
 
             <LinearLayout
@@ -473,26 +516,18 @@
                     android:id="@+id/collectPsncntT"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1.1"
+                    android:layout_weight="1"
                     android:text="모집인원"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
 
                 <TextView
                     android:id="@+id/collectPsncnt"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="1"
-                    android:textColor="@color/black"
-                    android:textSize="17dp" />
-
-                <TextView
-                    android:id="@+id/collectPsncntM"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="2.1"
-                    android:text="명 모집"
+                    android:layout_weight="2"
+                    android:text="1명 모집"
                     android:textColor="@color/black"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
 
             </LinearLayout>
 
@@ -509,7 +544,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="기타안내"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
 
                 <TextView
                     android:id="@+id/etcHopeCont"
@@ -518,7 +553,7 @@
                     android:layout_weight="2"
                     android:text="인근(감천항) 거주자 우대"
                     android:textColor="@color/black"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
             </LinearLayout>
 
             <View
@@ -532,11 +567,11 @@
                 android:id="@+id/workCdT"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
                 android:layout_marginLeft="25dp"
+                android:layout_marginTop="10dp"
                 android:text="근무조건"
                 android:textColor="@color/black"
-                android:textSize="17dp"
+                android:textSize="20dp"
                 android:textStyle="bold" />
 
             <LinearLayout
@@ -552,7 +587,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1.5"
                     android:text="임금조건"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
 
                 <TextView
                     android:id="@+id/salaryTypeCode"
@@ -561,7 +596,7 @@
                     android:layout_marginRight="5dp"
                     android:text="월급"
                     android:textColor="#FF9800"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
 
                 <TextView
                     android:id="@+id/salary"
@@ -570,7 +605,7 @@
                     android:layout_weight="2.6"
                     android:text="2,320,000원 ~ 2,320,800원"
                     android:textColor="@color/black"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
             </LinearLayout>
 
             <LinearLayout
@@ -586,7 +621,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="근무시간"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
 
                 <TextView
                     android:id="@+id/workTime"
@@ -595,7 +630,7 @@
                     android:layout_weight="2"
                     android:text="-"
                     android:textColor="@color/black"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
             </LinearLayout>
 
             <LinearLayout
@@ -611,7 +646,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="근무형태"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
 
                 <TextView
                     android:id="@+id/workDay"
@@ -620,7 +655,7 @@
                     android:layout_weight="2"
                     android:text="-"
                     android:textColor="@color/black"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
             </LinearLayout>
 
             <LinearLayout
@@ -636,7 +671,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="퇴직급여"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
 
                 <TextView
                     android:id="@+id/retirepay"
@@ -645,7 +680,7 @@
                     android:layout_weight="2"
                     android:text="퇴직금"
                     android:textColor="@color/black"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
             </LinearLayout>
 
             <LinearLayout
@@ -661,7 +696,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="연금4대보혐"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
 
                 <TextView
                     android:id="@+id/fourIns"
@@ -670,7 +705,7 @@
                     android:layout_weight="2"
                     android:text="국민연금, 고용보험, 산재보험, 건강보험"
                     android:textColor="@color/black"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
             </LinearLayout>
 
             <LinearLayout
@@ -686,7 +721,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="기타복리후생"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
 
                 <TextView
                     android:id="@+id/etcWelfare"
@@ -695,7 +730,7 @@
                     android:layout_weight="2"
                     android:text="-"
                     android:textColor="@color/black"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
             </LinearLayout>
 
 
@@ -710,11 +745,11 @@
                 android:id="@+id/applyT"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
                 android:layout_marginLeft="25dp"
+                android:layout_marginTop="10dp"
                 android:text="접수방법"
                 android:textColor="@color/black"
-                android:textSize="17dp"
+                android:textSize="20dp"
                 android:textStyle="bold" />
 
             <LinearLayout
@@ -730,7 +765,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="접수마감일"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
 
                 <TextView
                     android:id="@+id/receiptCloseDt"
@@ -739,7 +774,7 @@
                     android:layout_weight="2"
                     android:text="채용시까지"
                     android:textColor="@color/black"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
             </LinearLayout>
 
             <LinearLayout
@@ -755,7 +790,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="전형방법"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
 
                 <TextView
                     android:id="@+id/selMthd"
@@ -764,7 +799,7 @@
                     android:layout_weight="2"
                     android:text="서류, 면접"
                     android:textColor="@color/black"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
             </LinearLayout>
 
             <LinearLayout
@@ -780,7 +815,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="접수방법"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
 
                 <TextView
                     android:id="@+id/rcptMthd"
@@ -789,7 +824,7 @@
                     android:layout_weight="2"
                     android:text="워크넷"
                     android:textColor="@color/black"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
             </LinearLayout>
 
             <LinearLayout
@@ -805,7 +840,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="제출서류\n준비물"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
 
                 <TextView
                     android:id="@+id/submitDoc"
@@ -814,7 +849,7 @@
                     android:layout_weight="2"
                     android:text="이력서, 자기소개서"
                     android:textColor="@color/black"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
             </LinearLayout>
 
             <LinearLayout
@@ -830,9 +865,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="제출서류양식"
-                    android:textSize="17dp" />
-
-                -
+                    android:textSize="20dp" />
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -848,7 +881,7 @@
                         android:linksClickable="true"
                         android:text="다운로드 링크 1"
                         android:textColor="@color/black"
-                        android:textSize="17dp"
+                        android:textSize="20dp"
                         android:visibility="gone" />
 
                     <TextView
@@ -859,7 +892,7 @@
                         android:linksClickable="true"
                         android:text="다운로드 링크 2"
                         android:textColor="@color/black"
-                        android:textSize="17dp"
+                        android:textSize="20dp"
                         android:visibility="gone" />
 
                     <TextView
@@ -870,7 +903,7 @@
                         android:linksClickable="true"
                         android:text="다운로드 링크 3"
                         android:textColor="@color/black"
-                        android:textSize="17dp"
+                        android:textSize="20dp"
                         android:visibility="gone" />
 
                     <TextView
@@ -881,7 +914,7 @@
                         android:linksClickable="true"
                         android:text="다운로드 링크 4"
                         android:textColor="@color/black"
-                        android:textSize="17dp"
+                        android:textSize="20dp"
                         android:visibility="gone" />
 
                     <TextView
@@ -892,7 +925,7 @@
                         android:linksClickable="true"
                         android:text="다운로드 링크 5"
                         android:textColor="@color/black"
-                        android:textSize="17dp"
+                        android:textSize="20dp"
                         android:visibility="gone" />
                 </LinearLayout>
 
@@ -910,11 +943,11 @@
                 android:id="@+id/preferT"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
                 android:layout_marginLeft="25dp"
+                android:layout_marginTop="10dp"
                 android:text="우대사항"
                 android:textColor="@color/black"
-                android:textSize="17dp"
+                android:textSize="20dp"
                 android:textStyle="bold" />
 
             <LinearLayout
@@ -930,7 +963,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="우대조건"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
 
                 <TextView
                     android:id="@+id/pfCond"
@@ -939,7 +972,7 @@
                     android:layout_weight="2"
                     android:text="-"
                     android:textColor="@color/black"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
             </LinearLayout>
 
             <LinearLayout
@@ -955,7 +988,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="기타우대사항"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
 
                 <TextView
                     android:id="@+id/etcPfCond"
@@ -964,7 +997,7 @@
                     android:layout_weight="2"
                     android:text="-"
                     android:textColor="@color/black"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
             </LinearLayout>
 
             <LinearLayout
@@ -980,7 +1013,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="자격먼허"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
 
                 <TextView
                     android:id="@+id/certificate"
@@ -989,7 +1022,7 @@
                     android:layout_weight="2"
                     android:text="자동차운전면허2종보통"
                     android:textColor="@color/black"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
             </LinearLayout>
 
             <LinearLayout
@@ -1005,7 +1038,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="컴퓨터활용\n능력"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
 
                 <TextView
                     android:id="@+id/compAbl"
@@ -1014,7 +1047,7 @@
                     android:layout_weight="2"
                     android:text="표계산 (스프레드시트 활용)"
                     android:textColor="@color/black"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
             </LinearLayout>
 
 
@@ -1029,11 +1062,11 @@
                 android:id="@+id/corpT"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
                 android:layout_marginLeft="25dp"
+                android:layout_marginTop="10dp"
                 android:text="기업정보"
                 android:textColor="@color/black"
-                android:textSize="17dp"
+                android:textSize="20dp"
                 android:textStyle="bold" />
 
             <LinearLayout
@@ -1049,7 +1082,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="기업명"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
 
                 <TextView
                     android:id="@+id/corpNm"
@@ -1058,7 +1091,7 @@
                     android:layout_weight="2"
                     android:text="㈜에이치티에스"
                     android:textColor="@color/black"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
             </LinearLayout>
 
             <LinearLayout
@@ -1074,7 +1107,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="대표자명"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
 
                 <TextView
                     android:id="@+id/reperNm"
@@ -1083,7 +1116,7 @@
                     android:layout_weight="2"
                     android:text="권기범"
                     android:textColor="@color/black"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
             </LinearLayout>
 
             <LinearLayout
@@ -1099,7 +1132,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="업종"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
 
                 <TextView
                     android:id="@+id/indTpCdNm"
@@ -1108,7 +1141,7 @@
                     android:layout_weight="2"
                     android:text="경비 및 경호 서비스업"
                     android:textColor="@color/black"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
             </LinearLayout>
 
             <LinearLayout
@@ -1124,7 +1157,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="주소"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
 
                 <TextView
                     android:id="@+id/corpAddr"
@@ -1133,7 +1166,7 @@
                     android:layout_weight="2"
                     android:text="-"
                     android:textColor="@color/black"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
             </LinearLayout>
 
             <LinearLayout
@@ -1149,7 +1182,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="근로자수"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
 
                 <TextView
                     android:id="@+id/totPsncnt"
@@ -1158,7 +1191,7 @@
                     android:layout_weight="2"
                     android:text="158 명"
                     android:textColor="@color/black"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
             </LinearLayout>
 
             <LinearLayout
@@ -1174,7 +1207,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="연매출액"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
 
                 <TextView
                     android:id="@+id/yrSalesAmt"
@@ -1183,7 +1216,7 @@
                     android:layout_weight="2"
                     android:text="-"
                     android:textColor="@color/black"
-                    android:textSize="17dp" />
+                    android:textSize="20dp" />
             </LinearLayout>
 
             <View
@@ -1199,8 +1232,10 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginBottom="5dp"
-                android:backgroundTint="#E1E2E1"
-                android:text="채용정보 제공사이트로 이동" />
+                android:background="@drawable/border_txt"
+                android:text="채용정보 제공사이트로 이동"
+                android:textColor="#508ea8"
+                android:textSize="17dp" />
 
             <ImageView
                 android:id="@+id/goWorknetImg"
@@ -1209,6 +1244,9 @@
                 android:layout_marginHorizontal="4dp"
                 app:srcCompat="@drawable/info_source" />
 
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="140dp" />
 
         </LinearLayout>
     </ScrollView>

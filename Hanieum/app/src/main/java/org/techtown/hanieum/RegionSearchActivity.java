@@ -83,8 +83,8 @@ public class RegionSearchActivity extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.search_menu, menu);
 
-        SearchView searchView = (SearchView)menu.findItem(R.id.searchItem).getActionView();
-        ImageView icon = (ImageView)searchView.findViewById(androidx.appcompat.R.id.search_mag_icon);
+        SearchView searchView = (SearchView) menu.findItem(R.id.searchItem).getActionView();
+        ImageView icon = (ImageView) searchView.findViewById(androidx.appcompat.R.id.search_mag_icon);
         View v = searchView.findViewById(androidx.appcompat.R.id.search_plate);
 
         searchView.setMaxWidth(Integer.MAX_VALUE);
@@ -101,17 +101,17 @@ public class RegionSearchActivity extends AppCompatActivity {
                 ArrayList<Search> items = new ArrayList<>();
                 ArrayList<ChipList> chipList = pref.getArrayPref(SharedPreference.REGION_TMP);
 
-                for(int i=0; i<bDong.size(); i++) {
-                    if(newText.equals("")) {
+                for (int i = 0; i < bDong.size(); i++) {
+                    if (newText.equals("")) {
                         break;
-                    } else if(bDong.get(i).sido_name.contains(newText) || bDong.get(i).sigungu_name.contains(newText) || bDong.get(i).eupmyeondong_name.contains(newText)) {
+                    } else if (bDong.get(i).sido_name.contains(newText) || bDong.get(i).sigungu_name.contains(newText) || bDong.get(i).eupmyeondong_name.contains(newText)) {
                         items.add(new Search(bDong.get(i).sido_name + " " + bDong.get(i).sigungu_name + " " + bDong.get(i).eupmyeondong_name, bDong.get(i).b_dong_code, Code.ViewType.REGION_SEARCH));
                     }
                 }
 
                 // 아이템과 선택된 칩의 이름이 같으면 아이템의 setChecked true로 설정
-                for (int i=0; i<items.size(); i++) {
-                    for (int j=0; j<chipList.size(); j++) {
+                for (int i = 0; i < items.size(); i++) {
+                    for (int j = 0; j < chipList.size(); j++) {
                         if (items.get(i).getTitle().equals(chipList.get(j).getName())) {
                             items.get(i).setChecked(true);
                         }
@@ -139,23 +139,24 @@ public class RegionSearchActivity extends AppCompatActivity {
         chipGroup.removeAllViews();
         ArrayList<ChipList> chipList = pref.getArrayPref(SharedPreference.REGION_TMP);
 
-        for(int i=chipList.size()-1;i>=0;i--) {
+        for (int i = chipList.size() - 1; i >= 0; i--) {
             String name = chipList.get(i).getName();
 
             Chip chip = new Chip(context);
             chip.setText(name);
+            chip.setTextSize(17);
             chip.setCloseIconResource(R.drawable.close);
             chip.setCloseIconVisible(true);
             chipGroup.addView(chip);
             chip.setOnCloseIconClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    for(int i=0;i<chipList.size();i++) {
-                        if(chipList.get(i).getName().equals(name)) {
+                    for (int i = 0; i < chipList.size(); i++) {
+                        if (chipList.get(i).getName().equals(name)) {
                             chipList.remove(i);
 
-                            for(int j=0; j<adapter.getItemCount(); j++) {
-                                if(name.equals(adapter.getItem(j).getTitle())) {
+                            for (int j = 0; j < adapter.getItemCount(); j++) {
+                                if (name.equals(adapter.getItem(j).getTitle())) {
                                     adapter.getItem(j).setChecked(false);
                                     pref.setArrayPref(chipList, SharedPreference.REGION_TMP);
                                     adapter.notifyItemChanged(j);
@@ -163,7 +164,7 @@ public class RegionSearchActivity extends AppCompatActivity {
                                     pref.setArrayPref(chipList, SharedPreference.REGION_TMP);
                                 }
                             }
-                            if(adapter.getItemCount() == 0) {
+                            if (adapter.getItemCount() == 0) {
                                 pref.setArrayPref(chipList, SharedPreference.REGION_TMP);
                             }
                         }

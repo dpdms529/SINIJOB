@@ -5,7 +5,6 @@ import androidx.room.Query;
 
 import org.techtown.hanieum.db.entity.Bdong;
 
-import java.util.HashMap;
 import java.util.List;
 
 @Dao
@@ -14,7 +13,7 @@ public interface BdongDao {
     List<Bdong> getAll();
 
     @Query("SELECT distinct(sido_name) FROM b_dong")
-    List<String> getsido() ;
+    List<String> getsido();
 
     @Query("select distinct(sigungu_name) from b_dong where sido_name = :sido_name")
     List<String> getsigungu(String sido_name);

@@ -6,7 +6,7 @@ public class DistanceCalculator {
     private static Double end_x; // 끝지점 x좌표
     private static Double end_y; // 끝지점 y좌표
 
-    public DistanceCalculator(String start_x, String start_y, String end_x, String end_y){
+    public DistanceCalculator(String start_x, String start_y, String end_x, String end_y) {
         this.start_x = Double.valueOf(start_x);
         this.start_y = Double.valueOf(start_y);
         this.end_x = Double.valueOf(end_x);
