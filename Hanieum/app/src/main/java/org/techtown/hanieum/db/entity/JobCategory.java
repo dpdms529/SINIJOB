@@ -7,7 +7,8 @@ import androidx.room.PrimaryKey;
 
 @Entity(tableName = "job_category")
 public class JobCategory {
-    @PrimaryKey @NonNull
+    @PrimaryKey
+    @NonNull
     public String category_code;
 
     @ColumnInfo(name = "primary_cate_code")

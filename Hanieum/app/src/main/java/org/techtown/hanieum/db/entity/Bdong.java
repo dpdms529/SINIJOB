@@ -7,7 +7,8 @@ import androidx.room.PrimaryKey;
 
 @Entity(tableName = "b_dong")
 public class Bdong {
-    @PrimaryKey @NonNull
+    @PrimaryKey
+    @NonNull
     public String b_dong_code;
 
     @ColumnInfo(name = "sido_name")
