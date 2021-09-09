@@ -424,6 +424,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         String recoPhp = getResources().getString(R.string.serverIP) + "reco_list.php?user_id=" + getResources().getString(R.string.user_id);
         URLConnector urlConnector = new URLConnector(recoPhp);
 
+        ArrayList<String> jobNm = new ArrayList<>(); // 직종명과 추천순위 저장
+
         // 북마크 테이블 읽어오기
         ArrayList<String> arrayList = new ArrayList<>();
         String bookmarkPhp = context.getResources().getString(R.string.serverIP) + "bookmark_read.php?user_id=" + getResources().getString(R.string.user_id);
@@ -516,11 +518,23 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     } else {    // 북마크가 안 되어 있을 때
                         items.add(new Recommendation(recruit.get(0).recruit_id, recruit.get(0).organization, recruit.get(0).recruit_title, salaryType, sal, dist, false));
                     }
+
+                    if(count == 0 || count == 1 || count == 2) { // 1,2,3번째 추천된 공고의 직종명 저장
+                        String job = db.jobCategoryDao().getCategoryName(recruit.get(0).job_code);
+                        int idx = job.indexOf("(");
+                        if(idx != -1) {
+                            job = job.substring(0,idx);
+                        }
+                        jobNm.add(count, job);
+                    }
+
                     count++;
                 }
                 if (count == 100) {
                     break;
                 }
+
+
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -532,14 +546,14 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         if (Integer.parseInt(itemNum.getText().toString()) > 0) {    // 추천 공고가 있을 경우 최대 3건까지 요약
             msg = "추천된 공고는 총" + itemNum.getText().toString() + " 건 입니다.";
             if (Integer.parseInt(itemNum.getText().toString()) >= 3) {
-                msg += "첫 번째로 추천된 공고는 " + items.get(0).getTitle() + "입니다. " +
-                        "두 번째로 추천된 공고는 " + items.get(1).getTitle() + "입니다. " +
-                        "세 번째로 추천된 공고는 " + items.get(2).getTitle() + "입니다.";
+                msg += "첫 번째로 추천된 공고는 " + items.get(0).getCompanyName() + "에서 " + jobNm.get(0) + "를 모집하는 공고입니다. " +
+                        "두 번째로 추천된 공고는 " + items.get(1).getCompanyName() + "에서 " + jobNm.get(1) + "를 모집하는 공고입니다. " +
+                        "세 번째로 추천된 공고는 " + items.get(2).getCompanyName() + "에서 " + jobNm.get(2) + "를 모집하는 공고입니다. ";
             } else if (Integer.parseInt(itemNum.getText().toString()) >= 2) {
-                msg += "첫 번째로 추천된 공고는 " + items.get(0).getTitle() + "입니다. " +
-                        "두 번째로 추천된 공고는 " + items.get(1).getTitle() + "입니다. ";
+                msg += "첫 번째로 추천된 공고는 " + items.get(0).getCompanyName() + "에서 " + jobNm.get(0) + "를 모집하는 공고입니다. " +
+                        "두 번째로 추천된 공고는 " + items.get(1).getCompanyName() + "에서 " + jobNm.get(1) + "를 모집하는 공고입니다. ";
             } else if (Integer.parseInt(itemNum.getText().toString()) >= 1) {
-                msg += "추천된 공고는 " + items.get(0).getTitle() + "입니다.";
+                msg += "추천된 공고는 " + items.get(0).getCompanyName() + "에서 " + jobNm.get(0) + "를 모집하는 공고입니다. ";
             } else {
                 // 추천 공고가 없을 경우 "추천된 일자리가 없습니다" 출력
             }
