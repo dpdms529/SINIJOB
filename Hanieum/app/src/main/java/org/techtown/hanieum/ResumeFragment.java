@@ -14,6 +14,8 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.techtown.hanieum.db.AppDatabase;
+
 public class ResumeFragment extends Fragment implements View.OnClickListener {
 
     private static final float FONT_SIZE = 16;
@@ -22,8 +24,11 @@ public class ResumeFragment extends Fragment implements View.OnClickListener {
     LinearLayout careerLayout;
     LinearLayout certifiLayout;
     LinearLayout selfIntroLayout;
+    TextView school;
 
     Context context;
+
+    AppDatabase db;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -40,9 +45,35 @@ public class ResumeFragment extends Fragment implements View.OnClickListener {
         careerLayout = view.findViewById(R.id.careerLayout);
         certifiLayout = view.findViewById(R.id.certifiLayout);
         selfIntroLayout = view.findViewById(R.id.selfIntroLayout);
+        school = view.findViewById(R.id.school);
 
-        textview("웹 개발자 / 팀장 / xx회사 / 5년 6개월");
-        textview("웹 개발자 / 팀장 / oo회사 / 3년");
+        db = AppDatabase.getInstance(this.getContext());
+
+        String education = db.CvInfoDao().getInfoCode("E");
+        if (education.equals("00")) {
+            school.setVisibility(View.GONE);
+        } else if (education.equals("01")) {
+            school.setText("초등학교 졸업 이하");
+            school.setVisibility(View.VISIBLE);
+        } else if (education.equals("02")) {
+            school.setText("중학교 졸업");
+            school.setVisibility(View.VISIBLE);
+        } else if (education.equals("03")) {
+            school.setText("고등학교 졸업");
+            school.setVisibility(View.VISIBLE);
+        } else if (education.equals("04")) {
+            school.setText("대학(2,3년제) 졸업");
+            school.setVisibility(View.VISIBLE);
+        } else if (education.equals("05")) {
+            school.setText("대학(4년제) 졸업");
+            school.setVisibility(View.VISIBLE);
+        } else if (education.equals("06")) {
+            school.setText("석사");
+            school.setVisibility(View.VISIBLE);
+        } else if (education.equals("07")) {
+            school.setText("박사");
+            school.setVisibility(View.VISIBLE);
+        }
 
         schoolLayout.setOnClickListener(this);
         careerLayout.setOnClickListener(this);
