@@ -41,20 +41,22 @@ public class SchoolActivity extends AppCompatActivity {
 
         adapter = new ArrayAdapter(getApplicationContext(), android.R.layout.simple_spinner_dropdown_item, getResources().getStringArray(R.array.schoolArray1));
         spinner.setAdapter(adapter);
-        if (education.equals("01")) {
-            spinner.setSelection(1);
-        } else if (education.equals("02")) {
-            spinner.setSelection(2);
-        } else if (education.equals("03")) {
-            spinner.setSelection(3);
-        } else if (education.equals("04")) {
-            spinner.setSelection(4);
-        } else if (education.equals("05")) {
-            spinner.setSelection(5);
-        } else if (education.equals("06")) {
-            spinner.setSelection(6);
-        } else if (education.equals("07")) {
-            spinner.setSelection(7);
+        if (education != null) {
+            if (education.equals("01")) {
+                spinner.setSelection(1);
+            } else if (education.equals("02")) {
+                spinner.setSelection(2);
+            } else if (education.equals("03")) {
+                spinner.setSelection(3);
+            } else if (education.equals("04")) {
+                spinner.setSelection(4);
+            } else if (education.equals("05")) {
+                spinner.setSelection(5);
+            } else if (education.equals("06")) {
+                spinner.setSelection(6);
+            } else if (education.equals("07")) {
+                spinner.setSelection(7);
+            }
         }
 
         saveButton.setOnClickListener(new View.OnClickListener() {
@@ -78,6 +80,7 @@ public class SchoolActivity extends AppCompatActivity {
                 }
                 CvInfo cvInfo = new CvInfo("E", 1, code, null, null);
                 new CvInfoInsertAsyncTask(db.CvInfoDao()).execute(cvInfo);
+
                 finish();
             }
         });
