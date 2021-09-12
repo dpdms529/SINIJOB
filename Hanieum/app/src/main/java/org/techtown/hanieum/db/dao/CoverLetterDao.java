@@ -15,6 +15,9 @@ public interface CoverLetterDao {
     @Query("SELECT * FROM cover_letter")
     List<CoverLetter> getAll();
 
+    @Query("SELECT * FROM cover_letter where cover_letter_no = :no")
+    CoverLetter getSelected(int no);
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertCoverLetter(CoverLetter coverLetter);
 
