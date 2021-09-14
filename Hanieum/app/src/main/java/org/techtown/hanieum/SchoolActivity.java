@@ -20,6 +20,8 @@ import org.techtown.hanieum.db.dao.CvInfoDao;
 import org.techtown.hanieum.db.entity.CoverLetter;
 import org.techtown.hanieum.db.entity.CvInfo;
 
+import java.util.concurrent.ExecutionException;
+
 public class SchoolActivity extends AppCompatActivity {
 
     Button saveButton;
@@ -37,8 +39,14 @@ public class SchoolActivity extends AppCompatActivity {
         spinner = findViewById(R.id.spinner);
 
         db = AppDatabase.getInstance(this);
-        String education = db.CvInfoDao().getInfoCode("E");
-
+        String education = null;
+        try {
+            education = new ResumeFragment.GetCvInfoAsyncTask(db.CvInfoDao()).execute().get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         adapter = new ArrayAdapter(getApplicationContext(), android.R.layout.simple_spinner_dropdown_item, getResources().getStringArray(R.array.schoolArray1));
         spinner.setAdapter(adapter);
         if (education != null) {
@@ -78,7 +86,7 @@ public class SchoolActivity extends AppCompatActivity {
                 } else if (spinner.getSelectedItem().equals("초등학교 졸업 이하")) {
                     code = "01";
                 }
-                CvInfo cvInfo = new CvInfo("E", 1, code, null, null);
+                CvInfo cvInfo = new CvInfo("E", 0, code, null, null);
                 new CvInfoInsertAsyncTask(db.CvInfoDao()).execute(cvInfo);
 
                 finish();
@@ -86,6 +94,7 @@ public class SchoolActivity extends AppCompatActivity {
         });
     }
 
+    // 사용처: SchoolActivity, CarCerActivity
     public static class CvInfoInsertAsyncTask extends AsyncTask<CvInfo, Void, Void> {
         private CvInfoDao mCvInfoDao;
 

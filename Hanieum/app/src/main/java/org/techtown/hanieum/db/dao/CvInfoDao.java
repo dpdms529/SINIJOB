@@ -19,4 +19,10 @@ public interface CvInfoDao {
 
     @Query("select info_code from cv_info where cv_dist_code = :cv_dist_code")
     String getInfoCode(String cv_dist_code);
+
+    @Query("select * from cv_info where cv_dist_code = :cv_dist_code")
+    List<CvInfo> getCvInfo(String cv_dist_code);
+
+    @Query("delete from cv_info where cv_dist_code = :cv_dist_code and info_no = :no")
+    void deleteCvInfo(String cv_dist_code, int no);
 }

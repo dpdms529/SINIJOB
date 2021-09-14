@@ -26,4 +26,14 @@
         <item name="android:textColorPrimary">@color/black</item>
     </style>
 
+    <!-- Alert Dialog -->
+    <style name="MaterialAlertDialog_OK_color" parent="@style/ThemeOverlay.MaterialComponents.Dialog.Alert">
+        <!-- Style for positive button -->
+        <item name="buttonBarPositiveButtonStyle">@style/PositiveButtonStyle.textColor</item>
+    </style>
+
+    <style name="PositiveButtonStyle.textColor" parent="@style/Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">#F44336</item>
+    </style>
+
 </resources>
