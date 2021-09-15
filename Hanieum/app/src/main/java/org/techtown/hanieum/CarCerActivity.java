@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.TextView;
 
 import org.techtown.hanieum.db.AppDatabase;
@@ -30,7 +31,6 @@ public class CarCerActivity extends AppCompatActivity implements View.OnClickLis
     CareerAdapter adapter1;
     CertifiAdapter adapter2;
 
-    private int careerNum;
     private int certifiNum;
 
     AppDatabase db;
@@ -65,10 +65,10 @@ public class CarCerActivity extends AppCompatActivity implements View.OnClickLis
                 e.printStackTrace();
             }
             for (int i=0; i<cv.size(); i++) {
+                Log.d("ddddddd", cv.get(i).company_name);   ///////////////////
                 adapter1.addItem(new Career(cv.get(i).info_no, "", cv.get(i).info_code, cv.get(i).company_name, "", ""));
             }
 
-            careerNum = cv.size();
             recyclerView.setAdapter(adapter1);
         } else {    // 보유자격증
             title.setText("보유자격증");
@@ -79,7 +79,7 @@ public class CarCerActivity extends AppCompatActivity implements View.OnClickLis
             recyclerView.setAdapter(adapter2);
         }
 
-        // 경력, 자격증 등록된 개수를 가져오는 코드
+        // 자격증 등록된 개수를 가져오는 코드
         certifiNum = 0; // 수정해야함
 
         saveButton.setOnClickListener(this);
@@ -89,23 +89,23 @@ public class CarCerActivity extends AppCompatActivity implements View.OnClickLis
     @Override
     public void onClick(View v) {
         if (v == saveButton) {
-            if (title.getText().equals("경력사항") && careerNum<10) {
+            if (title.getText().equals("경력사항")) {
                 ArrayList<Career> items = adapter1.getItems();
                 for (int i=0; i<items.size(); i++) {
                     Career item = items.get(i);
+                    Log.d("cccccc", item.getCompName());    /////////////////
                     CvInfo cvInfo = new CvInfo("CA", i, "직종코드", 333, item.getCompName());
                     new SchoolActivity.CvInfoInsertAsyncTask(db.CvInfoDao()).execute(cvInfo);
                 }
-            } else if (title.getText().equals("보유자격증") && certifiNum<10) {
+            } else if (title.getText().equals("보유자격증")) {
 
             }
             finish();
         } else if (v == addButton) {
-            careerNum = adapter1.getItemCount();
+            int careerNum = adapter1.getItemCount();
 
             if (title.getText().equals("경력사항") && careerNum<10) {
                 adapter1.addItem(new Career(careerNum, "", "", "", "", ""));
-                careerNum++;
                 adapter1.notifyDataSetChanged();
             } else if (title.getText().equals("보유자격증") && certifiNum<10) {
                 certifiNum++;
