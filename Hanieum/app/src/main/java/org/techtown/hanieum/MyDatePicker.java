@@ -11,8 +11,6 @@ import android.widget.NumberPicker;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
-import java.util.Calendar;
-
 public class MyDatePicker extends DialogFragment {
 
     private static final int MAX_YEAR = 2021;
@@ -54,14 +52,14 @@ public class MyDatePicker extends DialogFragment {
         final NumberPicker monthPicker2 = (NumberPicker) dialog.findViewById(R.id.pickerMonth2);
         final NumberPicker yearPicker2 = (NumberPicker) dialog.findViewById(R.id.pickerYear2);
 
-        cancelBtn.setOnClickListener(new View.OnClickListener(){
+        cancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 MyDatePicker.this.getDialog().cancel();
             }
         });
 
-        confirmBtn.setOnClickListener(new View.OnClickListener(){
+        confirmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 listener.onDateSet(null, yearPicker1.getValue(), monthPicker1.getValue(), 0);

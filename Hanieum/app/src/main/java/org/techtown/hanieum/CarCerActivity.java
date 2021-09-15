@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.TextView;
 
 import org.techtown.hanieum.db.AppDatabase;
@@ -64,7 +63,7 @@ public class CarCerActivity extends AppCompatActivity implements View.OnClickLis
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            for (int i=0; i<cv.size(); i++) {
+            for (int i = 0; i < cv.size(); i++) {
                 Log.d("ddddddd", cv.get(i).company_name);   ///////////////////
                 adapter1.addItem(new Career(cv.get(i).info_no, "", cv.get(i).info_code, cv.get(i).company_name, "", ""));
             }
@@ -91,7 +90,7 @@ public class CarCerActivity extends AppCompatActivity implements View.OnClickLis
         if (v == saveButton) {
             if (title.getText().equals("경력사항")) {
                 ArrayList<Career> items = adapter1.getItems();
-                for (int i=0; i<items.size(); i++) {
+                for (int i = 0; i < items.size(); i++) {
                     Career item = items.get(i);
                     Log.d("cccccc", item.getCompName());    /////////////////
                     CvInfo cvInfo = new CvInfo("CA", i, "직종코드", 333, item.getCompName());
@@ -104,10 +103,10 @@ public class CarCerActivity extends AppCompatActivity implements View.OnClickLis
         } else if (v == addButton) {
             int careerNum = adapter1.getItemCount();
 
-            if (title.getText().equals("경력사항") && careerNum<10) {
+            if (title.getText().equals("경력사항") && careerNum < 10) {
                 adapter1.addItem(new Career(careerNum, "", "", "", "", ""));
                 adapter1.notifyDataSetChanged();
-            } else if (title.getText().equals("보유자격증") && certifiNum<10) {
+            } else if (title.getText().equals("보유자격증") && certifiNum < 10) {
                 certifiNum++;
                 adapter2.addItem(new Certificate("", ""));
                 adapter2.notifyDataSetChanged();

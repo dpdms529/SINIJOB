@@ -145,7 +145,7 @@ public class CameraActivity extends AppCompatActivity {
         if (!dir.exists() && !dir.mkdirs()) {
 
         }
-
+        Log.d("TAG", "getBatchDirectoryName: " + app_folder_path);
         return app_folder_path;
     }
 

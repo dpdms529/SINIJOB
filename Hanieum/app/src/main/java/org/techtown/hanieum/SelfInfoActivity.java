@@ -71,10 +71,10 @@ public class SelfInfoActivity extends AppCompatActivity implements View.OnClickL
     @Override
     public void onClick(View v) {
         if (v == addButton) {
-            if (adapter.getItemCount() == 3) {
+            if (adapter.getItemCount() == 10) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle("알림")
-                        .setMessage("자기소개서는 최대 3개까지만 등록 가능합니다.")
+                        .setMessage("자기소개서는 최대 10개까지만 등록 가능합니다.")
                         .setPositiveButton("확인", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
@@ -89,7 +89,7 @@ public class SelfInfoActivity extends AppCompatActivity implements View.OnClickL
                 items.add("일반");
                 CharSequence[] charSequences = items.toArray(new CharSequence[items.size()]);
 
-                AlertDialog.Builder alertDialog = new AlertDialog.Builder(this, android.R.style.Theme_Material_Light_Dialog_Alert);
+                AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
                 alertDialog.setTitle("자기소개서 유형을 선택하세요");
                 alertDialog.setItems(charSequences, new DialogInterface.OnClickListener() {
                     @Override

@@ -32,7 +32,7 @@
             android:layout_weight="1"
             android:text="~"
             android:textColor="@color/black"
-            android:textSize="16sp"/>
+            android:textSize="16sp" />
 
         <NumberPicker
             android:id="@+id/pickerYear2"

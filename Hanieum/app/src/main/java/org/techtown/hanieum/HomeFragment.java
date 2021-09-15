@@ -519,11 +519,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                         items.add(new Recommendation(recruit.get(0).recruit_id, recruit.get(0).organization, recruit.get(0).recruit_title, salaryType, sal, dist, false));
                     }
 
-                    if(count == 0 || count == 1 || count == 2) { // 1,2,3번째 추천된 공고의 직종명 저장
+                    if (count == 0 || count == 1 || count == 2) { // 1,2,3번째 추천된 공고의 직종명 저장
                         String job = db.jobCategoryDao().getCategoryName(recruit.get(0).job_code);
                         int idx = job.indexOf("(");
-                        if(idx != -1) {
-                            job = job.substring(0,idx);
+                        if (idx != -1) {
+                            job = job.substring(0, idx);
                         }
                         jobNm.add(count, job);
                     }

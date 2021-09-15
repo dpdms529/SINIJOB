@@ -51,10 +51,10 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
         motiveNotice = findViewById(R.id.motive_notice);
         careerNotice = findViewById(R.id.career_notice);
 
-        if(ActivityCompat.checkSelfPermission(VideoListActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(VideoListActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             boolean permission = hasAllPermissionGranted();
             Log.e("permission", "permission" + permission);
-            if(!permission) {
+            if (!permission) {
 
             }
             getGallery();
@@ -73,16 +73,16 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
             new ActivityResultCallback<ActivityResult>() {
                 @Override
                 public void onActivityResult(ActivityResult result) {
-                    Log.e("activity result","in");
+                    Log.e("activity result", "in");
                     if (result.getResultCode() == Activity.RESULT_OK) {
                         Intent data = result.getData();
                         if (data != null) {
                             Uri returnImg = data.getData();
-                            if("com.google.android.apps.photos.contentprovider".equals(returnImg.getAuthority())) {
-                                for (int i=0;i<returnImg.getPathSegments().size();i++) {
+                            if ("com.google.android.apps.photos.contentprovider".equals(returnImg.getAuthority())) {
+                                for (int i = 0; i < returnImg.getPathSegments().size(); i++) {
                                     String temp = returnImg.getPathSegments().get(i);
-                                    Log.e("filepath",temp);
-                                    if(temp.startsWith("content://")) {
+                                    Log.e("filepath", temp);
+                                    if (temp.startsWith("content://")) {
                                         returnImg = Uri.parse(temp);
                                         break;
                                     }
@@ -119,8 +119,8 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
                                            String permissions[], int[] grantResults) {
         if (requestCode == REQUEST_PERMISSIONS) {
             int index = 0;
-            for(String permission : permissions) {
-                if(permission.equalsIgnoreCase(Manifest.permission.READ_EXTERNAL_STORAGE) && grantResults[index] == PackageManager.PERMISSION_GRANTED) {
+            for (String permission : permissions) {
+                if (permission.equalsIgnoreCase(Manifest.permission.READ_EXTERNAL_STORAGE) && grantResults[index] == PackageManager.PERMISSION_GRANTED) {
                     getGallery();
                     break;
                 }
@@ -143,7 +143,7 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            if(mediaMetadataRetriever != null) {
+            if (mediaMetadataRetriever != null) {
                 mediaMetadataRetriever.release();
             }
         }

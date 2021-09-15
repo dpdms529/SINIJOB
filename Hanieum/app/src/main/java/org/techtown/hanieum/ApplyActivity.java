@@ -26,7 +26,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -85,22 +84,22 @@ public class ApplyActivity extends AppCompatActivity implements View.OnClickList
         db.CoverLetterDao().getAll().observe((LifecycleOwner) this, new Observer<List<CoverLetter>>() {
             @Override
             public void onChanged(List<CoverLetter> coverLetters) {
-                for(CoverLetter c : coverLetters){
+                for (CoverLetter c : coverLetters) {
                     items.add("자기소개서 " + c.cover_letter_no);
                 }
             }
         });
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,android.R.layout.simple_spinner_dropdown_item,items);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items);
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                if(i==0){
+                if (i == 0) {
                     coverLetter1.setVisibility(View.GONE);
                     coverLetter2.setVisibility(View.GONE);
                     coverLetter3.setVisibility(View.GONE);
-                }else{
+                } else {
                     int no = Integer.parseInt(items.get(i).substring(6));
                     try {
                         selectedCL = new CoverLetterGetSelectedAsyncTask(db.CoverLetterDao()).execute(no).get();
@@ -109,7 +108,7 @@ public class ApplyActivity extends AppCompatActivity implements View.OnClickList
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    if(selectedCL.cover_dist_code.equals("1")){
+                    if (selectedCL.cover_dist_code.equals("1")) {
                         coverLetter1.setText(selectedCL.first_item);
                         coverLetter2.setText(selectedCL.second_item);
                         coverLetter3.setText(selectedCL.third_item);
@@ -273,7 +272,7 @@ public class ApplyActivity extends AppCompatActivity implements View.OnClickList
     public static class CoverLetterGetSelectedAsyncTask extends AsyncTask<Integer, Void, CoverLetter> {
         private CoverLetterDao mCoverLetterDao;
 
-        public CoverLetterGetSelectedAsyncTask(CoverLetterDao coverLetterDao){
+        public CoverLetterGetSelectedAsyncTask(CoverLetterDao coverLetterDao) {
             this.mCoverLetterDao = coverLetterDao;
         }
 

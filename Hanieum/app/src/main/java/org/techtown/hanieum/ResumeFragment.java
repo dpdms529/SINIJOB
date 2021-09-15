@@ -7,7 +7,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.annotation.Dimension;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
@@ -16,7 +15,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -24,10 +22,8 @@ import android.widget.TextView;
 
 import org.techtown.hanieum.db.AppDatabase;
 import org.techtown.hanieum.db.dao.CvInfoDao;
-import org.techtown.hanieum.db.dao.JobCategoryDao;
 import org.techtown.hanieum.db.entity.CoverLetter;
 import org.techtown.hanieum.db.entity.CvInfo;
-import org.techtown.hanieum.db.entity.JobCategory;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -84,7 +80,7 @@ public class ResumeFragment extends Fragment implements View.OnClickListener {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        for (int i=0; i<tmp.size(); i++) {
+        for (int i = 0; i < tmp.size(); i++) {
             Log.d("info_no", String.valueOf(tmp.get(i).info_no));
             Log.d("info_code", tmp.get(i).info_code);
             Log.d("career_period", String.valueOf(tmp.get(i).career_period));
@@ -96,7 +92,7 @@ public class ResumeFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onChanged(List<CoverLetter> coverLetters) {
                 selfInfoAdapter.clearItems();
-                for(CoverLetter c : coverLetters){
+                for (CoverLetter c : coverLetters) {
                     selfInfoAdapter.addItem(new SelfInfo(c));
                 }
                 selfInfoAdapter.notifyDataSetChanged();
@@ -178,7 +174,7 @@ public class ResumeFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    public void textview(String a){
+    public void textview(String a) {
         //TextView 생성
         TextView view1 = new TextView(context);
         view1.setText(a);

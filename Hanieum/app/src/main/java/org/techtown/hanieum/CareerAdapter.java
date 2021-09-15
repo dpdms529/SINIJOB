@@ -4,7 +4,6 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -18,18 +17,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.techtown.hanieum.db.AppDatabase;
 import org.techtown.hanieum.db.dao.CvInfoDao;
-import org.techtown.hanieum.db.dao.RecruitDao;
 import org.techtown.hanieum.db.entity.CvInfo;
 
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -100,11 +95,11 @@ public class CareerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         int endM = cal.get(Calendar.MONTH) + 1;
         DatePickerDialog.OnDateSetListener d = new DatePickerDialog.OnDateSetListener() {
             @Override
-            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth){
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                 if (n == 0 || n == 2) { // 첫번째 date 또는 입력 완료
                     startY = year;
                     startM = monthOfYear;
-                    if (monthOfYear/10 == 1) {
+                    if (monthOfYear / 10 == 1) {
                         period.setText(year + "-" + monthOfYear);
                     } else {
                         period.setText(year + "-0" + monthOfYear);
@@ -117,7 +112,7 @@ public class CareerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 } else if (n == 1) {    // 두번째 date
                     endY = year;
                     endM = monthOfYear;
-                    if (monthOfYear/10 == 1) {
+                    if (monthOfYear / 10 == 1) {
                         period.setText(period.getText() + " ~ " + year + "-" + monthOfYear);
                     } else {
                         period.setText(period.getText() + " ~ " + year + "-0" + monthOfYear);
@@ -128,7 +123,7 @@ public class CareerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     Calendar start = new GregorianCalendar(startY, startM, 1);
                     Calendar end = new GregorianCalendar(endY, endM, 1);
                     long diffSec = (end.getTimeInMillis() - start.getTimeInMillis()) / 1000;
-                    long diffDay = diffSec / (24*60*60);
+                    long diffDay = diffSec / (24 * 60 * 60);
                     int diffMon = (int) diffDay / 30 + 1;
 
                     // 시작 날짜보다 끝 날짜가 이르면
@@ -158,11 +153,13 @@ public class CareerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
                     // 입력에 변화가 있을 때
                 }
+
                 @Override
                 public void afterTextChanged(Editable arg0) {
                     // 입력이 끝났을 때
                     items.get(getAdapterPosition()).setCompName(compName.getText().toString());
                 }
+
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                     // 입력하기 전
@@ -178,9 +175,10 @@ public class CareerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         public void onClick(View v) {
             if (v == delete) {
                 AlertDialog.Builder msgBuilder = new AlertDialog.Builder(context, R.style.MaterialAlertDialog_OK_color)
-                        .setTitle("삭제") .setMessage("삭제하시겠습니까?")
+                        .setTitle("삭제").setMessage("삭제하시겠습니까?")
                         .setPositiveButton("삭제", new DialogInterface.OnClickListener() {
-                            @Override public void onClick(DialogInterface dialogInterface, int i) {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
                                 // 아이템 삭제
                                 items.remove(getAdapterPosition());
                                 // db에서 삭제
@@ -195,13 +193,14 @@ public class CareerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                                 } catch (InterruptedException e) {
                                     e.printStackTrace();
                                 }
-                                for (int j=0; j<cv.size(); j++) {
+                                for (int j = 0; j < cv.size(); j++) {
                                     Log.d("aaaaaa", cv.get(j).company_name);    ////////////////
                                 }
                             }
                         })
                         .setNegativeButton("취소", new DialogInterface.OnClickListener() {
-                            @Override public void onClick(DialogInterface dialogInterface, int i) {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
                             }
                         });
                 AlertDialog msgDlg = msgBuilder.create();

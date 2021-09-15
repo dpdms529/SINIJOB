@@ -13,7 +13,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.text.util.Linkify;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
@@ -35,7 +34,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -342,8 +340,8 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                         items.add("전화");
                         items.add("문자");
                     }
-                    for(String s : rcptMthd){
-                        switch (s){
+                    for (String s : rcptMthd) {
+                        switch (s) {
                             case "이메일":
                                 items.add("이메일");
                                 break;
@@ -352,7 +350,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                                 break;
                         }
                     }
-                    if(items.size()>0){
+                    if (items.size() > 0) {
                         CharSequence[] charSequences = items.toArray(new CharSequence[items.size()]);
 
                         AlertDialog.Builder applyDialog = new AlertDialog.Builder(context, android.R.style.Theme_Material_Light_Dialog_Alert);

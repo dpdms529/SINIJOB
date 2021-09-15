@@ -3,33 +3,28 @@
 
     <item
         android:id="@+id/listItem"
-        android:icon="@drawable/list"
-        android:title="목록"
         android:enabled="true"
-        />
+        android:icon="@drawable/list"
+        android:title="목록" />
     <item
         android:id="@+id/resumeItem"
-        android:icon="@drawable/resume"
-        android:title="이력서"
         android:enabled="true"
-        />
+        android:icon="@drawable/resume"
+        android:title="이력서" />
     <item
         android:id="@+id/recommendItem"
-        android:icon="@drawable/recommend"
-        android:title="추천"
         android:enabled="true"
-        />
+        android:icon="@drawable/recommend"
+        android:title="추천" />
     <item
         android:id="@+id/starItem"
-        android:icon="@drawable/star"
-        android:title="즐겨찾기"
         android:enabled="true"
-        />
+        android:icon="@drawable/star"
+        android:title="즐겨찾기" />
     <item
         android:id="@+id/myItem"
-        android:icon="@drawable/my"
-        android:title="내 정보"
         android:enabled="true"
-        />
+        android:icon="@drawable/my"
+        android:title="내 정보" />
 
 </menu>

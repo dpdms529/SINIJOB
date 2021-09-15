@@ -13,7 +13,7 @@ public class SelfInfo implements Serializable {
     private String third_item;
     private String title;   //자기소개서 제목
 
-    public SelfInfo(CoverLetter coverLetter){
+    public SelfInfo(CoverLetter coverLetter) {
         no = coverLetter.cover_letter_no;
         code = coverLetter.cover_dist_code;
         first_item = coverLetter.first_item;

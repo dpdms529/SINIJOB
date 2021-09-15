@@ -77,17 +77,25 @@
                 android:textSize="20dp"
                 android:textStyle="bold" />
 
-            <EditText
-                android:id="@+id/textMsg"
+            <androidx.core.widget.NestedScrollView
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="10dp"
                 android:layout_marginHorizontal="25dp"
-                android:background="@drawable/border"
-                android:gravity="top"
-                android:hint="나를 소개하는 말, 각오 한마디"
-                android:padding="10dp" />
+                android:layout_marginVertical="10dp"
+                android:background="@drawable/border">
+
+                <EditText
+                    android:id="@+id/textMsg"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@null"
+                    android:gravity="start|top"
+                    android:hint="나를 소개하는 말, 각오 한마디"
+                    android:minHeight="200dp"
+                    android:padding="10dp" />
+
+            </androidx.core.widget.NestedScrollView>
 
             <View
                 android:id="@+id/view"
