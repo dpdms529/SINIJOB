@@ -58,6 +58,8 @@ public class CertifiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             delete.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    items.remove(getLayoutPosition());
+                    notifyDataSetChanged();
                 }
             });
         }
