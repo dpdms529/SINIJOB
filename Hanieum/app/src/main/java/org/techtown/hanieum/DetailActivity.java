@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.text.util.Linkify;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
@@ -34,6 +35,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -333,36 +335,46 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             alertDialog.setPositiveButton("확인", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
+                    String rcptMthd[] = apply.get("rcptMthd").getText().toString().split(",");
                     // 아이템 추가
                     List<CharSequence> items = new ArrayList<>();
                     if (!contact.equals("")) {      // 전화번호 있을 경우
                         items.add("전화");
+                        items.add("문자");
                     }
-                    items.add("문자");
-                    items.add("이메일");
-                    items.add("워크넷");
-                    CharSequence[] charSequences = items.toArray(new CharSequence[items.size()]);
+                    for(String s : rcptMthd){
+                        switch (s){
+                            case "이메일":
+                                items.add("이메일");
+                                break;
+                            case "워크넷":
+                                items.add("워크넷");
+                                break;
+                        }
+                    }
+                    if(items.size()>0){
+                        CharSequence[] charSequences = items.toArray(new CharSequence[items.size()]);
 
-                    AlertDialog.Builder applyDialog = new AlertDialog.Builder(context, android.R.style.Theme_Material_Light_Dialog_Alert);
-                    applyDialog.setTitle("지원 유형을 선택하세요");
-                    applyDialog.setItems(charSequences, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            if (charSequences[which] == "전화") {
-                                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("tel:" + contact));
-                                startActivity(intent);
-                            } else if (charSequences[which] == "문자") {
+                        AlertDialog.Builder applyDialog = new AlertDialog.Builder(context, android.R.style.Theme_Material_Light_Dialog_Alert);
+                        applyDialog.setTitle("지원 유형을 선택하세요");
+                        applyDialog.setItems(charSequences, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                if (charSequences[which] == "전화") {
+                                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("tel:" + contact));
+                                    startActivity(intent);
+                                } else if (charSequences[which] == "문자") {
 //                                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("tel:"));
 //                                intent.setType("vnd.android-dir/mms-sms");
 //                                intent.putExtra("address", "");
 //                                intent.putExtra("sms_body", companyNameDetail.getText()+"에 지원합니다.");
 //                                startActivity(intent);
 
-                                Intent intent = new Intent(context, ApplyActivity.class);
-                                intent.putExtra("type", "sms");
-                                intent.putExtra("company", companyNameDetail.getText());
-                                startActivity(intent);
-                            } else if (charSequences[which] == "이메일") {
+                                    Intent intent = new Intent(context, ApplyActivity.class);
+                                    intent.putExtra("type", "sms");
+                                    intent.putExtra("company", companyNameDetail.getText());
+                                    startActivity(intent);
+                                } else if (charSequences[which] == "이메일") {
 //                                String uriText = "mailto:" + "?subject=" +
 //                                        Uri.encode(companyNameDetail.getText()+"에 지원합니다.") + "&body=" + Uri.encode("");
 //                                Uri uri = Uri.parse(uriText);
@@ -371,17 +383,19 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 //                                intent.setData(uri);
 //                                startActivity(Intent.createChooser(intent, "이메일 앱을 선택하세요"));
 
-                                Intent intent = new Intent(context, ApplyActivity.class);
-                                intent.putExtra("type", "email");
-                                intent.putExtra("company", companyNameDetail.getText());
-                                startActivity(intent);
-                            } else if (charSequences[which] == "워크넷") {
-                                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                                startActivity(intent);
+                                    Intent intent = new Intent(context, ApplyActivity.class);
+                                    intent.putExtra("type", "email");
+                                    intent.putExtra("company", companyNameDetail.getText());
+                                    startActivity(intent);
+                                } else if (charSequences[which] == "워크넷") {
+                                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                                    startActivity(intent);
+                                }
                             }
-                        }
-                    });
-                    applyDialog.show();
+                        });
+                        applyDialog.show();
+
+                    }
                 }
             });
             alertDialog.show();
