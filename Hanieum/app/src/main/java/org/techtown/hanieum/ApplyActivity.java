@@ -3,6 +3,8 @@ package org.techtown.hanieum;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.Observer;
 
 import android.Manifest;
 import android.content.Context;
@@ -56,7 +58,7 @@ public class ApplyActivity extends AppCompatActivity implements View.OnClickList
 
     Spinner spinner;
     ArrayList<String> items = new ArrayList<>();
-    TextView coverLetter;
+    TextView coverLetter1, coverLetter2, coverLetter3;
     CoverLetter selectedCL;
 
     AppDatabase db;
@@ -74,14 +76,20 @@ public class ApplyActivity extends AppCompatActivity implements View.OnClickList
         textSys = findViewById(R.id.textSys);
         finishButton = findViewById(R.id.finishButton);
         spinner = findViewById(R.id.spinner);
-        coverLetter = findViewById(R.id.coverLetter);
+        coverLetter1 = findViewById(R.id.coverLetter1);
+        coverLetter2 = findViewById(R.id.coverLetter2);
+        coverLetter3 = findViewById(R.id.coverLetter3);
 
         db = AppDatabase.getInstance(this);
-        List<CoverLetter> coverLetters = db.CoverLetterDao().getAll();
         items.add("선택");
-        for(CoverLetter c : coverLetters){
-            items.add("자기소개서 " + c.cover_letter_no);
-        }
+        db.CoverLetterDao().getAll().observe((LifecycleOwner) this, new Observer<List<CoverLetter>>() {
+            @Override
+            public void onChanged(List<CoverLetter> coverLetters) {
+                for(CoverLetter c : coverLetters){
+                    items.add("자기소개서 " + c.cover_letter_no);
+                }
+            }
+        });
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,android.R.layout.simple_spinner_dropdown_item,items);
         spinner.setAdapter(adapter);
@@ -89,7 +97,9 @@ public class ApplyActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 if(i==0){
-                    coverLetter.setVisibility(View.GONE);
+                    coverLetter1.setVisibility(View.GONE);
+                    coverLetter2.setVisibility(View.GONE);
+                    coverLetter3.setVisibility(View.GONE);
                 }else{
                     int no = Integer.parseInt(items.get(i).substring(6));
                     try {
@@ -100,8 +110,12 @@ public class ApplyActivity extends AppCompatActivity implements View.OnClickList
                         e.printStackTrace();
                     }
                     if(selectedCL.cover_dist_code.equals("1")){
-                        coverLetter.setText(selectedCL.first_item + "\n" + selectedCL.second_item + "\n" + selectedCL.third_item);
-                        coverLetter.setVisibility(View.VISIBLE);
+                        coverLetter1.setText(selectedCL.first_item);
+                        coverLetter2.setText(selectedCL.second_item);
+                        coverLetter3.setText(selectedCL.third_item);
+                        coverLetter1.setVisibility(View.VISIBLE);
+                        coverLetter2.setVisibility(View.VISIBLE);
+                        coverLetter3.setVisibility(View.VISIBLE);
                     }
                 }
             }
