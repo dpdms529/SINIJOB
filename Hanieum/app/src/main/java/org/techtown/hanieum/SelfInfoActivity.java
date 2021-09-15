@@ -95,7 +95,7 @@ public class SelfInfoActivity extends AppCompatActivity implements View.OnClickL
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (charSequences[which] == "영상") {
-                            Intent intent = new Intent(getApplicationContext(), CameraActivity.class);
+                            Intent intent = new Intent(getApplicationContext(), VideoListActivity.class);
                             startActivity(intent);
                         } else if (charSequences[which] == "일반") {
                             Intent intent = new Intent(getApplicationContext(), CoverLetterActivity.class);
