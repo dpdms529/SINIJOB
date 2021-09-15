@@ -21,4 +21,12 @@ public class CvInfo {
 
     @ColumnInfo(name = "company_name")
     public String company_name;
+
+    public CvInfo(String cv_dist_code, Integer info_no, String info_code, Integer career_period, String company_name) {
+        this.cv_dist_code = cv_dist_code;
+        this.info_no = info_no;
+        this.info_code = info_code;
+        this.career_period = career_period;
+        this.company_name = company_name;
+    }
 }

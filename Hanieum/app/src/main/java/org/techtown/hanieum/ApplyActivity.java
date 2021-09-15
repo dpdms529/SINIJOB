@@ -3,6 +3,8 @@ package org.techtown.hanieum;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.Observer;
 
 import android.Manifest;
 import android.content.Context;
@@ -11,20 +13,31 @@ import android.content.pm.PackageManager;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import org.techtown.hanieum.db.AppDatabase;
+import org.techtown.hanieum.db.dao.CoverLetterDao;
+import org.techtown.hanieum.db.entity.CoverLetter;
+
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ExecutionException;
 
 public class ApplyActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -43,6 +56,13 @@ public class ApplyActivity extends AppCompatActivity implements View.OnClickList
     TextView textSys;
     Button finishButton;
 
+    Spinner spinner;
+    ArrayList<String> items = new ArrayList<>();
+    TextView coverLetter1, coverLetter2, coverLetter3;
+    CoverLetter selectedCL;
+
+    AppDatabase db;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,6 +75,56 @@ public class ApplyActivity extends AppCompatActivity implements View.OnClickList
         textMsg = findViewById(R.id.textMsg);
         textSys = findViewById(R.id.textSys);
         finishButton = findViewById(R.id.finishButton);
+        spinner = findViewById(R.id.spinner);
+        coverLetter1 = findViewById(R.id.coverLetter1);
+        coverLetter2 = findViewById(R.id.coverLetter2);
+        coverLetter3 = findViewById(R.id.coverLetter3);
+
+        db = AppDatabase.getInstance(this);
+        items.add("선택");
+        db.CoverLetterDao().getAll().observe((LifecycleOwner) this, new Observer<List<CoverLetter>>() {
+            @Override
+            public void onChanged(List<CoverLetter> coverLetters) {
+                for(CoverLetter c : coverLetters){
+                    items.add("자기소개서 " + c.cover_letter_no);
+                }
+            }
+        });
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,android.R.layout.simple_spinner_dropdown_item,items);
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if(i==0){
+                    coverLetter1.setVisibility(View.GONE);
+                    coverLetter2.setVisibility(View.GONE);
+                    coverLetter3.setVisibility(View.GONE);
+                }else{
+                    int no = Integer.parseInt(items.get(i).substring(6));
+                    try {
+                        selectedCL = new CoverLetterGetSelectedAsyncTask(db.CoverLetterDao()).execute(no).get();
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    if(selectedCL.cover_dist_code.equals("1")){
+                        coverLetter1.setText(selectedCL.first_item);
+                        coverLetter2.setText(selectedCL.second_item);
+                        coverLetter3.setText(selectedCL.third_item);
+                        coverLetter1.setVisibility(View.VISIBLE);
+                        coverLetter2.setVisibility(View.VISIBLE);
+                        coverLetter3.setVisibility(View.VISIBLE);
+                    }
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 
         // 동그란 모양으로 변경
         micButton.setBackground(new ShapeDrawable(new OvalShape()));
@@ -111,8 +181,8 @@ public class ApplyActivity extends AppCompatActivity implements View.OnClickList
                 intent.putExtra("sms_body", textMsg.getText().toString());
                 startActivity(intent);
             } else {    // email
-                String uriText = "mailto:" + "?subject=" +
-                        Uri.encode(i.getStringExtra("company") + "에 지원합니다.") + "&body=" + Uri.encode(textMsg.getText().toString());
+                String uriText = "mailto:8bangwomen@hanium.com" + "?subject=" +
+                        Uri.encode(i.getStringExtra("company") + "에 지원합니다.") + "&body=" + Uri.encode(textMsg.getText().toString() + "\n자기소개 : " + selectedCL.first_item + "\n지원동기 : " + selectedCL.second_item + "\n경력 및 경험 : " + selectedCL.third_item);
                 Uri uri = Uri.parse(uriText);
 
                 Intent intent = new Intent(Intent.ACTION_SENDTO);
@@ -198,5 +268,18 @@ public class ApplyActivity extends AppCompatActivity implements View.OnClickList
         tts.setPitch(0.8f); //목소리 톤1.0
         tts.setSpeechRate(0.9f);    //목소리 속도
         tts.speak(msg, TextToSpeech.QUEUE_FLUSH, null, null);
+    }
+
+    public static class CoverLetterGetSelectedAsyncTask extends AsyncTask<Integer, Void, CoverLetter> {
+        private CoverLetterDao mCoverLetterDao;
+
+        public CoverLetterGetSelectedAsyncTask(CoverLetterDao coverLetterDao){
+            this.mCoverLetterDao = coverLetterDao;
+        }
+
+        @Override
+        protected CoverLetter doInBackground(Integer... integers) {
+            return mCoverLetterDao.getSelected(integers[0]);
+        }
     }
 }
