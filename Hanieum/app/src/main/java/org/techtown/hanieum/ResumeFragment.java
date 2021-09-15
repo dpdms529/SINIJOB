@@ -3,16 +3,34 @@ package org.techtown.hanieum;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.annotation.Dimension;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.Observer;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import org.techtown.hanieum.db.AppDatabase;
+import org.techtown.hanieum.db.dao.CvInfoDao;
+import org.techtown.hanieum.db.dao.JobCategoryDao;
+import org.techtown.hanieum.db.entity.CoverLetter;
+import org.techtown.hanieum.db.entity.CvInfo;
+import org.techtown.hanieum.db.entity.JobCategory;
+
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class ResumeFragment extends Fragment implements View.OnClickListener {
 
@@ -22,8 +40,14 @@ public class ResumeFragment extends Fragment implements View.OnClickListener {
     LinearLayout careerLayout;
     LinearLayout certifiLayout;
     LinearLayout selfIntroLayout;
+    TextView school;
+
+    RecyclerView selfInfoRecyclerView;
+    SelfInfoAdapter selfInfoAdapter;
 
     Context context;
+
+    AppDatabase db;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -40,16 +64,99 @@ public class ResumeFragment extends Fragment implements View.OnClickListener {
         careerLayout = view.findViewById(R.id.careerLayout);
         certifiLayout = view.findViewById(R.id.certifiLayout);
         selfIntroLayout = view.findViewById(R.id.selfIntroLayout);
+        school = view.findViewById(R.id.school);
 
-        textview("웹 개발자 / 팀장 / xx회사 / 5년 6개월");
-        textview("웹 개발자 / 팀장 / oo회사 / 3년");
+        selfInfoRecyclerView = view.findViewById(R.id.selfInfoRecyclerView);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
+        selfInfoRecyclerView.setLayoutManager(layoutManager);
+        selfInfoAdapter = new SelfInfoAdapter();
+        selfInfoRecyclerView.setAdapter(selfInfoAdapter);
+
+        db = AppDatabase.getInstance(this.getContext());
+
+
+        // 지울거
+        List<CvInfo> tmp = null;
+        try {
+            tmp = new GetAllAsyncTask(db.CvInfoDao()).execute().get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        for (int i=0; i<tmp.size(); i++) {
+            Log.d("info_no", String.valueOf(tmp.get(i).info_no));
+            Log.d("info_code", tmp.get(i).info_code);
+            Log.d("career_period", String.valueOf(tmp.get(i).career_period));
+            Log.d("company_name", tmp.get(i).company_name);
+            Log.d("cv_dist_code", tmp.get(i).cv_dist_code);
+        }
+
+        db.CoverLetterDao().getAll().observe((LifecycleOwner) this, new Observer<List<CoverLetter>>() {
+            @Override
+            public void onChanged(List<CoverLetter> coverLetters) {
+                selfInfoAdapter.clearItems();
+                for(CoverLetter c : coverLetters){
+                    selfInfoAdapter.addItem(new SelfInfo(c));
+                }
+                selfInfoAdapter.notifyDataSetChanged();
+            }
+        });
 
         schoolLayout.setOnClickListener(this);
         careerLayout.setOnClickListener(this);
         certifiLayout.setOnClickListener(this);
         selfIntroLayout.setOnClickListener(this);
+        selfInfoAdapter.setOnItemClickListener(new OnSelfInfoItemClickListener() {
+            @Override
+            public void OnItemClick(SelfInfoAdapter.ViewHolder holder, View view, int position) {
+                Intent intent = new Intent(getContext(), SelfInfoActivity.class);
+                startActivity(intent);
+            }
+        });
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        String education = null;
+        try {
+            education = new GetCvInfoAsyncTask(db.CvInfoDao()).execute().get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        if (education != null) {
+            if (education.equals("00")) {
+                school.setVisibility(View.GONE);
+            } else if (education.equals("01")) {
+                school.setText("초등학교 졸업 이하");
+                school.setVisibility(View.VISIBLE);
+            } else if (education.equals("02")) {
+                school.setText("중학교 졸업");
+                school.setVisibility(View.VISIBLE);
+            } else if (education.equals("03")) {
+                school.setText("고등학교 졸업");
+                school.setVisibility(View.VISIBLE);
+            } else if (education.equals("04")) {
+                school.setText("대학(2,3년제) 졸업");
+                school.setVisibility(View.VISIBLE);
+            } else if (education.equals("05")) {
+                school.setText("대학(4년제) 졸업");
+                school.setVisibility(View.VISIBLE);
+            } else if (education.equals("06")) {
+                school.setText("석사");
+                school.setVisibility(View.VISIBLE);
+            } else if (education.equals("07")) {
+                school.setText("박사");
+                school.setVisibility(View.VISIBLE);
+            }
+        }
     }
 
     @Override
@@ -85,6 +192,34 @@ public class ResumeFragment extends Fragment implements View.OnClickListener {
 
         //부모 뷰에 추가
         careerLayout.addView(view1);
+    }
+
+    // 사용처: ResumeFragment, SchoolActivity
+    public static class GetCvInfoAsyncTask extends AsyncTask<Void, Void, String> {
+        private CvInfoDao mCvInfoDao;
+
+        public GetCvInfoAsyncTask(CvInfoDao cvInfoDao) {
+            this.mCvInfoDao = cvInfoDao;
+        }
+
+        @Override
+        protected String doInBackground(Void... voids) {
+            return mCvInfoDao.getInfoCode("E");
+        }
+    }
+
+    // 지울거
+    public static class GetAllAsyncTask extends AsyncTask<Void, Void, List<CvInfo>> {
+        private CvInfoDao mCvInfoDao;
+
+        public GetAllAsyncTask(CvInfoDao cvInfoDao) {
+            this.mCvInfoDao = cvInfoDao;
+        }
+
+        @Override
+        protected List<CvInfo> doInBackground(Void... voids) {
+            return mCvInfoDao.getCvInfo("CA");
+        }
     }
 
 }
