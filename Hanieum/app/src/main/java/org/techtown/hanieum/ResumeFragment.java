@@ -7,10 +7,16 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.annotation.Dimension;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.Observer;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -19,6 +25,7 @@ import android.widget.TextView;
 import org.techtown.hanieum.db.AppDatabase;
 import org.techtown.hanieum.db.dao.CvInfoDao;
 import org.techtown.hanieum.db.dao.JobCategoryDao;
+import org.techtown.hanieum.db.entity.CoverLetter;
 import org.techtown.hanieum.db.entity.CvInfo;
 import org.techtown.hanieum.db.entity.JobCategory;
 
@@ -34,6 +41,9 @@ public class ResumeFragment extends Fragment implements View.OnClickListener {
     LinearLayout certifiLayout;
     LinearLayout selfIntroLayout;
     TextView school;
+
+    RecyclerView selfInfoRecyclerView;
+    SelfInfoAdapter selfInfoAdapter;
 
     Context context;
 
@@ -56,6 +66,12 @@ public class ResumeFragment extends Fragment implements View.OnClickListener {
         selfIntroLayout = view.findViewById(R.id.selfIntroLayout);
         school = view.findViewById(R.id.school);
 
+        selfInfoRecyclerView = view.findViewById(R.id.selfInfoRecyclerView);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
+        selfInfoRecyclerView.setLayoutManager(layoutManager);
+        selfInfoAdapter = new SelfInfoAdapter();
+        selfInfoRecyclerView.setAdapter(selfInfoAdapter);
+
         db = AppDatabase.getInstance(this.getContext());
 
 
@@ -76,12 +92,28 @@ public class ResumeFragment extends Fragment implements View.OnClickListener {
             Log.d("cv_dist_code", tmp.get(i).cv_dist_code);
         }
 
-
+        db.CoverLetterDao().getAll().observe((LifecycleOwner) this, new Observer<List<CoverLetter>>() {
+            @Override
+            public void onChanged(List<CoverLetter> coverLetters) {
+                selfInfoAdapter.clearItems();
+                for(CoverLetter c : coverLetters){
+                    selfInfoAdapter.addItem(new SelfInfo(c));
+                }
+                selfInfoAdapter.notifyDataSetChanged();
+            }
+        });
 
         schoolLayout.setOnClickListener(this);
         careerLayout.setOnClickListener(this);
         certifiLayout.setOnClickListener(this);
         selfIntroLayout.setOnClickListener(this);
+        selfInfoAdapter.setOnItemClickListener(new OnSelfInfoItemClickListener() {
+            @Override
+            public void OnItemClick(SelfInfoAdapter.ViewHolder holder, View view, int position) {
+                Intent intent = new Intent(getContext(), SelfInfoActivity.class);
+                startActivity(intent);
+            }
+        });
 
         return view;
     }

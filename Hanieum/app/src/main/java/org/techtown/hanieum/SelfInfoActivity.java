@@ -1,38 +1,101 @@
 package org.techtown.hanieum;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.Observer;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.Toast;
 
+import org.techtown.hanieum.db.AppDatabase;
+import org.techtown.hanieum.db.dao.CoverLetterDao;
 import org.techtown.hanieum.db.entity.CoverLetter;
 
-public class SelfInfoActivity extends AppCompatActivity implements View.OnClickListener {
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
-    Button saveButton;
+public class SelfInfoActivity extends AppCompatActivity implements View.OnClickListener {
+    RecyclerView recyclerView;
+    SelfInfoAdapter adapter;
+
     Button addButton;
+
+    AppDatabase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_self_info);
 
-        saveButton = findViewById(R.id.saveButton);
+        db = AppDatabase.getInstance(this);
+
+        recyclerView = findViewById(R.id.recyclerView);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.addItemDecoration(new DividerItemDecoration(this, 1)); // 구분선
+        adapter = new SelfInfoAdapter();
+        recyclerView.setAdapter(adapter);
+
         addButton = findViewById(R.id.addButton);
 
-        saveButton.setOnClickListener(this);
+        db.CoverLetterDao().getAll().observe((LifecycleOwner) this, new Observer<List<CoverLetter>>() {
+            @Override
+            public void onChanged(List<CoverLetter> coverLetters) {
+                for(CoverLetter c : coverLetters){
+                    adapter.addItem(new SelfInfo(c));
+                }
+                adapter.notifyDataSetChanged();
+            }
+        });
+
+        adapter.setOnItemClickListener(new OnSelfInfoItemClickListener() {
+            @Override
+            public void OnItemClick(SelfInfoAdapter.ViewHolder holder, View view, int position) {
+                SelfInfo item = adapter.getItem(position);
+                Intent intent = new Intent(getApplicationContext(),CoverLetterActivity.class);
+                intent.putExtra("edit", item);
+                startActivity(intent);
+                finish();
+            }
+        });
         addButton.setOnClickListener(this);
+
     }
 
     @Override
     public void onClick(View v) {
-        if (v == saveButton) {
-            finish();
-        }else if(v == addButton) {
-            Intent intent = new Intent(getApplicationContext(), CoverLetterActivity.class);
-            startActivity(intent);
+        if(v == addButton) {
+            if(adapter.getItemCount()==3){
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("알림")
+                        .setMessage("자기소개서는 최대 3개까지만 등록 가능합니다.")
+                        .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                            }
+                        });
+                AlertDialog alertDialog = builder.create();
+                alertDialog.show();
+            }else{
+                Intent intent = new Intent(getApplicationContext(), CoverLetterActivity.class);
+                startActivity(intent);
+                finish();
+            }
         }
     }
 }
