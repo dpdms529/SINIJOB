@@ -2,7 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/video_esseay_list"
+    android:id="@+id/video_list"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F5F5F6"
@@ -44,13 +44,13 @@
             android:orientation="vertical">
 
             <Button
-                android:id="@+id/start_recode"
+                android:id="@+id/start_record"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:drawableLeft="@drawable/camera"
                 android:layout_gravity="center"
                 android:layout_marginTop="15dp"
                 android:background="@drawable/border_txt"
+                android:drawableLeft="@drawable/camera"
                 android:text="촬영 시작하기"
                 android:textColor="#508ea8"
                 android:textSize="17sp"
@@ -77,7 +77,7 @@
                     android:text="자기소개"
                     android:textColor="@color/black"
                     android:textSize="20sp"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold" />
 
                 <View
                     android:layout_width="0dp"
@@ -96,11 +96,27 @@
                     android:textSize="17dp" />
             </LinearLayout>
 
-            <ImageView
+            <FrameLayout
                 android:layout_width="350dp"
                 android:layout_height="200dp"
-                android:layout_gravity="center"
-                />
+                android:layout_gravity="center">
+
+                <ImageView
+                    android:id="@+id/introduce_thumb"
+                    android:layout_width="350dp"
+                    android:layout_height="200dp"
+                    android:background="@drawable/border" />
+
+                <TextView
+                    android:id="@+id/introduce_notice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:text="아직 촬영된 영상이 없습니다.\n상단의 버튼을 눌러 촬영을 시작해주세요."
+                    android:textSize="20sp" />
+
+            </FrameLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -115,7 +131,7 @@
                     android:text="지원동기"
                     android:textColor="@color/black"
                     android:textSize="20sp"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold" />
 
                 <View
                     android:layout_width="0dp"
@@ -123,7 +139,7 @@
                     android:layout_weight="1" />
 
                 <Button
-                    android:id="@+id/motivation_retake"
+                    android:id="@+id/motive_retake"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
@@ -134,10 +150,27 @@
                     android:textSize="17dp" />
             </LinearLayout>
 
-            <ImageView
+            <FrameLayout
                 android:layout_width="350dp"
                 android:layout_height="200dp"
-                android:layout_gravity="center"/>
+                android:layout_gravity="center">
+
+                <ImageView
+                    android:id="@+id/motive_thumb"
+                    android:layout_width="350dp"
+                    android:layout_height="200dp"
+                    android:background="@drawable/border" />
+
+                <TextView
+                    android:id="@+id/motive_notice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:text="아직 촬영된 영상이 없습니다.\n상단의 버튼을 눌러 촬영을 시작해주세요."
+                    android:textSize="20sp" />
+
+            </FrameLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -152,7 +185,7 @@
                     android:text="경험 및 경력 소개"
                     android:textColor="@color/black"
                     android:textSize="20sp"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold" />
 
                 <View
                     android:layout_width="0dp"
@@ -160,7 +193,7 @@
                     android:layout_weight="1" />
 
                 <Button
-                    android:id="@+id/retake"
+                    android:id="@+id/career_retake"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
@@ -171,13 +204,29 @@
                     android:textSize="17dp" />
             </LinearLayout>
 
-            <ImageView
+            <FrameLayout
                 android:layout_width="350dp"
                 android:layout_height="200dp"
-                android:layout_gravity="center"/>
+                android:layout_gravity="center">
+
+                <ImageView
+                    android:id="@+id/career_thumb"
+                    android:layout_width="350dp"
+                    android:layout_height="200dp"
+                    android:background="@drawable/border" />
+
+                <TextView
+                    android:id="@+id/career_notice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:text="아직 촬영된 영상이 없습니다.\n상단의 버튼을 눌러 촬영을 시작해주세요."
+                    android:textSize="20sp" />
+
+            </FrameLayout>
 
         </LinearLayout>
-
 
 
     </androidx.core.widget.NestedScrollView>

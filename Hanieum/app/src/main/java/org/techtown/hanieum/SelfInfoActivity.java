@@ -5,12 +5,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-
-import org.techtown.hanieum.db.entity.CoverLetter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +45,7 @@ public class SelfInfoActivity extends AppCompatActivity implements View.OnClickL
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     if (charSequences[which] == "영상") {
-                        Intent intent = new Intent(getApplicationContext(), CameraActivity.class);
+                        Intent intent = new Intent(getApplicationContext(), VideoListActivity.class);
                         startActivity(intent);
                     } else if (charSequences[which] == "일반") {
                         Intent intent = new Intent(getApplicationContext(), CoverLetterActivity.class);
