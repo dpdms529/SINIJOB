@@ -28,13 +28,13 @@ import org.techtown.hanieum.db.entity.CvInfo;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class CareerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     ArrayList<Career> items = new ArrayList<>();
     Context context;
-    AppDatabase db;
 
     @NonNull
     @Override
@@ -42,7 +42,6 @@ public class CareerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
         View view = inflater.inflate(R.layout.career_item, viewGroup, false);
         context = inflater.getContext();
-        db = AppDatabase.getInstance(context);
         return new ViewHolder(view);
     }
 
@@ -55,11 +54,6 @@ public class CareerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     @Override
     public int getItemCount() {
         return items.size();
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        return position;
     }
 
     public void addItem(Career item) {
@@ -86,6 +80,7 @@ public class CareerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         ImageView delete;
         EditText compName;
         TextView period;
+        TextView job;
 
         int n = 0;
         Calendar cal = Calendar.getInstance();
@@ -144,9 +139,11 @@ public class CareerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             delete = view.findViewById(R.id.delete);
             compName = view.findViewById(R.id.compName);
             period = view.findViewById(R.id.period);
+            job = view.findViewById(R.id.job);
 
             delete.setOnClickListener(this);
             period.setOnClickListener(this);
+            job.setOnClickListener(this);
 
             compName.addTextChangedListener(new TextWatcher() {
                 @Override
@@ -181,21 +178,7 @@ public class CareerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 // 아이템 삭제
                                 items.remove(getAdapterPosition());
-                                // db에서 삭제
-                                new CareerDeleteAsyncTask(db.CvInfoDao()).execute(getAdapterPosition());
                                 notifyDataSetChanged();
-
-//                                List<CvInfo> cv = null;
-//                                try {
-//                                    cv = new CarCerActivity.GetAllAsyncTask(db.CvInfoDao()).execute().get();
-//                                } catch (ExecutionException e) {
-//                                    e.printStackTrace();
-//                                } catch (InterruptedException e) {
-//                                    e.printStackTrace();
-//                                }
-//                                for (int j = 0; j < cv.size(); j++) {
-//                                    Log.d("aaaaaa", cv.get(j).company_name);    ////////////////
-//                                }
                             }
                         })
                         .setNegativeButton("취소", new DialogInterface.OnClickListener() {
@@ -209,24 +192,22 @@ public class CareerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 MyDatePicker datePicker = new MyDatePicker(startY, startM, endY, endM);
                 datePicker.setListener(d);
                 datePicker.show(((AppCompatActivity) context).getSupportFragmentManager(), "MyDatePicker");
+            } else if (v == job) {
+                JobDialog dialog = new JobDialog(context);
+                dialog.show();
+                dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface d) {
+                        HashMap<String, String> hashMap = dialog.getSelected();
+                        if (hashMap != null) {
+                            items.get(getAdapterPosition()).setJobCode(hashMap.get("code"));
+                            items.get(getAdapterPosition()).setJobName(hashMap.get("name"));
+                        }
+                    }
+                });
             }
         }
     }
-
-    public static class CareerDeleteAsyncTask extends AsyncTask<Integer, Void, Void> {
-        private CvInfoDao mCvInfoDao;
-
-        public CareerDeleteAsyncTask(CvInfoDao cvInfoDao) {
-            this.mCvInfoDao = cvInfoDao;
-        }
-
-        @Override
-        protected Void doInBackground(Integer... integers) {
-            mCvInfoDao.deleteCvInfo("CA", integers[0]);
-            return null;
-        }
-    }
-
 
 //    private void showDialog() {
 //        AlertDialog.Builder msgBuilder = new AlertDialog.Builder(context)
