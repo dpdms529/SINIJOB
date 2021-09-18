@@ -27,10 +27,7 @@ import androidx.lifecycle.LifecycleOwner;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Date;
-import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -41,6 +38,7 @@ public class CameraActivity extends AppCompatActivity {
     private final int REQUEST_CODE_PERMISSIONS = 1001; //arbitrary number, can be changed accordingly
     private final String[] REQUIRED_PERMISSIONS = new String[]{"android.permission.CAMERA", "android.permission.RECORD_AUDIO"}; //array w/ permissions from manifest
     PreviewView mPreviewView;
+    int levelCount;
     Button mCaptureButton;
 
     private boolean mIsRecordingVideo;
@@ -52,6 +50,7 @@ public class CameraActivity extends AppCompatActivity {
 
         mPreviewView = findViewById(R.id.previewView);
         mCaptureButton = findViewById(R.id.camera_capture_button);
+        levelCount = 1;
 
         // Request camera permissions
         if (allPermissionsGranted()) {
@@ -108,8 +107,22 @@ public class CameraActivity extends AppCompatActivity {
             if (!mIsRecordingVideo) {
                 mIsRecordingVideo = true;
 
-                SimpleDateFormat mDateFormat = new SimpleDateFormat("yyyyMMddHHmmss", Locale.KOREA);
-                File file = new File(getBatchDirectoryName(), mDateFormat.format(new Date()) + ".mp4");
+                File file = null;
+                switch (levelCount) {
+                    case 1:
+                        file = new File(getBatchDirectoryName(), "cv_1.mp4");
+                        levelCount = 2;
+                        break;
+                    case 2:
+                        file = new File(getBatchDirectoryName(), "cv_2.mp4");
+                        levelCount = 3;
+                        break;
+                    case 3:
+                        file = new File(getBatchDirectoryName(), "cv_3.mp4");
+                        levelCount = 0;
+                        break;
+                }
+
                 mCaptureButton.setBackgroundColor(Color.GREEN);
                 mCaptureButton.setText("종료");
 
@@ -133,6 +146,10 @@ public class CameraActivity extends AppCompatActivity {
                 mCaptureButton.setBackgroundColor(Color.RED);
                 mCaptureButton.setText("시작");
                 videoCapture.stopRecording();
+                if (levelCount == 0) {
+                    // 종료 후, 머지 시작
+                    this.finish();
+                }
                 Log.d("tag", "Video stopped");
             }
         });
