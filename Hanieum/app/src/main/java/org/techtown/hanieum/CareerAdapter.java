@@ -79,6 +79,7 @@ public class CareerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView delete;
         EditText compName;
+        EditText position;
         TextView period;
         TextView job;
 
@@ -88,6 +89,8 @@ public class CareerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         int startM = cal.get(Calendar.MONTH) + 1;
         int endY = cal.get(Calendar.YEAR);
         int endM = cal.get(Calendar.MONTH) + 1;
+        String startStr, endStr;
+        int diffMon;
         DatePickerDialog.OnDateSetListener d = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
@@ -95,8 +98,10 @@ public class CareerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     startY = year;
                     startM = monthOfYear;
                     if (monthOfYear / 10 == 1) {
+                        startStr = year + "-" + monthOfYear;
                         period.setText(year + "-" + monthOfYear);
                     } else {
+                        startStr = year + "-0" + monthOfYear;
                         period.setText(year + "-0" + monthOfYear);
                     }
 
@@ -108,8 +113,10 @@ public class CareerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     endY = year;
                     endM = monthOfYear;
                     if (monthOfYear / 10 == 1) {
+                        endStr = year + "-" + monthOfYear;
                         period.setText(period.getText() + " ~ " + year + "-" + monthOfYear);
                     } else {
+                        endStr = year + "-0" + monthOfYear;
                         period.setText(period.getText() + " ~ " + year + "-0" + monthOfYear);
                     }
                     n++;
@@ -119,7 +126,7 @@ public class CareerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     Calendar end = new GregorianCalendar(endY, endM, 1);
                     long diffSec = (end.getTimeInMillis() - start.getTimeInMillis()) / 1000;
                     long diffDay = diffSec / (24 * 60 * 60);
-                    int diffMon = (int) diffDay / 30 + 1;
+                    diffMon = (int) diffDay / 30 + 1;
 
                     // 시작 날짜보다 끝 날짜가 이르면
                     if (diffMon <= 0) {
@@ -129,6 +136,10 @@ public class CareerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                         startM = cal.get(Calendar.MONTH) + 1;
                         endY = cal.get(Calendar.YEAR);
                         endM = cal.get(Calendar.MONTH) + 1;
+                    }else{
+                        items.get(getAdapterPosition()).setCareerStart(startStr);
+                        items.get(getAdapterPosition()).setCarrerEnd(endStr);
+                        items.get(getAdapterPosition()).setPeriod(diffMon);
                     }
                 }
             }
@@ -138,6 +149,7 @@ public class CareerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             super(view);
             delete = view.findViewById(R.id.delete);
             compName = view.findViewById(R.id.compName);
+            position = view.findViewById(R.id.position);
             period = view.findViewById(R.id.period);
             job = view.findViewById(R.id.job);
 
@@ -162,10 +174,35 @@ public class CareerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     // 입력하기 전
                 }
             });
+
+            position.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable editable) {
+                    items.get(getAdapterPosition()).setPosition(position.getText().toString());
+                }
+            });
         }
 
         public void setItem(Career item) {
+            job.setText(item.getJobName());
             compName.setText(item.getCompName());
+            position.setText(item.getPosition());
+            if(item.getCareerStart() == null){
+                period.setText("");
+            }else{
+                period.setText(item.getCareerStart() + " ~ " + item.getCarrerEnd());
+            }
+
         }
 
         @Override
@@ -193,16 +230,14 @@ public class CareerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 datePicker.setListener(d);
                 datePicker.show(((AppCompatActivity) context).getSupportFragmentManager(), "MyDatePicker");
             } else if (v == job) {
-                JobDialog dialog = new JobDialog(context);
+                JobDialog dialog = new JobDialog(context, items.get(getAdapterPosition()));
+                Log.d("TAG", "onClick: " + items.get(getAdapterPosition()).getClass());
                 dialog.show();
                 dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
                     @Override
                     public void onCancel(DialogInterface d) {
-                        HashMap<String, String> hashMap = dialog.getSelected();
-                        if (hashMap != null) {
-                            items.get(getAdapterPosition()).setJobCode(hashMap.get("code"));
-                            items.get(getAdapterPosition()).setJobName(hashMap.get("name"));
-                        }
+                        job.setText(items.get(getAdapterPosition()).getJobName());
+                        Log.d("TAG", "onClick: " + items.get(getAdapterPosition()).getJobCode() + items.get(getAdapterPosition()).getJobName());
                     }
                 });
             }

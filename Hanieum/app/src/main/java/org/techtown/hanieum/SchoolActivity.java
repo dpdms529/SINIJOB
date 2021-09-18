@@ -79,7 +79,7 @@ public class SchoolActivity extends AppCompatActivity {
                 } else if (spinner.getSelectedItem().equals("초등학교 졸업 이하")) {
                     code = "01";
                 }
-                CvInfo cvInfo = new CvInfo("E", 0, code, null, null);
+                CvInfo cvInfo = new CvInfo("E", 0, code, spinner.getSelectedItem().toString());
                 new CvInfoInsertAsyncTask(db.CvInfoDao()).execute(cvInfo);
 
                 finish();

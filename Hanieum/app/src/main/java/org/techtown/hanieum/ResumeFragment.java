@@ -83,7 +83,7 @@ public class ResumeFragment extends Fragment implements View.OnClickListener {
         for (int i = 0; i < tmp.size(); i++) {
             Log.d("info_no", String.valueOf(tmp.get(i).info_no));
             Log.d("info_code", tmp.get(i).info_code);
-            Log.d("career_period", String.valueOf(tmp.get(i).career_period));
+            Log.d("career_period", String.valueOf(tmp.get(i).period));
             Log.d("company_name", tmp.get(i).company_name);
             Log.d("cv_dist_code", tmp.get(i).cv_dist_code);
         }

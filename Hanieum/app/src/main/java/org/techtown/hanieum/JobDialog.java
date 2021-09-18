@@ -2,26 +2,20 @@ package org.techtown.hanieum;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.Display;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.webkit.WebView;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -30,7 +24,6 @@ import org.techtown.hanieum.db.dao.JobCategoryDao;
 import org.techtown.hanieum.db.entity.JobCategory;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -45,11 +38,12 @@ public class JobDialog extends Dialog {
     Context context;
     List<JobCategory> job;
 
-    HashMap<String, String> hashMap = new HashMap<>();
+    Career career;
 
-    public JobDialog(@NonNull Context context) {
+    public JobDialog(@NonNull Context context, Career career) {
         super(context);
         this.context = context;
+        this.career = career;
     }
 
     @Override
@@ -134,8 +128,9 @@ public class JobDialog extends Dialog {
                 JobDialogItem item = adapter.getItem(position);
                 String name = item.categoryName;
                 String code = item.categoryCode;
-                hashMap.put("name", name);
-                hashMap.put("code", code);
+                career.setJobCode(code);
+                career.setJobName(name);
+                Log.d("TAG", "JobDialog: " + career.getJobName() + career.getJobCode());
                 cancel();
             }
         });
@@ -152,10 +147,6 @@ public class JobDialog extends Dialog {
         protected List<JobCategory> doInBackground(Void... voids) {
             return mJobCategoryDao.getJob();
         }
-    }
-
-    public HashMap<String, String> getSelected() {
-        return hashMap;
     }
 
 }

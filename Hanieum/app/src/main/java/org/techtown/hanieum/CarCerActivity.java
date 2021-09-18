@@ -65,8 +65,9 @@ public class CarCerActivity extends AppCompatActivity implements View.OnClickLis
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            for (int i = 0; i < cv.size(); i++) {
-                adapter1.addItem(new Career(cv.get(i).info_no, "", cv.get(i).info_code, cv.get(i).company_name, "", ""));
+            for (CvInfo cvInfo: cv) {
+                adapter1.addItem(new Career(cvInfo));
+                Log.d("TAG", "onCreate: " + adapter1.getItem(cvInfo.info_no).getCareerStart());
             }
 
             recyclerView.setAdapter(adapter1);
@@ -108,7 +109,7 @@ public class CarCerActivity extends AppCompatActivity implements View.OnClickLis
                         alertDialog.show();
                         return;
                     }
-                    CvInfo cvInfo = new CvInfo("CA", i, item.getJobCode(), 111, item.getCompName());
+                    CvInfo cvInfo = new CvInfo("CA", i, item.getJobCode(), item.getJobName(), item.getCompName(), item.getPosition(), item.getCareerStart(), item.getCarrerEnd(), item.getPeriod());
                     new SchoolActivity.CvInfoInsertAsyncTask(db.CvInfoDao()).execute(cvInfo);
                 }
             } else if (title.getText().equals("보유자격증")) {
@@ -119,7 +120,7 @@ public class CarCerActivity extends AppCompatActivity implements View.OnClickLis
             int careerNum = adapter1.getItemCount();
 
             if (title.getText().equals("경력사항") && careerNum < 10) {
-                adapter1.addItem(new Career(careerNum, "", "", "", "", ""));
+                adapter1.addItem(new Career());
                 adapter1.notifyDataSetChanged();
             } else if (title.getText().equals("보유자격증") && certifiNum < 10) {
                 certifiNum++;
