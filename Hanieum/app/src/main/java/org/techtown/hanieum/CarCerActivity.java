@@ -1,9 +1,11 @@
 package org.techtown.hanieum;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -64,7 +66,6 @@ public class CarCerActivity extends AppCompatActivity implements View.OnClickLis
                 e.printStackTrace();
             }
             for (int i = 0; i < cv.size(); i++) {
-                Log.d("ddddddd", cv.get(i).company_name);   ///////////////////
                 adapter1.addItem(new Career(cv.get(i).info_no, "", cv.get(i).info_code, cv.get(i).company_name, "", ""));
             }
 
@@ -90,10 +91,24 @@ public class CarCerActivity extends AppCompatActivity implements View.OnClickLis
         if (v == saveButton) {
             if (title.getText().equals("경력사항")) {
                 ArrayList<Career> items = adapter1.getItems();
+                new CareerDeleteAsyncTask(db.CvInfoDao()).execute();    // "CA"를 모두 지우고 다시 저장
                 for (int i = 0; i < items.size(); i++) {
                     Career item = items.get(i);
-                    Log.d("cccccc", item.getCompName());    /////////////////
-                    CvInfo cvInfo = new CvInfo("CA", i, "직종코드", 333, item.getCompName());
+                    if (item.getJobCode() == null) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                        builder.setTitle("알림")
+                                .setMessage("직종을 선택하세요")
+                                .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                                    }
+                                });
+                        AlertDialog alertDialog = builder.create();
+                        alertDialog.show();
+                        return;
+                    }
+                    CvInfo cvInfo = new CvInfo("CA", i, item.getJobCode(), 111, item.getCompName());
                     new SchoolActivity.CvInfoInsertAsyncTask(db.CvInfoDao()).execute(cvInfo);
                 }
             } else if (title.getText().equals("보유자격증")) {
@@ -124,6 +139,20 @@ public class CarCerActivity extends AppCompatActivity implements View.OnClickLis
         @Override
         protected List<CvInfo> doInBackground(Void... voids) {
             return mCvInfoDao.getCvInfo("CA");
+        }
+    }
+
+    public static class CareerDeleteAsyncTask extends AsyncTask<Void, Void, Void> {
+        private CvInfoDao mCvInfoDao;
+
+        public CareerDeleteAsyncTask(CvInfoDao cvInfoDao) {
+            this.mCvInfoDao = cvInfoDao;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            mCvInfoDao.deleteCvInfo("CA");
+            return null;
         }
     }
 
