@@ -43,14 +43,6 @@ public class CvInfo {
     @ColumnInfo(name = "period")
     public Integer period;
 
-    @Ignore
-    public CvInfo(String cv_dist_code, Integer info_no, String info_code, String info) {
-        this.cv_dist_code = cv_dist_code;
-        this.info_no = info_no;
-        this.info_code = info_code;
-        this.info = info;
-    }
-
     public CvInfo(String cv_dist_code, Integer info_no, String info_code, String info, String company_name, String job_position, String career_start, String career_end, int period){
         this.cv_dist_code = cv_dist_code;
         this.info_no = info_no;

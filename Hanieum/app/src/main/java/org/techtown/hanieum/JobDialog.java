@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.techtown.hanieum.db.AppDatabase;
+import org.techtown.hanieum.db.dao.CertificateDao;
 import org.techtown.hanieum.db.dao.JobCategoryDao;
 import org.techtown.hanieum.db.entity.JobCategory;
 
@@ -37,13 +38,21 @@ public class JobDialog extends Dialog {
     JobDialogAdapter adapter;
     Context context;
     List<JobCategory> job;
+    List<org.techtown.hanieum.db.entity.Certificate> certificateList;
 
     Career career;
+    Certificate certificate;
 
     public JobDialog(@NonNull Context context, Career career) {
         super(context);
         this.context = context;
         this.career = career;
+    }
+
+    public JobDialog(@NonNull Context context, Certificate certificate) {
+        super(context);
+        this.context = context;
+        this.certificate = certificate;
     }
 
     @Override
@@ -74,14 +83,27 @@ public class JobDialog extends Dialog {
 //        layout.setMaxHeight(size.y/2);
 
         AppDatabase db = AppDatabase.getInstance(context);
-        job = null;
-        try {
-            job = new JobGetAsyncTask(db.jobCategoryDao()).execute().get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        if(career != null){
+            job = null;
+            try {
+                job = new JobGetAsyncTask(db.jobCategoryDao()).execute().get();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }else if(certificate != null){
+            try {
+                certificateList = null;
+                certificateList = new CertificateGetAsyncTask(db.CertificateDao()).execute().get();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
         }
+
 
         jobName.addTextChangedListener(new TextWatcher() {
             @Override
@@ -91,11 +113,20 @@ public class JobDialog extends Dialog {
                 ArrayList<JobDialogItem> items = new ArrayList<>();
 
                 if (text.length() != 0) {
-                    for (int i = 0; i < job.size(); i++) {
-                        if (job.get(i).category_name.contains(text)) {
-                            items.add(new JobDialogItem(job.get(i).category_code, job.get(i).category_name));
+                    if(career != null){
+                        for (int i = 0; i < job.size(); i++) {
+                            if (job.get(i).category_name.contains(text)) {
+                                items.add(new JobDialogItem(job.get(i).category_code, job.get(i).category_name));
+                            }
+                        }
+                    }else if(certificate != null){
+                        for (int i = 0; i < certificateList.size(); i++) {
+                            if(certificate != null && certificateList.get(i).certificate_name.contains(text)){
+                                items.add(new JobDialogItem(certificateList.get(i).certificate_id, certificateList.get(i).certificate_name));
+                            }
                         }
                     }
+
                 }
                 adapter.setItems(items);
                 adapter.notifyDataSetChanged();
@@ -128,9 +159,14 @@ public class JobDialog extends Dialog {
                 JobDialogItem item = adapter.getItem(position);
                 String name = item.categoryName;
                 String code = item.categoryCode;
-                career.setJobCode(code);
-                career.setJobName(name);
-                Log.d("TAG", "JobDialog: " + career.getJobName() + career.getJobCode());
+                if(career != null){
+                    career.setJobCode(code);
+                    career.setJobName(name);
+                    Log.d("TAG", "JobDialog: " + career.getJobName() + career.getJobCode());
+                }else if(certificate != null){
+                    certificate.setCertifiCode(code);
+                    certificate.setCertifi(name);
+                }
                 cancel();
             }
         });
@@ -146,6 +182,19 @@ public class JobDialog extends Dialog {
         @Override
         protected List<JobCategory> doInBackground(Void... voids) {
             return mJobCategoryDao.getJob();
+        }
+    }
+
+    public static class CertificateGetAsyncTask extends AsyncTask<Void, Void, List<org.techtown.hanieum.db.entity.Certificate>> {
+        private CertificateDao mCertificateDao;
+
+        public CertificateGetAsyncTask(CertificateDao certificateDao) {
+            this.mCertificateDao = certificateDao;
+        }
+
+        @Override
+        protected List<org.techtown.hanieum.db.entity.Certificate> doInBackground(Void... voids) {
+            return mCertificateDao.getAll();
         }
     }
 

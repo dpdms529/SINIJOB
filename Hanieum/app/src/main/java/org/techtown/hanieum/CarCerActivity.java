@@ -59,7 +59,7 @@ public class CarCerActivity extends AppCompatActivity implements View.OnClickLis
             // db에 저장된거 띄우기
             List<CvInfo> cv = null;
             try {
-                cv = new GetAllAsyncTask(db.CvInfoDao()).execute().get();
+                cv = new GetAllAsyncTask(db.CvInfoDao()).execute("CA").get();
             } catch (ExecutionException e) {
                 e.printStackTrace();
             } catch (InterruptedException e) {
@@ -77,11 +77,25 @@ public class CarCerActivity extends AppCompatActivity implements View.OnClickLis
             recyclerView.setLayoutManager(layoutManager2);
             adapter2 = new CertifiAdapter();
             adapter2.setItems(new ArrayList<>());
+
+            List<CvInfo> cv = null;
+            try {
+                cv = new GetAllAsyncTask(db.CvInfoDao()).execute("CE").get();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            for (CvInfo cvInfo: cv) {
+                adapter2.addItem(new Certificate(cvInfo));
+                Log.d("TAG", "onCreate: " + adapter2.getItem(cvInfo.info_no).getCertifi());
+            }
+
             recyclerView.setAdapter(adapter2);
         }
 
-        // 자격증 등록된 개수를 가져오는 코드
-        certifiNum = 0; // 수정해야함
+//        // 자격증 등록된 개수를 가져오는 코드
+//        certifiNum = 0; // 수정해야함
 
         saveButton.setOnClickListener(this);
         addButton.setOnClickListener(this);
@@ -92,7 +106,7 @@ public class CarCerActivity extends AppCompatActivity implements View.OnClickLis
         if (v == saveButton) {
             if (title.getText().equals("경력사항")) {
                 ArrayList<Career> items = adapter1.getItems();
-                new CareerDeleteAsyncTask(db.CvInfoDao()).execute();    // "CA"를 모두 지우고 다시 저장
+                new DeleteAsyncTask(db.CvInfoDao()).execute("CA");    // "CA"를 모두 지우고 다시 저장
                 for (int i = 0; i < items.size(); i++) {
                     Career item = items.get(i);
                     if (item.getJobCode() == null) {
@@ -110,27 +124,52 @@ public class CarCerActivity extends AppCompatActivity implements View.OnClickLis
                         return;
                     }
                     CvInfo cvInfo = new CvInfo("CA", i, item.getJobCode(), item.getJobName(), item.getCompName(), item.getPosition(), item.getCareerStart(), item.getCarrerEnd(), item.getPeriod());
-                    new SchoolActivity.CvInfoInsertAsyncTask(db.CvInfoDao()).execute(cvInfo);
+                    new CvInfoInsertAsyncTask(db.CvInfoDao()).execute(cvInfo);
                 }
             } else if (title.getText().equals("보유자격증")) {
+                ArrayList<Certificate> items = adapter2.getItmes();
+                new DeleteAsyncTask(db.CvInfoDao()).execute("CE");
+                for(int i = 0; i < items.size();i++){
+                    Certificate item = items.get(i);
+                    if(item.getCertifiCode() == null){
+                        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                        builder.setTitle("알림")
+                                .setMessage("자격증을 선택하세요")
+                                .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                                    }
+                                });
+                        AlertDialog alertDialog = builder.create();
+                        alertDialog.show();
+                        return;
+                    }
+                    CvInfo cvInfo = new CvInfo("CE", i, item.getCertifiCode(), item.getCertifi(), null, null, null, null, 0);
+                    new CvInfoInsertAsyncTask(db.CvInfoDao()).execute(cvInfo);
+                }
+
 
             }
             finish();
         } else if (v == addButton) {
-            int careerNum = adapter1.getItemCount();
-
-            if (title.getText().equals("경력사항") && careerNum < 10) {
-                adapter1.addItem(new Career());
-                adapter1.notifyDataSetChanged();
-            } else if (title.getText().equals("보유자격증") && certifiNum < 10) {
-                certifiNum++;
-                adapter2.addItem(new Certificate("", ""));
-                adapter2.notifyDataSetChanged();
+            if(title.getText().equals("경력사항")){
+                int careerNum = adapter1.getItemCount();
+                if(careerNum < 10){
+                    adapter1.addItem(new Career());
+                    adapter1.notifyDataSetChanged();
+                }
+            }else if(title.getText().equals("보유자격증")){
+                int certifiNum = adapter2.getItemCount();
+                if(certifiNum < 10){
+                    adapter2.addItem(new Certificate());
+                    adapter2.notifyDataSetChanged();
+                }
             }
         }
     }
 
-    public static class GetAllAsyncTask extends AsyncTask<Void, Void, List<CvInfo>> {
+    public static class GetAllAsyncTask extends AsyncTask<String, Void, List<CvInfo>> {
         private CvInfoDao mCvInfoDao;
 
         public GetAllAsyncTask(CvInfoDao cvInfoDao) {
@@ -138,21 +177,36 @@ public class CarCerActivity extends AppCompatActivity implements View.OnClickLis
         }
 
         @Override
-        protected List<CvInfo> doInBackground(Void... voids) {
-            return mCvInfoDao.getCvInfo("CA");
+        protected List<CvInfo> doInBackground(String... strings) {
+            Log.d("TAG", "doInBackground: " + strings[0]);
+            return mCvInfoDao.getCvInfo(strings[0]);
         }
     }
 
-    public static class CareerDeleteAsyncTask extends AsyncTask<Void, Void, Void> {
+    public static class DeleteAsyncTask extends AsyncTask<String, Void, Void> {
         private CvInfoDao mCvInfoDao;
 
-        public CareerDeleteAsyncTask(CvInfoDao cvInfoDao) {
+        public DeleteAsyncTask(CvInfoDao cvInfoDao) {
             this.mCvInfoDao = cvInfoDao;
         }
 
         @Override
-        protected Void doInBackground(Void... voids) {
-            mCvInfoDao.deleteCvInfo("CA");
+        protected Void doInBackground(String... strings) {
+            mCvInfoDao.deleteCvInfo(strings[0]);
+            return null;
+        }
+    }
+
+    public static class CvInfoInsertAsyncTask extends AsyncTask<CvInfo, Void, Void> {
+        private CvInfoDao mCvInfoDao;
+
+        public CvInfoInsertAsyncTask(CvInfoDao cvInfoDao) {
+            this.mCvInfoDao = cvInfoDao;
+        }
+
+        @Override
+        protected Void doInBackground(CvInfo... cvInfos) {
+            mCvInfoDao.insertCvInfo(cvInfos[0]);
             return null;
         }
     }
