@@ -185,17 +185,17 @@ public class CareerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                                 new CareerDeleteAsyncTask(db.CvInfoDao()).execute(getAdapterPosition());
                                 notifyDataSetChanged();
 
-                                List<CvInfo> cv = null;
-                                try {
-                                    cv = new CarCerActivity.GetAllAsyncTask(db.CvInfoDao()).execute().get();
-                                } catch (ExecutionException e) {
-                                    e.printStackTrace();
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-                                for (int j = 0; j < cv.size(); j++) {
-                                    Log.d("aaaaaa", cv.get(j).company_name);    ////////////////
-                                }
+//                                List<CvInfo> cv = null;
+//                                try {
+//                                    cv = new CarCerActivity.GetAllAsyncTask(db.CvInfoDao()).execute().get();
+//                                } catch (ExecutionException e) {
+//                                    e.printStackTrace();
+//                                } catch (InterruptedException e) {
+//                                    e.printStackTrace();
+//                                }
+//                                for (int j = 0; j < cv.size(); j++) {
+//                                    Log.d("aaaaaa", cv.get(j).company_name);    ////////////////
+//                                }
                             }
                         })
                         .setNegativeButton("취소", new DialogInterface.OnClickListener() {
