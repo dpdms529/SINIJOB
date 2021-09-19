@@ -18,13 +18,13 @@ public class CertifiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
         View view = inflater.inflate(R.layout.certifi_item, viewGroup, false);
-        return new CertifiAdapter.ViewHolder(view);
+        return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         Certificate item = items.get(position);
-        ((CertifiAdapter.ViewHolder) viewHolder).setItem(item);
+        ((ViewHolder) viewHolder).setItem(item);
     }
 
     @Override

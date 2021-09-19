@@ -112,6 +112,7 @@ public class CareerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     } else {
                         period.setText(period.getText() + " ~ " + year + "-0" + monthOfYear);
                     }
+                    items.get(getAdapterPosition()).setPeriodStr(period.getText().toString());
                     n++;
 
                     // 시작 날짜와 끝 날짜 개월 수 구하기
@@ -120,11 +121,13 @@ public class CareerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     long diffSec = (end.getTimeInMillis() - start.getTimeInMillis()) / 1000;
                     long diffDay = diffSec / (24 * 60 * 60);
                     int diffMon = (int) diffDay / 30 + 1;
+                    items.get(getAdapterPosition()).setPeriodInt(diffMon);
 
                     // 시작 날짜보다 끝 날짜가 이르면
                     if (diffMon <= 0) {
                         Toast.makeText(context, "올바르지 않습니다", Toast.LENGTH_LONG).show();
                         period.setText("기간을 설정하세요");
+                        items.get(getAdapterPosition()).setPeriodStr("");
                         startY = cal.get(Calendar.YEAR);
                         startM = cal.get(Calendar.MONTH) + 1;
                         endY = cal.get(Calendar.YEAR);

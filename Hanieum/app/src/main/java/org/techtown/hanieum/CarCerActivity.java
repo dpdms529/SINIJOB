@@ -32,8 +32,6 @@ public class CarCerActivity extends AppCompatActivity implements View.OnClickLis
     CareerAdapter adapter1;
     CertifiAdapter adapter2;
 
-    private int certifiNum;
-
     AppDatabase db;
 
     @Override
@@ -66,7 +64,7 @@ public class CarCerActivity extends AppCompatActivity implements View.OnClickLis
                 e.printStackTrace();
             }
             for (int i = 0; i < cv.size(); i++) {
-                adapter1.addItem(new Career(cv.get(i).info_no, "", cv.get(i).info_code, cv.get(i).company_name, "", ""));
+                adapter1.addItem(new Career("", cv.get(i).company_name, "", ""));
             }
 
             recyclerView.setAdapter(adapter1);
@@ -76,11 +74,11 @@ public class CarCerActivity extends AppCompatActivity implements View.OnClickLis
             recyclerView.setLayoutManager(layoutManager2);
             adapter2 = new CertifiAdapter();
             adapter2.setItems(new ArrayList<>());
+
+
+
             recyclerView.setAdapter(adapter2);
         }
-
-        // 자격증 등록된 개수를 가져오는 코드
-        certifiNum = 0; // 수정해야함
 
         saveButton.setOnClickListener(this);
         addButton.setOnClickListener(this);
@@ -94,7 +92,7 @@ public class CarCerActivity extends AppCompatActivity implements View.OnClickLis
                 new CareerDeleteAsyncTask(db.CvInfoDao()).execute();    // "CA"를 모두 지우고 다시 저장
                 for (int i = 0; i < items.size(); i++) {
                     Career item = items.get(i);
-                    if (item.getJobCode() == null) {
+                    if (item.getJobCode() == null) {    // 직종을 선택하지 않았으면
                         AlertDialog.Builder builder = new AlertDialog.Builder(this);
                         builder.setTitle("알림")
                                 .setMessage("직종을 선택하세요")
@@ -108,7 +106,21 @@ public class CarCerActivity extends AppCompatActivity implements View.OnClickLis
                         alertDialog.show();
                         return;
                     }
-                    CvInfo cvInfo = new CvInfo("CA", i, item.getJobCode(), 111, item.getCompName());
+                    if (!item.getPeriodStr().contains("~")) {    // 기간을 선택하지 않았으면
+                        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                        builder.setTitle("알림")
+                                .setMessage("기간을 설정하세요")
+                                .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                                    }
+                                });
+                        AlertDialog alertDialog = builder.create();
+                        alertDialog.show();
+                        return;
+                    }
+                    CvInfo cvInfo = new CvInfo("CA", i, item.getJobCode(), item.getPeriodInt(), item.getCompName());
                     new SchoolActivity.CvInfoInsertAsyncTask(db.CvInfoDao()).execute(cvInfo);
                 }
             } else if (title.getText().equals("보유자격증")) {
@@ -117,14 +129,28 @@ public class CarCerActivity extends AppCompatActivity implements View.OnClickLis
             finish();
         } else if (v == addButton) {
             int careerNum = adapter1.getItemCount();
+//            int certifiNum = adapter2.getItemCount();
 
-            if (title.getText().equals("경력사항") && careerNum < 10) {
-                adapter1.addItem(new Career(careerNum, "", "", "", "", ""));
-                adapter1.notifyDataSetChanged();
-            } else if (title.getText().equals("보유자격증") && certifiNum < 10) {
-                certifiNum++;
-                adapter2.addItem(new Certificate("", ""));
-                adapter2.notifyDataSetChanged();
+            if ((careerNum == 10)) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("알림")
+                        .setMessage("최대 10개까지 등록 가능합니다.")
+                        .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                            }
+                        });
+                AlertDialog alertDialog = builder.create();
+                alertDialog.show();
+            } else {
+                if (title.getText().equals("경력사항")) {
+                    adapter1.addItem(new Career("", "", "", ""));
+                    adapter1.notifyDataSetChanged();
+                } else if (title.getText().equals("보유자격증")) {
+                    adapter2.addItem(new Certificate("", ""));
+                    adapter2.notifyDataSetChanged();
+                }
             }
         }
     }

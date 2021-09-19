@@ -1,28 +1,18 @@
 package org.techtown.hanieum;
 
 public class Career {
-    private int no;
     private String jobName;
     private String jobCode;
     private String compName;
     private String position;
-    private String period;
+    private String periodStr;
+    private int periodInt;
 
-    public Career(int no, String jobName, String jobCode, String compName, String position, String period) {
-        this.no = no;
+    public Career(String jobName, String compName, String position, String periodStr) {
         this.jobName = jobName;
-        this.jobCode = jobCode;
         this.compName = compName;
         this.position = position;
-        this.period = period;
-    }
-
-    public int getNo() {
-        return no;
-    }
-
-    public void setNo(int no) {
-        this.no = no;
+        this.periodStr = periodStr;
     }
 
     public String getJobName() {
@@ -57,11 +47,19 @@ public class Career {
         this.position = position;
     }
 
-    public String getPeriod() {
-        return period;
+    public String getPeriodStr() {
+        return periodStr;
     }
 
-    public void setPeriod(String period) {
-        this.period = period;
+    public void setPeriodStr(String periodStr) {
+        this.periodStr = periodStr;
+    }
+
+    public int getPeriodInt() {
+        return periodInt;
+    }
+
+    public void setPeriodInt(int periodInt) {
+        this.periodInt = periodInt;
     }
 }
