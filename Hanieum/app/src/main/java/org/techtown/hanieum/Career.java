@@ -1,18 +1,26 @@
 package org.techtown.hanieum;
 
+import org.techtown.hanieum.db.entity.CvInfo;
+
 public class Career {
-    private String jobName;
     private String jobCode;
+    private String jobName;
     private String compName;
     private String position;
-    private String periodStr;
-    private int periodInt;
+    private String careerStart;
+    private String carrerEnd;
+    private int period;
 
-    public Career(String jobName, String compName, String position, String periodStr) {
-        this.jobName = jobName;
-        this.compName = compName;
-        this.position = position;
-        this.periodStr = periodStr;
+    public Career(){}
+
+    public Career(CvInfo cv) {
+        this.jobCode = cv.info_code;
+        this.jobName = cv.info;
+        this.compName = cv.company_name;
+        this.position = cv.job_position;
+        this.careerStart = cv.career_start;
+        this.carrerEnd = cv.career_end;
+        this.period = cv.period;
     }
 
     public String getJobName() {
@@ -47,19 +55,27 @@ public class Career {
         this.position = position;
     }
 
-    public String getPeriodStr() {
-        return periodStr;
+    public String getCareerStart() {
+        return careerStart;
     }
 
-    public void setPeriodStr(String periodStr) {
-        this.periodStr = periodStr;
+    public void setCareerStart(String careerStart) {
+        this.careerStart = careerStart;
     }
 
-    public int getPeriodInt() {
-        return periodInt;
+    public String getCarrerEnd() {
+        return carrerEnd;
     }
 
-    public void setPeriodInt(int periodInt) {
-        this.periodInt = periodInt;
+    public void setCarrerEnd(String carrerEnd) {
+        this.carrerEnd = carrerEnd;
+    }
+
+    public int getPeriod() {
+        return period;
+    }
+
+    public void setPeriod(int period) {
+        this.period = period;
     }
 }
