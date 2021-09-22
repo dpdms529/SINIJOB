@@ -4,25 +4,24 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".InformationFragment">
+    tools:context=".LoginActivity">
 
-    <Button
-        android:id="@+id/logout_btn"
+    <ImageButton
+        android:id="@+id/kakao_login_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="로그아웃"
+        android:background="@android:color/transparent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/kakao_login_medium_narrow" />
 
-    <Button
-        android:id="@+id/disconnect_btn"
+    <com.google.android.gms.common.SignInButton
+        android:id="@+id/google_login_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="탈퇴"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/logout_btn" />
-
+        app:layout_constraintTop_toBottomOf="@+id/kakao_login_btn" />
 </androidx.constraintlayout.widget.ConstraintLayout>
