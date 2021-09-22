@@ -60,7 +60,6 @@ public class JobActivity extends AppCompatActivity implements View.OnClickListen
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-//        db.jobCategoryDao().getCategory();
 
         toolbar = findViewById(R.id.toolbar5);
         jobSearchButton = findViewById(R.id.jobSearchButton);

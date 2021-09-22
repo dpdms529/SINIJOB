@@ -188,7 +188,7 @@
             <LinearLayout
                 android:id="@+id/schoolLayout"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:paddingVertical="25dp"
                 app:layout_constraintTop_toBottomOf="@+id/divider3">
@@ -210,7 +210,6 @@
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="right"
                         android:src="@drawable/right" />
                 </LinearLayout>
 
@@ -234,7 +233,7 @@
             <LinearLayout
                 android:id="@+id/careerLayout"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:paddingVertical="25dp"
                 app:layout_constraintTop_toBottomOf="@+id/divider4">
@@ -256,9 +255,16 @@
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="right"
                         android:src="@drawable/right" />
+
                 </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/careerTextLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"></LinearLayout>
+
             </LinearLayout>
 
             <View
@@ -271,7 +277,7 @@
             <LinearLayout
                 android:id="@+id/certifiLayout"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:paddingVertical="25dp"
                 app:layout_constraintTop_toBottomOf="@+id/divider5">
@@ -293,9 +299,14 @@
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="right"
                         android:src="@drawable/right" />
                 </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/certifiTextLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"></LinearLayout>
             </LinearLayout>
 
             <View
@@ -308,7 +319,7 @@
             <LinearLayout
                 android:id="@+id/selfIntroLayout"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:paddingTop="25dp"
                 app:layout_constraintTop_toBottomOf="@+id/divider6">
@@ -330,7 +341,6 @@
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="right"
                         android:src="@drawable/right" />
                 </LinearLayout>
 
