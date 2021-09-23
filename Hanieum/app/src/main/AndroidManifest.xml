@@ -3,7 +3,7 @@
     package="org.techtown.hanieum">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> <!-- 음성인식에 필요함 -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.CAMERA" />
 
@@ -24,6 +24,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Hanieum"
         android:usesCleartextTraffic="true">
+        <activity android:name=".AddressActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <!-- 검색 기능 구현 코드 (아래) -->
+                <action android:name="android.intent.action.SEARCH" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".LoginActivity" />
         <activity android:name=".VideoListActivity" />
         <activity
             android:name=".CameraActivity"
@@ -43,13 +53,7 @@
         <activity android:name=".RegionActivity" />
         <activity android:name=".FilteringActivity" />
         <activity android:name=".MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <!-- 검색 기능 구현 코드 (아래) -->
-                <action android:name="android.intent.action.SEARCH" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
             <!-- 검색 기능 구현 코드 (아래) -->
             <meta-data
                 android:name="android.app.searchable"
