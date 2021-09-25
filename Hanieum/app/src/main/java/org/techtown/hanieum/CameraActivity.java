@@ -1,15 +1,21 @@
 package org.techtown.hanieum;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -40,6 +46,9 @@ public class CameraActivity extends AppCompatActivity {
     PreviewView mPreviewView;
     int levelCount;
     Button mCaptureButton;
+    TextView guideline;
+    private String recordType;
+    private String dirName;
 
     private boolean mIsRecordingVideo;
 
@@ -50,7 +59,26 @@ public class CameraActivity extends AppCompatActivity {
 
         mPreviewView = findViewById(R.id.previewView);
         mCaptureButton = findViewById(R.id.camera_capture_button);
+        guideline = findViewById(R.id.textView10);
         levelCount = 1;
+
+
+        Intent intent = getIntent();
+        recordType = intent.getStringExtra("recordType");
+        dirName = intent.getStringExtra("dirName");
+        Log.e("dirName",intent.getStringExtra("dirName"));
+        if(recordType.equals("full")) {
+            guideline.setText("전체 촬영");
+        } else if(recordType.equals("introduce")) {
+            guideline.setText("자기소개 촬영");
+            levelCount = 4;
+        } else if(recordType.equals("motive")) {
+            guideline.setText("지원동기 촬영");
+            levelCount = 5;
+        } else if(recordType.equals("career")) { // recordType == "career"
+            guideline.setText("경력소개 촬영");
+            levelCount = 6;
+        }
 
         // Request camera permissions
         if (allPermissionsGranted()) {
@@ -98,11 +126,13 @@ public class CameraActivity extends AppCompatActivity {
                 .setTargetRotation(this.getWindowManager().getDefaultDisplay().getRotation())
                 .build();
 
+        Intent intent = new Intent();
+
         preview.setSurfaceProvider(mPreviewView.getSurfaceProvider());
 
         Camera camera = cameraProvider.bindToLifecycle((LifecycleOwner) this, cameraSelector, preview, videoCapture);
 
-        mCaptureButton.setOnClickListener(v -> {
+        mCaptureButton.setOnClickListener(v -> { //촬영f 시작
 
             if (!mIsRecordingVideo) {
                 mIsRecordingVideo = true;
@@ -119,7 +149,26 @@ public class CameraActivity extends AppCompatActivity {
                         break;
                     case 3:
                         file = new File(getBatchDirectoryName(), "cv_3.mp4");
+                        intent.putExtra("filename","full");
                         levelCount = 0;
+                        break;
+                    case 4:
+                        file = new File(getBatchDirectoryName(), "cv_1.mp4");
+                        intent.putExtra("filename","introduce");
+                        levelCount = 0;
+                        Log.e("file","4");
+                        break;
+                    case 5:
+                        file = new File(getBatchDirectoryName(), "cv_2.mp4");
+                        intent.putExtra("filename","motive");
+                        levelCount = 0;
+                        Log.e("file","5");
+                        break;
+                    case 6:
+                        file = new File(getBatchDirectoryName(), "cv_3.mp4");
+                        intent.putExtra("filename","career");
+                        levelCount = 0;
+                        Log.e("file","6");
                         break;
                 }
 
@@ -134,6 +183,12 @@ public class CameraActivity extends AppCompatActivity {
                     public void onVideoSaved(@NonNull VideoCapture.OutputFileResults outputFileResults) {
                         new Handler(Looper.getMainLooper()).post(() ->
                                 Log.d("tag", "Video Saved Successfully" + Arrays.toString(files)));
+                        if (levelCount == 0) {
+                            // 종료 후, 머지 시작
+                            setResult(Activity.RESULT_OK, intent);
+                            finishActivity();
+                        }
+
                     }
 
                     @Override
@@ -146,10 +201,7 @@ public class CameraActivity extends AppCompatActivity {
                 mCaptureButton.setBackgroundColor(Color.RED);
                 mCaptureButton.setText("시작");
                 videoCapture.stopRecording();
-                if (levelCount == 0) {
-                    // 종료 후, 머지 시작
-                    this.finish();
-                }
+
                 Log.d("tag", "Video stopped");
             }
         });
@@ -157,13 +209,20 @@ public class CameraActivity extends AppCompatActivity {
 
     public String getBatchDirectoryName() {
 
-        String app_folder_path = this.getFilesDir().toString();
+        String app_folder_path = this.getFilesDir().toString() + "/videocv_" + dirName;
         File dir = new File(app_folder_path);
         if (!dir.exists() && !dir.mkdirs()) {
-
         }
         Log.d("TAG", "getBatchDirectoryName: " + app_folder_path);
+        String[] testDir = dir.list();
+        for(int i=0;i<testDir.length;i++) {
+            Log.e("testDirfilepath", testDir[i]);
+        }
         return app_folder_path;
+    }
+
+    private void finishActivity() {
+        this.finish();
     }
 
     private boolean allPermissionsGranted() {
