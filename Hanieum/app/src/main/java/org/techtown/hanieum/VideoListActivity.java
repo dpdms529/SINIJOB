@@ -162,32 +162,38 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
                                 introducePlayer.setVideoURI(uri);
                                 introduceRecord.setVisibility(View.VISIBLE);
                                 introduceNotice.setVisibility(View.GONE);
+                                getThumbNail(introducePlayer, cv1Path);
 
                                 uri = Uri.parse(cv2Path);
                                 motivePlayer.setVideoURI(uri);
                                 motiveRecord.setVisibility(View.VISIBLE);
                                 motiveNotice.setVisibility(View.GONE);
+                                getThumbNail(motivePlayer, cv2Path);
 
                                 uri = Uri.parse(cv3Path);
                                 careerPlayer.setVideoURI(uri);
                                 careerRecord.setVisibility(View.VISIBLE);
                                 careerNotice.setVisibility(View.GONE);
+                                getThumbNail(careerPlayer, cv3Path);
 
                                 saveBtn.setVisibility(View.VISIBLE);
                             } else if(fileName.equals("introduce")) {
 
                                 uri = Uri.parse(cv1Path);
                                 introducePlayer.setVideoURI(uri);
+                                getThumbNail(introducePlayer, cv1Path);
 
                             } else if(fileName.equals("motive")) {
 
                                 uri = Uri.parse(cv2Path);
                                 motivePlayer.setVideoURI(uri);
+                                getThumbNail(motivePlayer, cv2Path);
 
                             } else if(fileName.equals("career")) {
 
                                 uri = Uri.parse(cv3Path);
                                 careerPlayer.setVideoURI(uri);
+                                getThumbNail(careerPlayer, cv3Path);
 
                             }
                         }
