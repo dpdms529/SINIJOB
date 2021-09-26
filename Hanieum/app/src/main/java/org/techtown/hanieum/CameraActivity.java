@@ -5,18 +5,19 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.Surface;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.camera.core.Camera;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageAnalysis;
@@ -44,10 +45,11 @@ public class CameraActivity extends AppCompatActivity {
 
     private int levelCount;
     private PreviewView mPreviewView;
-    private Button mCaptureButton;
+    private AppCompatButton mCaptureButton;
     private TextView guideline;
     private String recordType;
     private String dirName;
+    private GradientDrawable buttonShape;
 
     private boolean mIsRecordingVideo;
 
@@ -59,6 +61,7 @@ public class CameraActivity extends AppCompatActivity {
         mPreviewView = findViewById(R.id.previewView);
         mCaptureButton = findViewById(R.id.camera_capture_button);
         guideline = findViewById(R.id.textView10);
+        buttonShape = (GradientDrawable) ContextCompat.getDrawable(this, R.drawable.record_button);
         levelCount = 1;
 
         Intent intent = getIntent();
@@ -171,7 +174,9 @@ public class CameraActivity extends AppCompatActivity {
                         break;
                 }
 
-                mCaptureButton.setBackgroundColor(Color.GREEN);
+                buttonShape.setColor(Color.parseColor("#4CAF50"));
+                mCaptureButton.setBackground(buttonShape);
+//                mCaptureButton.setBackgroundColor(Color.parseColor("#4CAF50"));
                 mCaptureButton.setText("종료");
 
                 String[] files = this.fileList();
@@ -196,7 +201,9 @@ public class CameraActivity extends AppCompatActivity {
                 });
             } else {
                 mIsRecordingVideo = false;
-                mCaptureButton.setBackgroundColor(Color.RED);
+                buttonShape.setColor(Color.parseColor("#FF9800"));
+                mCaptureButton.setBackground(buttonShape);
+//                mCaptureButton.setBackgroundColor(Color.parseColor("#FF9800"));
                 mCaptureButton.setText("시작");
                 videoCapture.stopRecording();
                 Log.d("tag", "Video stopped");

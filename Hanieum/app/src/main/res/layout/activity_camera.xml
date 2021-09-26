@@ -28,13 +28,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"></TextView>
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/camera_capture_button"
         android:layout_width="90dp"
         android:layout_height="90dp"
-        android:backgroundTint="#ff0000"
+        android:background="@drawable/record_button"
         android:scaleType="fitCenter"
         android:text="시작"
+        android:textColor="@color/white"
+        android:textSize="20dp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
