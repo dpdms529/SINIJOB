@@ -24,7 +24,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Hanieum"
         android:usesCleartextTraffic="true">
-        <activity android:name=".VideoListActivity" />
+        <activity
+            android:name=".VideoListActivity"
+            android:configChanges="screenSize|orientation" />
         <activity
             android:name=".CameraActivity"
             android:screenOrientation="landscape" />
