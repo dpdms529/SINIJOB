@@ -13,7 +13,6 @@ import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +35,8 @@ public class ResumeFragment extends Fragment implements View.OnClickListener {
     LinearLayout careerLayout;
     LinearLayout certifiLayout;
     LinearLayout selfIntroLayout;
+    LinearLayout careerTextLayout;
+    LinearLayout certifiTextLayout;
     TextView school;
 
     RecyclerView selfInfoRecyclerView;
@@ -60,6 +61,8 @@ public class ResumeFragment extends Fragment implements View.OnClickListener {
         careerLayout = view.findViewById(R.id.careerLayout);
         certifiLayout = view.findViewById(R.id.certifiLayout);
         selfIntroLayout = view.findViewById(R.id.selfIntroLayout);
+        careerTextLayout = view.findViewById(R.id.careerTextLayout);
+        certifiTextLayout = view.findViewById(R.id.certifiTextLayout);
         school = view.findViewById(R.id.school);
 
         selfInfoRecyclerView = view.findViewById(R.id.selfInfoRecyclerView);
@@ -69,24 +72,6 @@ public class ResumeFragment extends Fragment implements View.OnClickListener {
         selfInfoRecyclerView.setAdapter(selfInfoAdapter);
 
         db = AppDatabase.getInstance(this.getContext());
-
-
-        // 지울거
-        List<CvInfo> tmp = null;
-        try {
-            tmp = new GetAllAsyncTask(db.CvInfoDao()).execute().get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        for (int i = 0; i < tmp.size(); i++) {
-            Log.d("info_no", String.valueOf(tmp.get(i).info_no));
-            Log.d("info_code", tmp.get(i).info_code);
-            Log.d("career_period", String.valueOf(tmp.get(i).career_period));
-            Log.d("company_name", tmp.get(i).company_name);
-            Log.d("cv_dist_code", tmp.get(i).cv_dist_code);
-        }
 
         db.CoverLetterDao().getAll().observe((LifecycleOwner) this, new Observer<List<CoverLetter>>() {
             @Override
@@ -118,6 +103,7 @@ public class ResumeFragment extends Fragment implements View.OnClickListener {
     public void onResume() {
         super.onResume();
 
+        // 학력사항
         String education = null;
         try {
             education = new GetCvInfoAsyncTask(db.CvInfoDao()).execute().get();
@@ -153,6 +139,43 @@ public class ResumeFragment extends Fragment implements View.OnClickListener {
                 school.setVisibility(View.VISIBLE);
             }
         }
+
+        // 경력사항
+        List<CvInfo> cv = null;
+        try {
+            cv = new CarCerActivity.GetAllAsyncTask(db.CvInfoDao()).execute("CA").get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        if (cv != null) {
+            careerTextLayout.removeAllViews();
+            for (CvInfo cvInfo : cv) {
+                if (cvInfo.job_position.equals("")) {
+                    careerTextLayout.addView(textview((cvInfo.info_no+1) + ". " + cvInfo.info + " / " + cvInfo.company_name + " / " + cvInfo.period + "개월"));
+                } else {
+                    careerTextLayout.addView(textview((cvInfo.info_no+1) + ". " + cvInfo.info + " / " + cvInfo.company_name + " / " + cvInfo.job_position + " / " + cvInfo.period + "개월")); }
+            }
+        }
+
+        // 보유자격증
+        cv = null;
+        try {
+            cv = new CarCerActivity.GetAllAsyncTask(db.CvInfoDao()).execute("CE").get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        if (cv != null) {
+            certifiTextLayout.removeAllViews();
+            for (CvInfo cvInfo : cv) {
+                certifiTextLayout.addView(textview((cvInfo.info_no+1) + ". " + cvInfo.info));
+            }
+        }
     }
 
     @Override
@@ -174,20 +197,19 @@ public class ResumeFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    public void textview(String a) {
+    public TextView textview(String a) {
         //TextView 생성
-        TextView view1 = new TextView(context);
-        view1.setText(a);
-        view1.setTextSize(Dimension.SP, FONT_SIZE);
-        view1.setTextColor(Color.BLACK);
+        TextView view = new TextView(context);
+        view.setText(a);
+        view.setTextSize(Dimension.SP, FONT_SIZE);
+        view.setTextColor(Color.BLACK);
 
         //layout_width, layout_height, gravity 설정
 //        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 //        lp.gravity = Gravity.CENTER;
 //        view1.setLayoutParams(lp);
 
-        //부모 뷰에 추가
-        careerLayout.addView(view1);
+        return view;
     }
 
     // 사용처: ResumeFragment, SchoolActivity

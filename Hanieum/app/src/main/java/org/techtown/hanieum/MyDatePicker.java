@@ -86,20 +86,6 @@ public class MyDatePicker extends DialogFragment {
 
         builder.setView(dialog);
 
-        /*
-        .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int id) {
-                listener.onDateSet(null, yearPicker.getValue(), monthPicker.getValue(), 0);
-            }
-        })
-        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                MyYearMonthPickerDialog.this.getDialog().cancel();
-            }
-        })
-        */
-
         return builder.create();
     }
 }

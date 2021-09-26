@@ -9,11 +9,11 @@ import androidx.room.PrimaryKey;
 public class Certificate {
     @PrimaryKey
     @NonNull
-    public int certificate_id;
+    public String certificate_id;
 
     @ColumnInfo
     @NonNull
-    public int category_code;
+    public String category_code;
 
     @ColumnInfo
     @NonNull

@@ -3,7 +3,6 @@ package org.techtown.hanieum;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.os.AsyncTask;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -21,20 +20,13 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.techtown.hanieum.db.AppDatabase;
-import org.techtown.hanieum.db.dao.CvInfoDao;
-import org.techtown.hanieum.db.entity.CvInfo;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 public class CareerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     ArrayList<Career> items = new ArrayList<>();
     Context context;
-    AppDatabase db;
 
     @NonNull
     @Override
@@ -42,7 +34,6 @@ public class CareerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
         View view = inflater.inflate(R.layout.career_item, viewGroup, false);
         context = inflater.getContext();
-        db = AppDatabase.getInstance(context);
         return new ViewHolder(view);
     }
 
@@ -57,7 +48,7 @@ public class CareerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         return items.size();
     }
 
-    @Override
+    @Override   // 아이템이 뒤섞이는 문제 해결
     public int getItemViewType(int position) {
         return position;
     }
@@ -85,7 +76,9 @@ public class CareerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView delete;
         EditText compName;
+        EditText position;
         TextView period;
+        TextView job;
 
         int n = 0;
         Calendar cal = Calendar.getInstance();
@@ -93,6 +86,7 @@ public class CareerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         int startM = cal.get(Calendar.MONTH) + 1;
         int endY = cal.get(Calendar.YEAR);
         int endM = cal.get(Calendar.MONTH) + 1;
+        String startStr, endStr;
         DatePickerDialog.OnDateSetListener d = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
@@ -100,8 +94,10 @@ public class CareerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     startY = year;
                     startM = monthOfYear;
                     if (monthOfYear / 10 == 1) {
+                        startStr = year + "-" + monthOfYear;
                         period.setText(year + "-" + monthOfYear);
                     } else {
+                        startStr = year + "-0" + monthOfYear;
                         period.setText(year + "-0" + monthOfYear);
                     }
 
@@ -113,8 +109,10 @@ public class CareerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     endY = year;
                     endM = monthOfYear;
                     if (monthOfYear / 10 == 1) {
+                        endStr = year + "-" + monthOfYear;
                         period.setText(period.getText() + " ~ " + year + "-" + monthOfYear);
                     } else {
+                        endStr = year + "-0" + monthOfYear;
                         period.setText(period.getText() + " ~ " + year + "-0" + monthOfYear);
                     }
                     n++;
@@ -129,11 +127,17 @@ public class CareerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     // 시작 날짜보다 끝 날짜가 이르면
                     if (diffMon <= 0) {
                         Toast.makeText(context, "올바르지 않습니다", Toast.LENGTH_LONG).show();
-                        period.setText("기간을 설정하세요");
+                        period.setText("");
+                        period.setHint("기간을 설정하세요");
+                        items.get(getAdapterPosition()).setCareerStart(null);
                         startY = cal.get(Calendar.YEAR);
                         startM = cal.get(Calendar.MONTH) + 1;
                         endY = cal.get(Calendar.YEAR);
                         endM = cal.get(Calendar.MONTH) + 1;
+                    }else{
+                        items.get(getAdapterPosition()).setCareerStart(startStr);
+                        items.get(getAdapterPosition()).setCarrerEnd(endStr);
+                        items.get(getAdapterPosition()).setPeriod(diffMon);
                     }
                 }
             }
@@ -143,10 +147,13 @@ public class CareerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             super(view);
             delete = view.findViewById(R.id.delete);
             compName = view.findViewById(R.id.compName);
+            position = view.findViewById(R.id.position);
             period = view.findViewById(R.id.period);
+            job = view.findViewById(R.id.job);
 
             delete.setOnClickListener(this);
             period.setOnClickListener(this);
+            job.setOnClickListener(this);
 
             compName.addTextChangedListener(new TextWatcher() {
                 @Override
@@ -165,10 +172,39 @@ public class CareerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     // 입력하기 전
                 }
             });
+
+            position.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable editable) {
+                    items.get(getAdapterPosition()).setPosition(position.getText().toString());
+                }
+            });
         }
 
         public void setItem(Career item) {
+            if(item.getJobName() == null){
+                job.setHint("직종을 선택하세요");
+            }else{
+                job.setText(item.getJobName());
+            }
             compName.setText(item.getCompName());
+            position.setText(item.getPosition());
+            if(item.getCareerStart() == null){
+                period.setHint("기간을 설정하세요");
+            }else{
+                period.setText(item.getCareerStart() + " ~ " + item.getCarrerEnd());
+            }
+
         }
 
         @Override
@@ -181,21 +217,7 @@ public class CareerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 // 아이템 삭제
                                 items.remove(getAdapterPosition());
-                                // db에서 삭제
-                                new CareerDeleteAsyncTask(db.CvInfoDao()).execute(getAdapterPosition());
                                 notifyDataSetChanged();
-
-                                List<CvInfo> cv = null;
-                                try {
-                                    cv = new CarCerActivity.GetAllAsyncTask(db.CvInfoDao()).execute().get();
-                                } catch (ExecutionException e) {
-                                    e.printStackTrace();
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-                                for (int j = 0; j < cv.size(); j++) {
-                                    Log.d("aaaaaa", cv.get(j).company_name);    ////////////////
-                                }
                             }
                         })
                         .setNegativeButton("취소", new DialogInterface.OnClickListener() {
@@ -206,59 +228,29 @@ public class CareerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 AlertDialog msgDlg = msgBuilder.create();
                 msgDlg.show();
             } else if (v == period) {
+                if (items.get(getAdapterPosition()).getCareerStart() != null) {
+                    String[] start = items.get(getAdapterPosition()).getCareerStart().split("-");
+                    String[] end = items.get(getAdapterPosition()).getCarrerEnd().split("-");
+                    startY = Integer.parseInt(start[0]);
+                    startM = Integer.parseInt(start[1]);
+                    endY = Integer.parseInt(end[0]);
+                    endM = Integer.parseInt(end[1]);
+                }
                 MyDatePicker datePicker = new MyDatePicker(startY, startM, endY, endM);
                 datePicker.setListener(d);
                 datePicker.show(((AppCompatActivity) context).getSupportFragmentManager(), "MyDatePicker");
+            } else if (v == job) {
+                JobDialog dialog = new JobDialog(context, items.get(getAdapterPosition()));
+                Log.d("TAG", "onClick: " + items.get(getAdapterPosition()).getClass());
+                dialog.show();
+                dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface d) {
+                        job.setText(items.get(getAdapterPosition()).getJobName());
+                        Log.d("TAG", "onClick: " + items.get(getAdapterPosition()).getJobCode() + items.get(getAdapterPosition()).getJobName());
+                    }
+                });
             }
         }
     }
-
-    public static class CareerDeleteAsyncTask extends AsyncTask<Integer, Void, Void> {
-        private CvInfoDao mCvInfoDao;
-
-        public CareerDeleteAsyncTask(CvInfoDao cvInfoDao) {
-            this.mCvInfoDao = cvInfoDao;
-        }
-
-        @Override
-        protected Void doInBackground(Integer... integers) {
-            mCvInfoDao.deleteCvInfo("CA", integers[0]);
-            return null;
-        }
-    }
-
-
-//    private void showDialog() {
-//        AlertDialog.Builder msgBuilder = new AlertDialog.Builder(context)
-//                .setTitle("앱 끈다?") .setMessage("진짜 끈다?")
-//                .setPositiveButton("꺼라", new DialogInterface.OnClickListener() {
-//                    @Override public void onClick(DialogInterface dialogInterface, int i) {
-//                        finish();
-//                    }
-//                })
-//                .setNegativeButton("취소", new DialogInterface.OnClickListener() {
-//                    @Override public void onClick(DialogInterface dialogInterface, int i) {
-//                        Toast.makeText(MainActivity.this, "안 끔", Toast.LENGTH_SHORT).show();
-//                    }
-//                });
-//        AlertDialog msgDlg = msgBuilder.create();
-//        msgDlg.show();
-//    }
-
-
-//    private final TextWatcher textWatcher = new TextWatcher() {
-//        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-//            // 입력하기 전에 조치
-//        }
-//
-//        public void onTextChanged(CharSequence s, int start, int before, int count) {
-//            // 입력난에 변화가 있을 시 조치
-//        }
-//
-//        public void afterTextChanged(Editable s) {
-//            // 입력이 끝났을 때 조치
-//
-//        }
-//    };
-
 }
