@@ -105,7 +105,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     });
                 }else if(tokenInfo != null){
                     Log.i("TAG", "카카오 토큰 정보 보기 성공" + tokenInfo.getId());
-                    Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+                    Intent intent = new Intent(getApplicationContext(),AddressActivity.class);
                     startActivity(intent);
                     finish();
                 }
@@ -115,7 +115,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         if(gsa != null){
             Log.i("TAG", "구글 로그인 성공");
-            Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+            Intent intent = new Intent(getApplicationContext(),AddressActivity.class);
             startActivity(intent);
             finish();
         }
@@ -153,7 +153,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             }
                             return null;
                         });
-                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                        Intent intent = new Intent(getApplicationContext(), AddressActivity.class);
                         startActivity(intent);
                         finish();
                     }
@@ -184,7 +184,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 Log.i("TAG", "loginSuccess: "+ user.getUid());
                                 Log.i("TAG", "loginSuccess: "+ user.getDisplayName());
                                 Log.i("TAG", "loginSuccess: "+ user.getEmail());
-                                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                                Intent intent = new Intent(getApplicationContext(), AddressActivity.class);
                                 startActivity(intent);
                                 finish();
                             }

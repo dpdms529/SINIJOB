@@ -25,12 +25,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Hanieum"
         android:usesCleartextTraffic="true">
-        <activity android:name=".AddressActivity">
-            <intent-filter>
-                <!-- 검색 기능 구현 코드 (아래) -->
-                <action android:name="android.intent.action.SEARCH" />
-            </intent-filter>
-        </activity>
         <activity android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
@@ -64,6 +58,7 @@
         <activity android:name=".JobSearchActivity" />
         <activity android:name=".RegionActivity" />
         <activity android:name=".FilteringActivity" />
+        <activity android:name=".AddressActivity"/>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <!-- 검색 기능 구현 코드 (아래) -->
