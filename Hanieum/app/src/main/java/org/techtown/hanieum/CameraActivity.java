@@ -1,12 +1,17 @@
 package org.techtown.hanieum;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.view.Surface;
+import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -24,6 +29,9 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.LifecycleOwner;
 
+import com.arthenica.mobileffmpeg.Config;
+import com.arthenica.mobileffmpeg.ExecuteCallback;
+import com.arthenica.mobileffmpeg.FFmpeg;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import java.io.File;
@@ -32,14 +40,19 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import static com.arthenica.mobileffmpeg.Config.RETURN_CODE_CANCEL;
+import static com.arthenica.mobileffmpeg.Config.RETURN_CODE_SUCCESS;
+
 public class CameraActivity extends AppCompatActivity {
 
     private final Executor executor = Executors.newSingleThreadExecutor();
     private final int REQUEST_CODE_PERMISSIONS = 1001; //arbitrary number, can be changed accordingly
     private final String[] REQUIRED_PERMISSIONS = new String[]{"android.permission.CAMERA", "android.permission.RECORD_AUDIO"}; //array w/ permissions from manifest
-    PreviewView mPreviewView;
-    int levelCount;
-    Button mCaptureButton;
+
+    private int levelCount;
+    private PreviewView mPreviewView;
+    private ProgressDialog progressDialog;
+    private Button mCaptureButton;
 
     private boolean mIsRecordingVideo;
 
@@ -51,6 +64,12 @@ public class CameraActivity extends AppCompatActivity {
         mPreviewView = findViewById(R.id.previewView);
         mCaptureButton = findViewById(R.id.camera_capture_button);
         levelCount = 1;
+
+        // creating the progress dialog @@@@@@@@@@@@@@@@ 위치 옮길 것-> 영상 리스트 화면 코드로
+        progressDialog = new ProgressDialog(CameraActivity.this);
+        progressDialog.setMessage("동영상을 생성하는 중입니다.\n잠시만 기다려주세요...");
+        progressDialog.setCancelable(false);
+        progressDialog.setCanceledOnTouchOutside(false);
 
         // Request camera permissions
         if (allPermissionsGranted()) {
@@ -95,7 +114,8 @@ public class CameraActivity extends AppCompatActivity {
         VideoCapture.Builder builder = new VideoCapture.Builder();
 
         final VideoCapture videoCapture = builder
-                .setTargetRotation(this.getWindowManager().getDefaultDisplay().getRotation())
+//                .setTargetRotation(this.getWindowManager().getDefaultDisplay().getRotation()) // orientation에 맞추어 촬영 방향 결정
+                .setTargetRotation(Surface.ROTATION_90) // 무조건 화면 표시 방향으로 촬영
                 .build();
 
         preview.setSurfaceProvider(mPreviewView.getSurfaceProvider());
@@ -147,10 +167,60 @@ public class CameraActivity extends AppCompatActivity {
                 mCaptureButton.setText("시작");
                 videoCapture.stopRecording();
                 if (levelCount == 0) {
-                    // 종료 후, 머지 시작
-                    this.finish();
+                    try {
+                        concatVideos();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
                 Log.d("tag", "Video stopped");
+            }
+        });
+    }
+
+    private void finishActivity() {
+        this.finish();
+    }
+
+    // @@@@@@@@@@@@@@@ 위치 옮길 것-> 영상 리스트 화면 코드로
+    private void concatVideos() throws Exception {
+        progressDialog.show();
+        String dir = getBatchDirectoryName();
+        File dest = new File(getBatchDirectoryName(), "cv.mp4");
+        String filePath = dest.getAbsolutePath();
+        String exe;
+        // the "exe" string contains the command to process video.The details of command are discussed later in this post.
+        // "video_url" is the url of video which you want to edit. You can get this url from intent by selecting any video from gallery.
+        exe = "-y -i " + dir + "/cv_1.mp4" + " -i " + dir + "/cv_2.mp4" + " -i " + dir + "/cv_3.mp4"
+                + " -filter_complex \"[0:v]setpts=PTS-STARTPTS,scale=1920x1080,fps=24,format=yuv420p[video0];" +
+                "[0:a]aformat=sample_fmts=fltp:sample_rates=48000:channel_layouts=stereo[audio0];" +
+                "[1:v]setpts=PTS-STARTPTS,scale=1920x1080,fps=24,format=yuv420p[video1];" +
+                "[1:a]aformat=sample_fmts=fltp:sample_rates=48000:channel_layouts=stereo[audio1];" +
+                "[2:v]setpts=PTS-STARTPTS,scale=1920x1080,fps=24,format=yuv420p[video2];" +
+                "[2:a]aformat=sample_fmts=fltp:sample_rates=48000:channel_layouts=stereo[audio2];" +
+                "[video0][audio0][video1][audio1][video2][audio2]" +
+                "concat=n=3:v=1:a=1[outv][outa]\" -map \"[outv]\" -map \"[outa]\" " + filePath;
+
+        long executionId = FFmpeg.executeAsync(exe, new ExecuteCallback() {
+
+            @Override
+            public void apply(final long executionId, final int returnCode) {
+                if (returnCode == RETURN_CODE_SUCCESS) {
+
+                    progressDialog.dismiss();
+                    finishActivity();
+
+                } else if (returnCode == RETURN_CODE_CANCEL) {
+                    Log.i(Config.TAG, "Async command execution cancelled by user.");
+                    progressDialog.dismiss();
+                    finishActivity();
+
+                } else {
+                    Log.i(Config.TAG, String.format("Async command execution failed with returnCode=%d.", returnCode));
+                    progressDialog.dismiss();
+                    finishActivity();
+
+                }
             }
         });
     }
@@ -190,4 +260,5 @@ public class CameraActivity extends AppCompatActivity {
             }
         }
     }
+
 }

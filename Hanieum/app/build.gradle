@@ -8,7 +8,7 @@ android {
 
     defaultConfig {
         applicationId "org.techtown.hanieum"
-        minSdkVersion 21
+        minSdkVersion 24
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
@@ -44,6 +44,9 @@ dependencies {
     implementation "androidx.camera:camera-lifecycle:$camerax_version"
     // CameraX View class
     implementation "androidx.camera:camera-view:1.0.0-alpha27"
+
+    // this is for ffmpeg
+    implementation "com.arthenica:mobile-ffmpeg-full:4.4"
 
     // this is for ViewPager
     implementation "androidx.viewpager2:viewpager2:1.0.0"
