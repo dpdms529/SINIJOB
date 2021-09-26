@@ -1,8 +1,7 @@
 package org.techtown.hanieum;
 
-import android.Manifest;
 import android.app.Activity;
-import android.content.Context;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -28,12 +27,20 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.arthenica.mobileffmpeg.Config;
+import com.arthenica.mobileffmpeg.ExecuteCallback;
+import com.arthenica.mobileffmpeg.FFmpeg;
+
 import org.techtown.hanieum.db.AppDatabase;
 import org.techtown.hanieum.db.entity.CoverLetter;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+
+import static com.arthenica.mobileffmpeg.Config.RETURN_CODE_CANCEL;
+import static com.arthenica.mobileffmpeg.Config.RETURN_CODE_SUCCESS;
 
 public class VideoListActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -42,6 +49,7 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
     VideoView introducePlayer, motivePlayer, careerPlayer;
     TextView introduceNotice, motiveNotice, careerNotice, title;
     String cv1Path, cv2Path, cv3Path, dirName;
+    private ProgressDialog progressDialog;
 
     AppDatabase db;
 
@@ -54,6 +62,12 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
 
         Intent intent = getIntent();
         item = (SelfInfo) intent.getSerializableExtra("edit");
+
+        // creating the progress dialog
+        progressDialog = new ProgressDialog(VideoListActivity.this);
+        progressDialog.setMessage("동영상을 생성하는 중입니다.\n잠시만 기다려주세요...");
+        progressDialog.setCancelable(false);
+        progressDialog.setCanceledOnTouchOutside(false);
 
         startRecord = findViewById(R.id.start_record);
         introduceRecord = findViewById(R.id.introduce_retake);
@@ -134,9 +148,6 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
             cv3Path = this.getFilesDir().toString() + "/videocv_" + dirName + "/cv_3.mp4";
         }
 
-
-
-
         db = AppDatabase.getInstance(this);
 
         startRecord.setOnClickListener(this);
@@ -153,11 +164,11 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
                 public void onActivityResult(ActivityResult result) {
                     if (result.getResultCode() == Activity.RESULT_OK) {
                         Intent data = result.getData();
-                        if(data != null) {
+                        if (data != null) {
                             String fileName = data.getStringExtra("filename");
                             Uri uri;
-                            Log.e("filename",fileName);
-                            if(fileName.equals("full")) {
+                            Log.e("filename", fileName);
+                            if (fileName.equals("full")) {
                                 uri = Uri.parse(cv1Path);
                                 introducePlayer.setVideoURI(uri);
                                 introduceRecord.setVisibility(View.VISIBLE);
@@ -174,17 +185,17 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
                                 careerNotice.setVisibility(View.GONE);
 
                                 saveBtn.setVisibility(View.VISIBLE);
-                            } else if(fileName.equals("introduce")) {
+                            } else if (fileName.equals("introduce")) {
 
                                 uri = Uri.parse(cv1Path);
                                 introducePlayer.setVideoURI(uri);
 
-                            } else if(fileName.equals("motive")) {
+                            } else if (fileName.equals("motive")) {
 
                                 uri = Uri.parse(cv2Path);
                                 motivePlayer.setVideoURI(uri);
 
-                            } else if(fileName.equals("career")) {
+                            } else if (fileName.equals("career")) {
 
                                 uri = Uri.parse(cv3Path);
                                 careerPlayer.setVideoURI(uri);
@@ -231,10 +242,14 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
                 new CoverLetterActivity.CoverLetterInsertAsyncTask(db.CoverLetterDao()).execute(coverLetter);
                 Toast.makeText(this, "자기소개서가 저장되었습니다.", Toast.LENGTH_SHORT).show();
             }
+            try {
+                concatVideos();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             Intent intent = new Intent(this, SelfInfoActivity.class);
             startActivity(intent);
             finish();
-
 
         } else if (v == delBtn) {
 
@@ -269,15 +284,52 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
         finish();
     }
 
-    /*
-    @Override
-    public void onResume() {
-        super.onResume();
-        Uri filepathUri = Uri.parse(cv1Path);
-        introduceThumb.setVideoURI(filepathUri);
+    private void concatVideos() throws Exception {
+        progressDialog.show();
+        String dir = this.getFilesDir().toString() + "/videocv_" + dirName;
+        File dest = new File(dir, "cv.mp4");
+        String filePath = dest.getAbsolutePath();
+        String exe;
+        // the "exe" string contains the command to process video.The details of command are discussed later in this post.
+        // "video_url" is the url of video which you want to edit. You can get this url from intent by selecting any video from gallery.
+        exe = "-y -i " + dir + "/cv_1.mp4" + " -i " + dir + "/cv_2.mp4" + " -i " + dir + "/cv_3.mp4"
+                + " -filter_complex \"[0:v]setpts=PTS-STARTPTS,scale=1920x1080,fps=24,format=yuv420p[video0];" +
+                "[0:a]aformat=sample_fmts=fltp:sample_rates=48000:channel_layouts=stereo[audio0];" +
+                "[1:v]setpts=PTS-STARTPTS,scale=1920x1080,fps=24,format=yuv420p[video1];" +
+                "[1:a]aformat=sample_fmts=fltp:sample_rates=48000:channel_layouts=stereo[audio1];" +
+                "[2:v]setpts=PTS-STARTPTS,scale=1920x1080,fps=24,format=yuv420p[video2];" +
+                "[2:a]aformat=sample_fmts=fltp:sample_rates=48000:channel_layouts=stereo[audio2];" +
+                "[video0][audio0][video1][audio1][video2][audio2]" +
+                "concat=n=3:v=1:a=1[outv][outa]\" -map \"[outv]\" -map \"[outa]\" " + filePath;
 
+        long executionId = FFmpeg.executeAsync(exe, new ExecuteCallback() {
+
+            @Override
+            public void apply(final long executionId, final int returnCode) {
+                if (returnCode == RETURN_CODE_SUCCESS) {
+
+                    progressDialog.dismiss();
+                    finishActivity();
+
+                } else if (returnCode == RETURN_CODE_CANCEL) {
+                    Log.i(Config.TAG, "Async command execution cancelled by user.");
+                    progressDialog.dismiss();
+                    finishActivity();
+
+                } else {
+                    Log.i(Config.TAG, String.format("Async command execution failed with returnCode=%d.", returnCode));
+                    progressDialog.dismiss();
+                    finishActivity();
+
+                }
+            }
+        });
     }
-     */
+
+    private void finishActivity() {
+        this.finish();
+    }
+
     public void getThumbNail(VideoView videoView, String path) {
         videoView.seekTo(1);
         Bitmap thumb = ThumbnailUtils.createVideoThumbnail(path, MediaStore.Images.Thumbnails.MINI_KIND);

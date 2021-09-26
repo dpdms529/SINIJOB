@@ -1,24 +1,19 @@
 package org.techtown.hanieum;
 
 import android.annotation.SuppressLint;
-import android.app.ProgressDialog;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.Surface;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -33,9 +28,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.LifecycleOwner;
 
-import com.arthenica.mobileffmpeg.Config;
-import com.arthenica.mobileffmpeg.ExecuteCallback;
-import com.arthenica.mobileffmpeg.FFmpeg;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import java.io.File;
@@ -43,9 +35,6 @@ import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-
-import static com.arthenica.mobileffmpeg.Config.RETURN_CODE_CANCEL;
-import static com.arthenica.mobileffmpeg.Config.RETURN_CODE_SUCCESS;
 
 public class CameraActivity extends AppCompatActivity {
 
@@ -55,7 +44,6 @@ public class CameraActivity extends AppCompatActivity {
 
     private int levelCount;
     private PreviewView mPreviewView;
-    private ProgressDialog progressDialog;
     private Button mCaptureButton;
     private TextView guideline;
     private String recordType;
@@ -73,25 +61,19 @@ public class CameraActivity extends AppCompatActivity {
         guideline = findViewById(R.id.textView10);
         levelCount = 1;
 
-        // creating the progress dialog @@@@@@@@@@@@@@@@ 위치 옮길 것-> 영상 리스트 화면 코드로
-        progressDialog = new ProgressDialog(CameraActivity.this);
-        progressDialog.setMessage("동영상을 생성하는 중입니다.\n잠시만 기다려주세요...");
-        progressDialog.setCancelable(false);
-        progressDialog.setCanceledOnTouchOutside(false);
-
         Intent intent = getIntent();
         recordType = intent.getStringExtra("recordType");
         dirName = intent.getStringExtra("dirName");
-        Log.e("dirName",intent.getStringExtra("dirName"));
-        if(recordType.equals("full")) {
+        Log.e("dirName", intent.getStringExtra("dirName"));
+        if (recordType.equals("full")) {
             guideline.setText("전체 촬영");
-        } else if(recordType.equals("introduce")) {
+        } else if (recordType.equals("introduce")) {
             guideline.setText("자기소개 촬영");
             levelCount = 4;
-        } else if(recordType.equals("motive")) {
+        } else if (recordType.equals("motive")) {
             guideline.setText("지원동기 촬영");
             levelCount = 5;
-        } else if(recordType.equals("career")) { // recordType == "career"
+        } else if (recordType.equals("career")) { // recordType == "career"
             guideline.setText("경력소개 촬영");
             levelCount = 6;
         }
@@ -166,26 +148,26 @@ public class CameraActivity extends AppCompatActivity {
                         break;
                     case 3:
                         file = new File(getBatchDirectoryName(), "cv_3.mp4");
-                        intent.putExtra("filename","full");
+                        intent.putExtra("filename", "full");
                         levelCount = 0;
                         break;
                     case 4:
                         file = new File(getBatchDirectoryName(), "cv_1.mp4");
-                        intent.putExtra("filename","introduce");
+                        intent.putExtra("filename", "introduce");
                         levelCount = 0;
-                        Log.e("file","4");
+                        Log.e("file", "4");
                         break;
                     case 5:
                         file = new File(getBatchDirectoryName(), "cv_2.mp4");
-                        intent.putExtra("filename","motive");
+                        intent.putExtra("filename", "motive");
                         levelCount = 0;
-                        Log.e("file","5");
+                        Log.e("file", "5");
                         break;
                     case 6:
                         file = new File(getBatchDirectoryName(), "cv_3.mp4");
-                        intent.putExtra("filename","career");
+                        intent.putExtra("filename", "career");
                         levelCount = 0;
-                        Log.e("file","6");
+                        Log.e("file", "6");
                         break;
                 }
 
@@ -201,7 +183,6 @@ public class CameraActivity extends AppCompatActivity {
                         new Handler(Looper.getMainLooper()).post(() ->
                                 Log.d("tag", "Video Saved Successfully" + Arrays.toString(files)));
                         if (levelCount == 0) {
-                            // 종료 후, 머지 시작
                             setResult(Activity.RESULT_OK, intent);
                             finishActivity();
                         }
@@ -218,13 +199,6 @@ public class CameraActivity extends AppCompatActivity {
                 mCaptureButton.setBackgroundColor(Color.RED);
                 mCaptureButton.setText("시작");
                 videoCapture.stopRecording();
-                if (levelCount == 0) {
-                    try {
-                        concatVideos();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
                 Log.d("tag", "Video stopped");
             }
         });
@@ -232,49 +206,6 @@ public class CameraActivity extends AppCompatActivity {
 
     private void finishActivity() {
         this.finish();
-    }
-
-    // @@@@@@@@@@@@@@@ 위치 옮길 것-> 영상 리스트 화면 코드로
-    private void concatVideos() throws Exception {
-        progressDialog.show();
-        String dir = getBatchDirectoryName();
-        File dest = new File(getBatchDirectoryName(), "cv.mp4");
-        String filePath = dest.getAbsolutePath();
-        String exe;
-        // the "exe" string contains the command to process video.The details of command are discussed later in this post.
-        // "video_url" is the url of video which you want to edit. You can get this url from intent by selecting any video from gallery.
-        exe = "-y -i " + dir + "/cv_1.mp4" + " -i " + dir + "/cv_2.mp4" + " -i " + dir + "/cv_3.mp4"
-                + " -filter_complex \"[0:v]setpts=PTS-STARTPTS,scale=1920x1080,fps=24,format=yuv420p[video0];" +
-                "[0:a]aformat=sample_fmts=fltp:sample_rates=48000:channel_layouts=stereo[audio0];" +
-                "[1:v]setpts=PTS-STARTPTS,scale=1920x1080,fps=24,format=yuv420p[video1];" +
-                "[1:a]aformat=sample_fmts=fltp:sample_rates=48000:channel_layouts=stereo[audio1];" +
-                "[2:v]setpts=PTS-STARTPTS,scale=1920x1080,fps=24,format=yuv420p[video2];" +
-                "[2:a]aformat=sample_fmts=fltp:sample_rates=48000:channel_layouts=stereo[audio2];" +
-                "[video0][audio0][video1][audio1][video2][audio2]" +
-                "concat=n=3:v=1:a=1[outv][outa]\" -map \"[outv]\" -map \"[outa]\" " + filePath;
-
-        long executionId = FFmpeg.executeAsync(exe, new ExecuteCallback() {
-
-            @Override
-            public void apply(final long executionId, final int returnCode) {
-                if (returnCode == RETURN_CODE_SUCCESS) {
-
-                    progressDialog.dismiss();
-                    finishActivity();
-
-                } else if (returnCode == RETURN_CODE_CANCEL) {
-                    Log.i(Config.TAG, "Async command execution cancelled by user.");
-                    progressDialog.dismiss();
-                    finishActivity();
-
-                } else {
-                    Log.i(Config.TAG, String.format("Async command execution failed with returnCode=%d.", returnCode));
-                    progressDialog.dismiss();
-                    finishActivity();
-
-                }
-            }
-        });
     }
 
     public String getBatchDirectoryName() {
@@ -285,7 +216,7 @@ public class CameraActivity extends AppCompatActivity {
         }
         Log.d("TAG", "getBatchDirectoryName: " + app_folder_path);
         String[] testDir = dir.list();
-        for(int i=0;i<testDir.length;i++) {
+        for (int i = 0; i < testDir.length; i++) {
             Log.e("testDirfilepath", testDir[i]);
         }
         return app_folder_path;
