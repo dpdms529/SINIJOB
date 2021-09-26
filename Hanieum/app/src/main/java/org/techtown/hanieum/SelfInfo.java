@@ -19,7 +19,11 @@ public class SelfInfo implements Serializable {
         first_item = coverLetter.first_item;
         second_item = coverLetter.second_item;
         third_item = coverLetter.third_item;
-        title = "자기소개서 " + no;
+        if(code.equals("0")) {
+            title = "영상 자기소개서 " + no;
+        } else {
+            title = "일반 자기소개서 " + no;
+        }
     }
 
     public static long getSerialVersionUID() {
