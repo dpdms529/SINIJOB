@@ -58,7 +58,12 @@ public class SelfInfoActivity extends AppCompatActivity implements View.OnClickL
             @Override
             public void OnItemClick(SelfInfoAdapter.ViewHolder holder, View view, int position) {
                 SelfInfo item = adapter.getItem(position);
-                Intent intent = new Intent(getApplicationContext(), CoverLetterActivity.class);
+                Intent intent;
+                if(item.getCode().equals("0")) { // 영상 자기소개서
+                    intent = new Intent(getApplicationContext(), VideoListActivity.class);
+                } else {
+                    intent = new Intent(getApplicationContext(), CoverLetterActivity.class);
+                }
                 intent.putExtra("edit", item);
                 startActivity(intent);
                 finish();
@@ -105,7 +110,6 @@ public class SelfInfoActivity extends AppCompatActivity implements View.OnClickL
                     }
                 });
                 alertDialog.show();
-
             }
         }
     }
