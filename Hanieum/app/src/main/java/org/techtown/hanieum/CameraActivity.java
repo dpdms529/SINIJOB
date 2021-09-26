@@ -2,20 +2,18 @@ package org.techtown.hanieum;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.view.Surface;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -43,10 +41,11 @@ public class CameraActivity extends AppCompatActivity {
     private final Executor executor = Executors.newSingleThreadExecutor();
     private final int REQUEST_CODE_PERMISSIONS = 1001; //arbitrary number, can be changed accordingly
     private final String[] REQUIRED_PERMISSIONS = new String[]{"android.permission.CAMERA", "android.permission.RECORD_AUDIO"}; //array w/ permissions from manifest
-    PreviewView mPreviewView;
-    int levelCount;
-    Button mCaptureButton;
-    TextView guideline;
+
+    private int levelCount;
+    private PreviewView mPreviewView;
+    private Button mCaptureButton;
+    private TextView guideline;
     private String recordType;
     private String dirName;
 
@@ -62,20 +61,19 @@ public class CameraActivity extends AppCompatActivity {
         guideline = findViewById(R.id.textView10);
         levelCount = 1;
 
-
         Intent intent = getIntent();
         recordType = intent.getStringExtra("recordType");
         dirName = intent.getStringExtra("dirName");
-        Log.e("dirName",intent.getStringExtra("dirName"));
-        if(recordType.equals("full")) {
+        Log.e("dirName", intent.getStringExtra("dirName"));
+        if (recordType.equals("full")) {
             guideline.setText("전체 촬영");
-        } else if(recordType.equals("introduce")) {
+        } else if (recordType.equals("introduce")) {
             guideline.setText("자기소개 촬영");
             levelCount = 4;
-        } else if(recordType.equals("motive")) {
+        } else if (recordType.equals("motive")) {
             guideline.setText("지원동기 촬영");
             levelCount = 5;
-        } else if(recordType.equals("career")) { // recordType == "career"
+        } else if (recordType.equals("career")) { // recordType == "career"
             guideline.setText("경력소개 촬영");
             levelCount = 6;
         }
@@ -123,7 +121,8 @@ public class CameraActivity extends AppCompatActivity {
         VideoCapture.Builder builder = new VideoCapture.Builder();
 
         final VideoCapture videoCapture = builder
-                .setTargetRotation(this.getWindowManager().getDefaultDisplay().getRotation())
+//                .setTargetRotation(this.getWindowManager().getDefaultDisplay().getRotation()) // orientation에 맞추어 촬영 방향 결정
+                .setTargetRotation(Surface.ROTATION_90) // 무조건 화면 표시 방향으로 촬영
                 .build();
 
         Intent intent = new Intent();
@@ -149,26 +148,26 @@ public class CameraActivity extends AppCompatActivity {
                         break;
                     case 3:
                         file = new File(getBatchDirectoryName(), "cv_3.mp4");
-                        intent.putExtra("filename","full");
+                        intent.putExtra("filename", "full");
                         levelCount = 0;
                         break;
                     case 4:
                         file = new File(getBatchDirectoryName(), "cv_1.mp4");
-                        intent.putExtra("filename","introduce");
+                        intent.putExtra("filename", "introduce");
                         levelCount = 0;
-                        Log.e("file","4");
+                        Log.e("file", "4");
                         break;
                     case 5:
                         file = new File(getBatchDirectoryName(), "cv_2.mp4");
-                        intent.putExtra("filename","motive");
+                        intent.putExtra("filename", "motive");
                         levelCount = 0;
-                        Log.e("file","5");
+                        Log.e("file", "5");
                         break;
                     case 6:
                         file = new File(getBatchDirectoryName(), "cv_3.mp4");
-                        intent.putExtra("filename","career");
+                        intent.putExtra("filename", "career");
                         levelCount = 0;
-                        Log.e("file","6");
+                        Log.e("file", "6");
                         break;
                 }
 
@@ -184,7 +183,6 @@ public class CameraActivity extends AppCompatActivity {
                         new Handler(Looper.getMainLooper()).post(() ->
                                 Log.d("tag", "Video Saved Successfully" + Arrays.toString(files)));
                         if (levelCount == 0) {
-                            // 종료 후, 머지 시작
                             setResult(Activity.RESULT_OK, intent);
                             finishActivity();
                         }
@@ -201,10 +199,13 @@ public class CameraActivity extends AppCompatActivity {
                 mCaptureButton.setBackgroundColor(Color.RED);
                 mCaptureButton.setText("시작");
                 videoCapture.stopRecording();
-
                 Log.d("tag", "Video stopped");
             }
         });
+    }
+
+    private void finishActivity() {
+        this.finish();
     }
 
     public String getBatchDirectoryName() {
@@ -215,14 +216,10 @@ public class CameraActivity extends AppCompatActivity {
         }
         Log.d("TAG", "getBatchDirectoryName: " + app_folder_path);
         String[] testDir = dir.list();
-        for(int i=0;i<testDir.length;i++) {
+        for (int i = 0; i < testDir.length; i++) {
             Log.e("testDirfilepath", testDir[i]);
         }
         return app_folder_path;
-    }
-
-    private void finishActivity() {
-        this.finish();
     }
 
     private boolean allPermissionsGranted() {
@@ -249,4 +246,5 @@ public class CameraActivity extends AppCompatActivity {
             }
         }
     }
+
 }
