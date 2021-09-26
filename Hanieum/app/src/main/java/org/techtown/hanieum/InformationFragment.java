@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -24,7 +25,10 @@ import org.jetbrains.annotations.NotNull;
 
 public class InformationFragment extends Fragment implements View.OnClickListener {
     Context context;
+
     Button logoutBtn,disconnectBtn;
+    LinearLayout myInfo, termsOfService, privacyPolicy, faq, email;
+
     FirebaseAuth mAuth;
     FirebaseUser gsa;
 
@@ -41,12 +45,25 @@ public class InformationFragment extends Fragment implements View.OnClickListene
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_information, container, false);
         context = getContext();
+
         mAuth = FirebaseAuth.getInstance();
         gsa = mAuth.getCurrentUser();
+
         logoutBtn = view.findViewById(R.id.logout_btn);
         disconnectBtn = view.findViewById(R.id.disconnect_btn);
+        myInfo = view.findViewById(R.id.myInfo);
+        termsOfService = view.findViewById(R.id.termsOfService);
+        privacyPolicy = view.findViewById(R.id.privacyPolicy);
+        faq = view.findViewById(R.id.FAQ);
+        email = view.findViewById(R.id.email);
+
         logoutBtn.setOnClickListener(this);
         disconnectBtn.setOnClickListener(this);
+        myInfo.setOnClickListener(this);
+        termsOfService.setOnClickListener(this);
+        privacyPolicy.setOnClickListener(this);
+        faq.setOnClickListener(this);
+        email.setOnClickListener(this);
         return view;
     }
 
@@ -108,6 +125,17 @@ public class InformationFragment extends Fragment implements View.OnClickListene
                             });
                     break;
             }
+        }else if(v==myInfo){
+            Intent intent = new Intent(context, MyInfoActivity.class);
+            startActivity(intent);
+        }else if(v==termsOfService){
+
+        }else if(v==privacyPolicy){
+
+        }else if(v==faq){
+
+        }else if(v==email){
+
         }
     }
     private int loginMethod(){
