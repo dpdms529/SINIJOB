@@ -28,7 +28,7 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract BdongDao BdongDao();
 
     public abstract RecruitDao RecruitDao();
-    
+
     public abstract RecruitCertificateDao recruitCertificateDao();
 
     public abstract CvInfoDao CvInfoDao();

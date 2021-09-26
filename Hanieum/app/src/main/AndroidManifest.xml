@@ -25,6 +25,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Hanieum"
         android:usesCleartextTraffic="true">
+        <activity
+            android:name=".VideoListActivity"
+            android:configChanges="screenSize|orientation" />
         <activity android:name=".MyInfoActivity"></activity>
         <activity android:name=".AddressActivity">
             <intent-filter>
@@ -52,7 +55,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".VideoListActivity" />
         <activity
             android:name=".CameraActivity"
             android:screenOrientation="landscape" />
