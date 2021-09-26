@@ -25,6 +25,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -57,6 +58,7 @@ public class ApplyActivity extends AppCompatActivity implements View.OnClickList
 
     Spinner spinner;
     ArrayList<String> items = new ArrayList<>();
+    LinearLayout coverLetterLayout;
     TextView coverLetter1, coverLetter2, coverLetter3;
     CoverLetter selectedCL;
 
@@ -78,6 +80,7 @@ public class ApplyActivity extends AppCompatActivity implements View.OnClickList
         coverLetter1 = findViewById(R.id.coverLetter1);
         coverLetter2 = findViewById(R.id.coverLetter2);
         coverLetter3 = findViewById(R.id.coverLetter3);
+        coverLetterLayout = findViewById(R.id.coverLetterLayout);
 
         db = AppDatabase.getInstance(this);
         items.add("선택");
@@ -96,9 +99,7 @@ public class ApplyActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 if (i == 0) {
-                    coverLetter1.setVisibility(View.GONE);
-                    coverLetter2.setVisibility(View.GONE);
-                    coverLetter3.setVisibility(View.GONE);
+                    coverLetterLayout.setVisibility(View.GONE);
                 } else {
                     int no = Integer.parseInt(items.get(i).substring(6));
                     try {
@@ -112,9 +113,7 @@ public class ApplyActivity extends AppCompatActivity implements View.OnClickList
                         coverLetter1.setText(selectedCL.first_item);
                         coverLetter2.setText(selectedCL.second_item);
                         coverLetter3.setText(selectedCL.third_item);
-                        coverLetter1.setVisibility(View.VISIBLE);
-                        coverLetter2.setVisibility(View.VISIBLE);
-                        coverLetter3.setVisibility(View.VISIBLE);
+                        coverLetterLayout.setVisibility(View.VISIBLE);
                     }
                 }
             }
