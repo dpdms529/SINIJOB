@@ -21,7 +21,6 @@ import org.techtown.hanieum.db.entity.JobCategory;
 import org.techtown.hanieum.db.entity.Recruit;
 import org.techtown.hanieum.db.entity.RecruitCertificate;
 
-
 @Database(entities = {JobCategory.class, Bdong.class, Recruit.class, RecruitCertificate.class, CvInfo.class, CoverLetter.class, Certificate.class}, version = 9, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
     public abstract JobCategoryDao jobCategoryDao();
@@ -29,7 +28,7 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract BdongDao BdongDao();
 
     public abstract RecruitDao RecruitDao();
-
+    
     public abstract RecruitCertificateDao recruitCertificateDao();
 
     public abstract CvInfoDao CvInfoDao();

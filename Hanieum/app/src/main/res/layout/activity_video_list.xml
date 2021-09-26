@@ -27,11 +27,36 @@
             android:text="영상 자기소개서"
             android:textColor="@color/white"
             android:textSize="20dp"
-            android:textStyle="bold"
-            android:visibility="visible" />
+            android:textStyle="bold" />
     </androidx.appcompat.widget.Toolbar>
 
-    <androidx.core.widget.NestedScrollView
+    <ImageButton
+        android:id="@+id/delBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        android:background="#00ff0000"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/toolbar"
+        app:layout_constraintEnd_toEndOf="@+id/toolbar"
+        app:layout_constraintTop_toTopOf="@+id/toolbar"
+        app:srcCompat="@drawable/trash"
+        app:tint="@color/white" />
+
+    <Button
+        android:id="@+id/saveButton"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/border_sec_color"
+        android:text="저장"
+        android:textSize="20dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:fillViewport="true"
@@ -93,7 +118,8 @@
                     android:layout_marginBottom="10dp"
                     android:background="@drawable/border_sec_color"
                     android:text="다시 촬영"
-                    android:textSize="17dp" />
+                    android:textSize="17dp"
+                    android:visibility="gone" />
             </LinearLayout>
 
             <FrameLayout
@@ -101,11 +127,11 @@
                 android:layout_height="200dp"
                 android:layout_gravity="center">
 
-                <ImageView
-                    android:id="@+id/introduce_thumb"
+                <VideoView
+                    android:id="@+id/introduce_player"
                     android:layout_width="350dp"
                     android:layout_height="200dp"
-                    android:background="@drawable/border" />
+                    android:layout_gravity="center" />
 
                 <TextView
                     android:id="@+id/introduce_notice"
@@ -114,7 +140,9 @@
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:text="아직 촬영된 영상이 없습니다.\n상단의 버튼을 눌러 촬영을 시작해주세요."
-                    android:textSize="20sp" />
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    android:visibility="visible" />
 
             </FrameLayout>
 
@@ -147,7 +175,8 @@
                     android:layout_marginBottom="10dp"
                     android:background="@drawable/border_sec_color"
                     android:text="다시 촬영"
-                    android:textSize="17dp" />
+                    android:textSize="17dp"
+                    android:visibility="gone" />
             </LinearLayout>
 
             <FrameLayout
@@ -155,11 +184,11 @@
                 android:layout_height="200dp"
                 android:layout_gravity="center">
 
-                <ImageView
-                    android:id="@+id/motive_thumb"
+                <VideoView
+                    android:id="@+id/motive_player"
                     android:layout_width="350dp"
                     android:layout_height="200dp"
-                    android:background="@drawable/border" />
+                    android:layout_gravity="center" />
 
                 <TextView
                     android:id="@+id/motive_notice"
@@ -168,8 +197,9 @@
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:text="아직 촬영된 영상이 없습니다.\n상단의 버튼을 눌러 촬영을 시작해주세요."
-                    android:textSize="20sp" />
-
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    android:visibility="visible" />
             </FrameLayout>
 
             <LinearLayout
@@ -201,7 +231,8 @@
                     android:layout_marginBottom="10dp"
                     android:background="@drawable/border_sec_color"
                     android:text="다시 촬영"
-                    android:textSize="17dp" />
+                    android:textSize="17dp"
+                    android:visibility="gone" />
             </LinearLayout>
 
             <FrameLayout
@@ -209,11 +240,11 @@
                 android:layout_height="200dp"
                 android:layout_gravity="center">
 
-                <ImageView
-                    android:id="@+id/career_thumb"
+                <VideoView
+                    android:id="@+id/career_player"
                     android:layout_width="350dp"
                     android:layout_height="200dp"
-                    android:background="@drawable/border" />
+                    android:layout_gravity="center" />
 
                 <TextView
                     android:id="@+id/career_notice"
@@ -222,14 +253,20 @@
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:text="아직 촬영된 영상이 없습니다.\n상단의 버튼을 눌러 촬영을 시작해주세요."
-                    android:textSize="20sp" />
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    android:visibility="visible" />
 
             </FrameLayout>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="110dp" />
 
         </LinearLayout>
 
 
-    </androidx.core.widget.NestedScrollView>
+    </ScrollView>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
