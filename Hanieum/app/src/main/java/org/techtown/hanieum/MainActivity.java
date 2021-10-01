@@ -19,8 +19,8 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
 
         getSupportFragmentManager().beginTransaction().add(R.id.mainFrame,
-                new HomeFragment()).commit(); // 처음 화면 설정
-        bottomNavigationView.setSelectedItemId(R.id.recommendItem); // 처음 아이템 설정
+                new ResumeFragment()).commit(); // 처음 화면 설정
+        bottomNavigationView.setSelectedItemId(R.id.resumeItem); // 처음 아이템 설정
 
         bottomNavigationView.setOnNavigationItemSelectedListener( // 아이템 선택시 실행
                 new BottomNavigationView.OnNavigationItemSelectedListener() {

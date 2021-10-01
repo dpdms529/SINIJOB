@@ -6,6 +6,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -264,6 +266,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         }
 //        db.recruitCertificateDao().getLastUpdated();
         String lastUpdated = rows.get(0);
+        Log.d("lastUpdated", "checkCertifiLastUpdated: " + lastUpdated);
         Log.d("date: ", "certifi: " + lastUpdated);
         String dbLastUpdated = "";
 

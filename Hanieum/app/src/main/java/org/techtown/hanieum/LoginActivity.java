@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -37,6 +38,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     ImageButton kakaoLoginBtn;
     SignInButton googleLoginBtn;
+    Button loginBtn;
 
     FirebaseAuth mAuth;
 
@@ -51,6 +53,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         kakaoLoginBtn = findViewById(R.id.kakao_login_btn);
         googleLoginBtn = findViewById(R.id.google_login_btn);
+        loginBtn = findViewById(R.id.login_btn);
+
         //구글 로그인 버튼 text변경
         TextView textView = (TextView)googleLoginBtn.getChildAt(0);
         textView.setText("Google 계정 로그인");
@@ -122,6 +126,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         kakaoLoginBtn.setOnClickListener(this);
         googleLoginBtn.setOnClickListener(this);
+        loginBtn.setOnClickListener(this);
 
 
     }
