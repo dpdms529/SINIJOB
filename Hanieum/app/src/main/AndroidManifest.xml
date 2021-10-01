@@ -25,10 +25,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Hanieum"
         android:usesCleartextTraffic="true">
+        <activity android:name=".InfoGetActivity"></activity>
         <activity
             android:name=".VideoListActivity"
             android:configChanges="screenSize|orientation" />
-        <activity android:name=".MyInfoActivity"></activity>
+        <activity android:name=".MyInfoActivity" />
         <activity android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -65,7 +66,7 @@
         <activity android:name=".JobSearchActivity" />
         <activity android:name=".RegionActivity" />
         <activity android:name=".FilteringActivity" />
-        <activity android:name=".AddressActivity"/>
+        <activity android:name=".AddressFragment" />
         <activity android:name=".MainActivity">
             <intent-filter>
 

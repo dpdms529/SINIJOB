@@ -5,7 +5,6 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -43,6 +42,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private ActivityResultLauncher<Intent> resultLauncher;
 
     GoogleSignInClient mGoogleSignInClient;
+
+    SharedPreference pref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,7 +106,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     });
                 }else if(tokenInfo != null){
                     Log.i("TAG", "카카오 토큰 정보 보기 성공" + tokenInfo.getId());
-                    Intent intent = new Intent(getApplicationContext(),AddressActivity.class);
+                    Intent intent = new Intent(getApplicationContext(), InfoGetActivity.class);
                     startActivity(intent);
                     finish();
                 }
@@ -115,15 +116,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         if(gsa != null){
             Log.i("TAG", "구글 로그인 성공");
-            Intent intent = new Intent(getApplicationContext(),AddressActivity.class);
+            Intent intent = new Intent(getApplicationContext(), InfoGetActivity.class);
             startActivity(intent);
             finish();
         }
 
+        pref = new SharedPreference(getApplicationContext());
+
         kakaoLoginBtn.setOnClickListener(this);
         googleLoginBtn.setOnClickListener(this);
-
-
     }
 
     @Override
@@ -150,10 +151,21 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 //출생월일, 이메일, 성별 필수로 가져오려면 카카오 비즈 앱 등록 필요
                                 //닉네임은 대체로 이름이지만 이름이 아닐수도..
                                 //주소는 따로 받아야함
+                                pref.editor.putString(SharedPreference.USER_ID, String.valueOf(user.getId()));
+                                if (user.getKakaoAccount().getProfile().getNickname() != null) {
+                                    pref.editor.putString(SharedPreference.NAME, user.getKakaoAccount().getProfile().getNickname());
+                                }
+                                if (user.getKakaoAccount().getGender() != null){
+                                    pref.editor.putString(SharedPreference.GENDER, String.valueOf(user.getKakaoAccount().getGender()));
+                                }
+                                if (user.getKakaoAccount().getEmail() != null) {
+                                    pref.editor.putString(SharedPreference.EMAIL, user.getKakaoAccount().getEmail());
+                                }
+                                pref.editor.commit();
                             }
                             return null;
                         });
-                        Intent intent = new Intent(getApplicationContext(), AddressActivity.class);
+                        Intent intent = new Intent(getApplicationContext(), InfoGetActivity.class);
                         startActivity(intent);
                         finish();
                     }
@@ -184,7 +196,17 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 Log.i("TAG", "loginSuccess: "+ user.getUid());
                                 Log.i("TAG", "loginSuccess: "+ user.getDisplayName());
                                 Log.i("TAG", "loginSuccess: "+ user.getEmail());
-                                Intent intent = new Intent(getApplicationContext(), AddressActivity.class);
+
+                                pref.editor.putString(SharedPreference.USER_ID, user.getUid());
+                                if (user.getDisplayName() != null){
+                                    pref.editor.putString(SharedPreference.NAME, user.getDisplayName());
+                                }
+                                if (user.getEmail() != null) {
+                                    pref.editor.putString(SharedPreference.EMAIL, user.getEmail());
+                                }
+                                pref.editor.commit();
+
+                                Intent intent = new Intent(getApplicationContext(), InfoGetActivity.class);
                                 startActivity(intent);
                                 finish();
                             }
