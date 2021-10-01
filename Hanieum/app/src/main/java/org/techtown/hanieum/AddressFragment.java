@@ -6,12 +6,13 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -20,7 +21,9 @@ import android.location.Geocoder;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -30,7 +33,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
-public class AddressActivity extends AppCompatActivity implements View.OnClickListener {
+public class AddressFragment extends Fragment implements View.OnClickListener {
 
     TextView title;
     EditText addressText;
@@ -45,22 +48,42 @@ public class AddressActivity extends AppCompatActivity implements View.OnClickLi
     private static final int PERMISSIONS_REQUEST_CODE = 100;
     String[] REQUIRED_PERMISSIONS  = {Manifest.permission.ACCESS_FINE_LOCATION};
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_address);
+    Context context;
 
-        title = findViewById(R.id.title);
-        addressText = findViewById(R.id.addressText);
-        yesBtn = findViewById(R.id.yesBtn);
-        noBtn = findViewById(R.id.noBtn);
-        nextBtn = findViewById(R.id.nextBtn);
-        retryBtn = findViewById(R.id.retryBtn);
+    public AddressFragment() {
+        // Required empty public constructor
+    }
+
+    public static AddressFragment newInstance() {
+        AddressFragment fragment = new AddressFragment();
+        Bundle args = new Bundle();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+        }
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_address, container, false);
+
+        context = getContext();
+        title = view.findViewById(R.id.title);
+        addressText = view.findViewById(R.id.addressText);
+        yesBtn = view.findViewById(R.id.yesBtn);
+        noBtn = view.findViewById(R.id.noBtn);
+        nextBtn = view.findViewById(R.id.nextBtn);
+        retryBtn = view.findViewById(R.id.retryBtn);
 
         if (!checkLocationServicesStatus()) {
             showDialogForLocationServiceSetting();
         }else {
-
             checkRunTimePermission();
         }
 
@@ -70,14 +93,14 @@ public class AddressActivity extends AppCompatActivity implements View.OnClickLi
         noBtn.setOnClickListener(this);
         nextBtn.setOnClickListener(this);
         retryBtn.setOnClickListener(this);
+
+        return view;
     }
 
     @Override
     public void onClick(View v) {
         if (v == yesBtn) {
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-            finish();
+            ((InfoGetActivity)getActivity()).replaceFragment(NameFragment.newInstance());
         } else if (v == noBtn) {
             title.setText("올바른 주소를 입력하세요");
             addressText.setEnabled(true);
@@ -85,14 +108,22 @@ public class AddressActivity extends AppCompatActivity implements View.OnClickLi
             noBtn.setVisibility(View.GONE);
             nextBtn.setVisibility(View.VISIBLE);
         } else if (v == nextBtn) {
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-            finish();
+            ((InfoGetActivity)getActivity()).replaceFragment(NameFragment.newInstance());
         } else if (v == retryBtn) {
             getAddress();
+            Toast.makeText(context, "검색 완료", Toast.LENGTH_SHORT).show();
             Log.d("@@@", "재검색 : getAddress");
         }
     }
+
+    private ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(
+            new ActivityResultContracts.RequestPermission(), isGranted -> {
+               if (isGranted) {
+
+               } else {
+
+               }
+        });
 
     @Override
     public void onRequestPermissionsResult(int permsRequestCode,
@@ -117,11 +148,11 @@ public class AddressActivity extends AppCompatActivity implements View.OnClickLi
 
             } else {
                 // 거부한 퍼미션이 있다면 앱을 사용할 수 없는 이유를 설명해주고 앱을 종료합니다.2 가지 경우가 있습니다.
-                if (ActivityCompat.shouldShowRequestPermissionRationale(this, REQUIRED_PERMISSIONS[0])) {
-                    Toast.makeText(AddressActivity.this, "퍼미션이 거부되었습니다. 앱을 다시 실행하여 퍼미션을 허용해주세요.", Toast.LENGTH_LONG).show();
-                    finish();
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this.getActivity(), REQUIRED_PERMISSIONS[0])) {
+                    Toast.makeText(context, "퍼미션이 거부되었습니다. 앱을 다시 실행하여 퍼미션을 허용해주세요.", Toast.LENGTH_SHORT).show();
+//                    finish();
                 } else {
-                    Toast.makeText(AddressActivity.this, "퍼미션이 거부되었습니다. 설정(앱 정보)에서 퍼미션을 허용해야 합니다. ", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, "퍼미션이 거부되었습니다. 설정(앱 정보)에서 퍼미션을 허용해야 합니다. ", Toast.LENGTH_SHORT).show();
                 }
             }
         }
@@ -130,7 +161,7 @@ public class AddressActivity extends AppCompatActivity implements View.OnClickLi
     void checkRunTimePermission(){
         //런타임 퍼미션 처리
         // 1. 위치 퍼미션을 가지고 있는지 체크합니다.
-        int hasFineLocationPermission = ContextCompat.checkSelfPermission(AddressActivity.this,
+        int hasFineLocationPermission = ContextCompat.checkSelfPermission(context,
                 Manifest.permission.ACCESS_FINE_LOCATION);
 
         if (hasFineLocationPermission == PackageManager.PERMISSION_GRANTED) {
@@ -141,16 +172,16 @@ public class AddressActivity extends AppCompatActivity implements View.OnClickLi
             getAddress();
         } else {  //2. 퍼미션 요청을 허용한 적이 없다면 퍼미션 요청이 필요합니다. 2가지 경우(3-1, 4-1)가 있습니다.
             // 3-1. 사용자가 퍼미션 거부를 한 적이 있는 경우에는
-            if (ActivityCompat.shouldShowRequestPermissionRationale(AddressActivity.this, REQUIRED_PERMISSIONS[0])) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this.getActivity(), REQUIRED_PERMISSIONS[0])) {
                 // 3-2. 요청을 진행하기 전에 사용자가에게 퍼미션이 필요한 이유를 설명해줄 필요가 있습니다.
-                Toast.makeText(AddressActivity.this, "이 앱을 실행하려면 위치 접근 권한이 필요합니다.", Toast.LENGTH_LONG).show();
+                Toast.makeText(context, "이 앱을 실행하려면 위치 접근 권한이 필요합니다.", Toast.LENGTH_SHORT).show();
                 // 3-3. 사용자게에 퍼미션 요청을 합니다. 요청 결과는 onRequestPermissionResult에서 수신됩니다.
-                ActivityCompat.requestPermissions(AddressActivity.this, REQUIRED_PERMISSIONS,
+                ActivityCompat.requestPermissions(this.getActivity(), REQUIRED_PERMISSIONS,
                         PERMISSIONS_REQUEST_CODE);
             } else {
                 // 4-1. 사용자가 퍼미션 거부를 한 적이 없는 경우에는 퍼미션 요청을 바로 합니다.
                 // 요청 결과는 onRequestPermissionResult에서 수신됩니다.
-                ActivityCompat.requestPermissions(AddressActivity.this, REQUIRED_PERMISSIONS,
+                ActivityCompat.requestPermissions(this.getActivity(), REQUIRED_PERMISSIONS,
                         PERMISSIONS_REQUEST_CODE);
             }
         }
@@ -160,7 +191,7 @@ public class AddressActivity extends AppCompatActivity implements View.OnClickLi
     public String getCurrentAddress( double latitude, double longitude) {
 
         //지오코더... GPS를 주소로 변환
-        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+        Geocoder geocoder = new Geocoder(context, Locale.getDefault());
 
         List<Address> addresses;
 
@@ -172,15 +203,15 @@ public class AddressActivity extends AppCompatActivity implements View.OnClickLi
                     7);
         } catch (IOException ioException) {
             //네트워크 문제
-            Toast.makeText(this, "지오코더 서비스 사용불가", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, "지오코더 서비스 사용불가", Toast.LENGTH_SHORT).show();
             return "지오코더 서비스 사용불가";
         } catch (IllegalArgumentException illegalArgumentException) {
-            Toast.makeText(this, "잘못된 GPS 좌표", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, "잘못된 GPS 좌표", Toast.LENGTH_SHORT).show();
             return "잘못된 GPS 좌표";
         }
 
         if (addresses == null || addresses.size() == 0) {
-            Toast.makeText(this, "주소 미발견", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, "주소 미발견", Toast.LENGTH_SHORT).show();
             return "주소 미발견";
         }
 
@@ -191,7 +222,7 @@ public class AddressActivity extends AppCompatActivity implements View.OnClickLi
     //여기부터는 GPS 활성화를 위한 메소드들
     private void showDialogForLocationServiceSetting() {
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(AddressActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("위치 서비스 비활성화");
         builder.setMessage("앱을 사용하기 위해서는 위치 서비스가 필요합니다.\n"
                 + "위치 설정을 수정하세요");
@@ -209,6 +240,7 @@ public class AddressActivity extends AppCompatActivity implements View.OnClickLi
             @Override
             public void onClick(DialogInterface dialog, int id) {
                 dialog.cancel();
+                getActivity().finish();
             }
         });
         builder.create().show();
@@ -231,14 +263,14 @@ public class AddressActivity extends AppCompatActivity implements View.OnClickLi
             });
 
     public boolean checkLocationServicesStatus() {
-        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
 
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
                 || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
     }
 
     private void getAddress() {
-        gpsTracker = new GpsTracker(AddressActivity.this);
+        gpsTracker = new GpsTracker(context);
 
         double latitude = gpsTracker.getLatitude();
         double longitude = gpsTracker.getLongitude();

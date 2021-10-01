@@ -45,26 +45,86 @@
             android:layout_marginTop="10dp"
             android:src="@drawable/person" />
 
-        <TextView
-            android:id="@+id/name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
             android:layout_marginTop="10dp"
-            android:text="홍길동"
-            android:textColor="@color/black"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            android:paddingHorizontal="25dp">
 
-        <TextView
-            android:id="@+id/genderAge"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="이름"
+                android:textSize="20sp"
+                android:layout_gravity="center_vertical"
+                android:gravity="center"/>
+
+            <EditText
+                android:id="@+id/name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:text="홍길동"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:gravity="center" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
             android:layout_marginTop="10dp"
-            android:text="남자 / 60세"
-            android:textColor="@color/black"
-            android:textSize="16sp" />
+            android:paddingHorizontal="25dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="성별"
+                android:textSize="20sp"
+                android:layout_gravity="center_vertical"
+                android:gravity="center"/>
+
+            <Spinner
+                android:id="@+id/gender"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:layout_gravity="center_vertical" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp"
+            android:paddingHorizontal="25dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="생년월일"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/birth"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:gravity="center"
+                android:text="1966.08.25"
+                android:textColor="@color/black"
+                android:textSize="20sp" />
+
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -78,16 +138,20 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="주소"
-                android:textSize="16sp" />
+                android:textSize="20sp"
+                android:layout_gravity="center_vertical"
+                android:gravity="center"/>
 
-            <TextView
+            <EditText
                 android:id="@+id/address"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="2.5"
+                android:layout_weight="3"
                 android:text="전라북도 전주시 덕진구 덕진동 덕진로 333"
                 android:textColor="@color/black"
-                android:textSize="16sp" />
+                android:textSize="20sp"
+                android:gravity="center" />
+
         </LinearLayout>
 
         <LinearLayout
@@ -102,16 +166,19 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="휴대폰"
-                android:textSize="16sp" />
+                android:textSize="20sp"
+                android:gravity="center"/>
 
-            <TextView
+            <EditText
                 android:id="@+id/phone"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="2.5"
+                android:layout_weight="3"
                 android:text="010-0000-0000"
                 android:textColor="@color/black"
-                android:textSize="16sp" />
+                android:textSize="20sp"
+                android:gravity="center" />
+
         </LinearLayout>
 
         <LinearLayout
@@ -126,79 +193,19 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="이메일"
-                android:textSize="16sp" />
+                android:textSize="20sp"
+                android:gravity="center"/>
 
-            <TextView
+            <EditText
                 android:id="@+id/email"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="2.5"
+                android:layout_weight="3"
                 android:text="hong@xxx.com"
                 android:textColor="@color/black"
-                android:textSize="16sp" />
-        </LinearLayout>
+                android:textSize="20sp"
+                android:gravity="center" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:layout_marginHorizontal="20dp"
-            android:layout_marginTop="20dp"
-            android:background="?android:attr/listDivider" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:text="비밀번호 변경" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:layout_marginTop="10dp"
-            android:paddingHorizontal="25dp">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="비민번호"
-                android:textSize="16sp" />
-
-            <EditText
-                android:id="@+id/passwd"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2.5"
-                android:ems="10"
-                android:inputType="textPassword"
-                android:textColor="@color/black"
-                android:textSize="16sp"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:layout_marginTop="10dp"
-            android:paddingHorizontal="25dp">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="비민번호 확인"
-                android:textSize="16sp" />
-
-            <EditText
-                android:id="@+id/passwdCheck"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2.5"
-                android:ems="10"
-                android:inputType="textPassword"
-                android:textColor="@color/black"
-                android:textSize="16sp"/>
         </LinearLayout>
 
     </LinearLayout>

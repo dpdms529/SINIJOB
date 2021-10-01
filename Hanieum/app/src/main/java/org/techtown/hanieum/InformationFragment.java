@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -28,9 +29,12 @@ public class InformationFragment extends Fragment implements View.OnClickListene
 
     Button logoutBtn,disconnectBtn;
     LinearLayout myInfo, termsOfService, privacyPolicy, faq, email;
+    TextView name;
 
     FirebaseAuth mAuth;
     FirebaseUser gsa;
+
+    SharedPreference pref;
 
     public InformationFragment() {
     }
@@ -49,6 +53,8 @@ public class InformationFragment extends Fragment implements View.OnClickListene
         mAuth = FirebaseAuth.getInstance();
         gsa = mAuth.getCurrentUser();
 
+        pref = new SharedPreference(context);
+
         logoutBtn = view.findViewById(R.id.logout_btn);
         disconnectBtn = view.findViewById(R.id.disconnect_btn);
         myInfo = view.findViewById(R.id.myInfo);
@@ -56,6 +62,8 @@ public class InformationFragment extends Fragment implements View.OnClickListene
         privacyPolicy = view.findViewById(R.id.privacyPolicy);
         faq = view.findViewById(R.id.FAQ);
         email = view.findViewById(R.id.email);
+        name = view.findViewById(R.id.name);
+        name.setText(pref.preferences.getString(SharedPreference.NAME,"")+"님 안녕하세요 :)");
 
         logoutBtn.setOnClickListener(this);
         disconnectBtn.setOnClickListener(this);
@@ -102,6 +110,14 @@ public class InformationFragment extends Fragment implements View.OnClickListene
                             Log.e("TAG", "카카오 탈퇴 실패", error);
                         }else{
                             Log.i("TAG", "카카오 탈퇴 성공. SDK에서 토큰 삭제 됨");
+                            pref.editor.remove(SharedPreference.NAME);
+                            pref.editor.remove(SharedPreference.BIRTH);
+                            pref.editor.remove(SharedPreference.GENDER);
+                            pref.editor.remove(SharedPreference.PHONE);
+                            pref.editor.remove(SharedPreference.AGE);
+                            pref.editor.remove(SharedPreference.EMAIL);
+                            pref.editor.remove(SharedPreference.USER_ID);
+                            pref.editor.commit();
                             Intent intent = new Intent(context, LoginActivity.class);
                             startActivity(intent);
                             getActivity().finish();
@@ -117,6 +133,14 @@ public class InformationFragment extends Fragment implements View.OnClickListene
                                 public void onComplete(@NonNull @NotNull Task<Void> task) {
                                     if(task.isSuccessful()){
                                         Log.d("TAG", "구글 사용자 탈퇴");
+                                        pref.editor.remove(SharedPreference.NAME);
+                                        pref.editor.remove(SharedPreference.BIRTH);
+                                        pref.editor.remove(SharedPreference.GENDER);
+                                        pref.editor.remove(SharedPreference.PHONE);
+                                        pref.editor.remove(SharedPreference.AGE);
+                                        pref.editor.remove(SharedPreference.EMAIL);
+                                        pref.editor.remove(SharedPreference.USER_ID);
+                                        pref.editor.commit();
                                         Intent intent = new Intent(context, LoginActivity.class);
                                         startActivity(intent);
                                         getActivity().finish();

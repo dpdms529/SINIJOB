@@ -25,6 +25,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Hanieum"
         android:usesCleartextTraffic="true">
+        <activity android:name=".InfoGetActivity"></activity>
         <activity
             android:name=".VideoListActivity"
             android:configChanges="screenSize|orientation" />
@@ -65,7 +66,6 @@
         <activity android:name=".JobSearchActivity" />
         <activity android:name=".RegionActivity" />
         <activity android:name=".FilteringActivity" />
-        <activity android:name=".AddressActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
 

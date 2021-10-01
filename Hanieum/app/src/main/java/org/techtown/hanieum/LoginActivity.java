@@ -5,11 +5,11 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -31,8 +31,11 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.kakao.sdk.auth.AuthApiClient;
 import com.kakao.sdk.user.UserApiClient;
+import com.kakao.sdk.user.model.Gender;
 
 import org.jetbrains.annotations.NotNull;
+
+import retrofit2.http.HEAD;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -45,6 +48,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private ActivityResultLauncher<Intent> resultLauncher;
 
     GoogleSignInClient mGoogleSignInClient;
+
+    SharedPreference pref;
+
+    boolean ismember = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,7 +116,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     });
                 }else if(tokenInfo != null){
                     Log.i("TAG", "카카오 토큰 정보 보기 성공" + tokenInfo.getId());
-                    Intent intent = new Intent(getApplicationContext(),AddressActivity.class);
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                     startActivity(intent);
                     finish();
                 }
@@ -119,16 +126,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         if(gsa != null){
             Log.i("TAG", "구글 로그인 성공");
-            Intent intent = new Intent(getApplicationContext(),AddressActivity.class);
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(intent);
             finish();
         }
 
+        pref = new SharedPreference(getApplicationContext());
+
         kakaoLoginBtn.setOnClickListener(this);
         googleLoginBtn.setOnClickListener(this);
-        loginBtn.setOnClickListener(this);
-
-
     }
 
     @Override
@@ -148,19 +154,41 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 Log.e("TAG", "카카오 사용자 정보 요청 실패", error);
                             }else if(user != null){
                                 Log.i("TAG", "카카오 사용자 정보 요청 성공");
+                                Log.i("TAG", "loginSuccess: "+user.getConnectedAt().getTime()  + " " + System.currentTimeMillis());
                                 Log.i("TAG", "loginSuccess: "+user.getId());
                                 Log.i("TAG", "loginSuccess: "+user.getKakaoAccount().getProfile().getNickname());
                                 Log.i("TAG", "loginSuccess: "+user.getKakaoAccount().getGender());
                                 Log.i("TAG", "loginSuccess: "+user.getKakaoAccount().getEmail());
-                                //출생월일, 이메일, 성별 필수로 가져오려면 카카오 비즈 앱 등록 필요
-                                //닉네임은 대체로 이름이지만 이름이 아닐수도..
-                                //주소는 따로 받아야함
+
+                                Intent intent;
+                                //회원가입한 경우
+                                if(System.currentTimeMillis()-user.getConnectedAt().getTime()<1000){
+                                    pref.editor.putString(SharedPreference.USER_ID, String.valueOf(user.getId()));
+                                    if (user.getKakaoAccount().getProfile().getNickname() != null) {
+                                        pref.editor.putString(SharedPreference.NAME, user.getKakaoAccount().getProfile().getNickname());
+                                    }
+                                    if (user.getKakaoAccount().getGender() != null){
+                                        if(user.getKakaoAccount().getGender().equals(Gender.FEMALE)){
+                                            pref.editor.putString(SharedPreference.GENDER, "F");
+                                        }else{
+                                            pref.editor.putString(SharedPreference.GENDER, "M");
+                                        }
+
+                                    }
+                                    if (user.getKakaoAccount().getEmail() != null) {
+                                        pref.editor.putString(SharedPreference.EMAIL, user.getKakaoAccount().getEmail());
+                                    }
+                                    pref.editor.commit();
+                                    intent = new Intent(getApplicationContext(), InfoGetActivity.class);
+                                }else{
+                                    intent = new Intent(getApplicationContext(), MainActivity.class);
+                                }
+                                startActivity(intent);
+                                finish();
                             }
                             return null;
                         });
-                        Intent intent = new Intent(getApplicationContext(), AddressActivity.class);
-                        startActivity(intent);
-                        finish();
+
                     }
                     return null;
                 });
@@ -189,9 +217,26 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 Log.i("TAG", "loginSuccess: "+ user.getUid());
                                 Log.i("TAG", "loginSuccess: "+ user.getDisplayName());
                                 Log.i("TAG", "loginSuccess: "+ user.getEmail());
-                                Intent intent = new Intent(getApplicationContext(), AddressActivity.class);
+                                Log.i("TAG", "loginSuccess: "+ user.getMetadata().getCreationTimestamp() + " " + System.currentTimeMillis());
+
+                                Intent intent;
+                                if(System.currentTimeMillis()-user.getMetadata().getCreationTimestamp()<1000){
+                                    pref.editor.putString(SharedPreference.USER_ID, user.getUid());
+                                    if (user.getDisplayName() != null){
+                                        pref.editor.putString(SharedPreference.NAME, user.getDisplayName());
+                                    }
+                                    if (user.getEmail() != null) {
+                                        pref.editor.putString(SharedPreference.EMAIL, user.getEmail());
+                                    }
+                                    pref.editor.commit();
+
+                                    intent = new Intent(getApplicationContext(), InfoGetActivity.class);
+                                }else{
+                                    intent = new Intent(getApplicationContext(), MainActivity.class);
+                                }
                                 startActivity(intent);
                                 finish();
+
                             }
 
                         }else{
