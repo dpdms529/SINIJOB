@@ -34,6 +34,11 @@ import com.kakao.sdk.user.UserApiClient;
 import com.kakao.sdk.user.model.Gender;
 
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
 
 import retrofit2.http.HEAD;
 
@@ -161,8 +166,20 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 Log.i("TAG", "loginSuccess: "+user.getKakaoAccount().getEmail());
 
                                 Intent intent;
+
+                                String php = getResources().getString(R.string.serverIP) + "user_read.php?user_id=" + user.getId();
+                                URLConnector urlConnector = new URLConnector(php);
+                                urlConnector.start();
+                                try {
+                                    urlConnector.join();
+                                } catch (InterruptedException e) {
+                                }
+                                String result = urlConnector.getResult();
+
+                                Log.d("TAG", result);
+
                                 //회원가입한 경우
-                                if(System.currentTimeMillis()-user.getConnectedAt().getTime()<1000){
+                                if(result.contains("\"result\":[]")){
                                     pref.editor.putString(SharedPreference.USER_ID, String.valueOf(user.getId()));
                                     if (user.getKakaoAccount().getProfile().getNickname() != null) {
                                         pref.editor.putString(SharedPreference.NAME, user.getKakaoAccount().getProfile().getNickname());
@@ -219,8 +236,30 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 Log.i("TAG", "loginSuccess: "+ user.getEmail());
                                 Log.i("TAG", "loginSuccess: "+ user.getMetadata().getCreationTimestamp() + " " + System.currentTimeMillis());
 
+                                String php = getResources().getString(R.string.serverIP) + "user_read.php?user_id=" + user.getUid();
+                                URLConnector urlConnector = new URLConnector(php);
+                                urlConnector.start();
+                                try {
+                                    urlConnector.join();
+                                } catch (InterruptedException e) {
+                                }
+                                String result = urlConnector.getResult();
+
+                                Log.d("TAG", result);
+
+//                                String user_id = "123";
+//                                try {
+//                                    JSONObject jsonObject = new JSONObject(result);
+//                                    JSONArray jsonArray = jsonObject.getJSONArray("result");
+//                                    JSONObject jsonObject1 = jsonArray.getJSONObject(0);
+//                                    user_id = jsonObject1.getString("user_id");
+//                                    Log.d("@@@", user_id);
+//                                } catch (JSONException e) {
+//                                    e.printStackTrace();
+//                                }
+
                                 Intent intent;
-                                if(System.currentTimeMillis()-user.getMetadata().getCreationTimestamp()<1000){
+                                if(result.contains("\"result\":[]")){
                                     pref.editor.putString(SharedPreference.USER_ID, user.getUid());
                                     if (user.getDisplayName() != null){
                                         pref.editor.putString(SharedPreference.NAME, user.getDisplayName());

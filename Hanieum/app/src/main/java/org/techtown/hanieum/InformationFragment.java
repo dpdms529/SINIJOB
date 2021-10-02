@@ -110,6 +110,16 @@ public class InformationFragment extends Fragment implements View.OnClickListene
                             Log.e("TAG", "카카오 탈퇴 실패", error);
                         }else{
                             Log.i("TAG", "카카오 탈퇴 성공. SDK에서 토큰 삭제 됨");
+
+                            // db에서 삭제
+                            String php = getResources().getString(R.string.serverIP) + "user_del.php?user_id=" + pref.preferences.getString(SharedPreference.USER_ID, "");
+                            URLConnector urlConnector = new URLConnector(php);
+                            urlConnector.start();
+                            try {
+                                urlConnector.join();
+                            } catch (InterruptedException e) {
+                            }
+                            
                             pref.editor.remove(SharedPreference.NAME);
                             pref.editor.remove(SharedPreference.BIRTH);
                             pref.editor.remove(SharedPreference.GENDER);
@@ -118,6 +128,7 @@ public class InformationFragment extends Fragment implements View.OnClickListene
                             pref.editor.remove(SharedPreference.EMAIL);
                             pref.editor.remove(SharedPreference.USER_ID);
                             pref.editor.commit();
+
                             Intent intent = new Intent(context, LoginActivity.class);
                             startActivity(intent);
                             getActivity().finish();
@@ -141,6 +152,16 @@ public class InformationFragment extends Fragment implements View.OnClickListene
                                         pref.editor.remove(SharedPreference.EMAIL);
                                         pref.editor.remove(SharedPreference.USER_ID);
                                         pref.editor.commit();
+
+                                        // db에서 삭제
+                                        String php = getResources().getString(R.string.serverIP) + "user_del.php?user_id=" + user.getUid();
+                                        URLConnector urlConnector = new URLConnector(php);
+                                        urlConnector.start();
+                                        try {
+                                            urlConnector.join();
+                                        } catch (InterruptedException e) {
+                                        }
+
                                         Intent intent = new Intent(context, LoginActivity.class);
                                         startActivity(intent);
                                         getActivity().finish();
