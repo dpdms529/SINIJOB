@@ -62,6 +62,10 @@ public class AddressFragment extends Fragment implements View.OnClickListener {
 
     Context context;
 
+    SharedPreference pref;
+
+    String streetCode;
+
     public AddressFragment() {
     }
 
@@ -90,6 +94,10 @@ public class AddressFragment extends Fragment implements View.OnClickListener {
         nextBtn = view.findViewById(R.id.nextBtn);
         webView = view.findViewById(R.id.webview);
 
+        pref = new SharedPreference(context);
+
+        addressText.setText(pref.preferences.getString(SharedPreference.ADDRESS,""));
+
         nextBtn.setOnClickListener(this);
         addressText.setOnClickListener(this);
 
@@ -101,6 +109,9 @@ public class AddressFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         if (v == nextBtn) {
+            pref.editor.putString(SharedPreference.STREET_CODE,streetCode);
+            pref.editor.putString(SharedPreference.ADDRESS,addressText.getText().toString());
+            pref.editor.commit();
             ((InfoGetActivity)getActivity()).replaceFragment(NameFragment.newInstance());
         } else if(v == addressText){
             init_webView();
@@ -128,6 +139,7 @@ public class AddressFragment extends Fragment implements View.OnClickListener {
                     }else{
                         addressText.setText(roadAddress+", "+buildingName);
                     }
+                    streetCode = sigunguCode + roadnameCode;
                     Log.d("TAG", "run: "+sigunguCode + roadnameCode);
                 }
             });

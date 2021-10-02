@@ -64,31 +64,33 @@ public class PhoneFragment extends Fragment implements View.OnClickListener {
             pref.editor.commit();
             ((InfoGetActivity)getActivity()).replaceFragment(EmailFragment.newInstance());
         } else if (v == finishBtn) {
-            if (phoneText.getText().length() == 0) {
+            if (phoneText.getText().length() < 11) {
                 Toast.makeText(getContext(), "전화번호를 입력하세요", Toast.LENGTH_SHORT).show();
             } else {
                 pref.editor.putString(SharedPreference.PHONE, phoneText.getText().toString());
                 Intent intent = new Intent(getActivity(), MainActivity.class);
                 pref.editor.commit();
                 Log.d("TAG","user_id="+pref.preferences.getString(SharedPreference.USER_ID, "")+
-                        "&street_code=111102005001&main_no=0&additional_no=0" +
+                        "&street_code="+pref.preferences.getString(SharedPreference.STREET_CODE,"")+
+                        "&main_no=0&additional_no=0" +
                         "&name="+pref.preferences.getString(SharedPreference.NAME, "")+
                         "&age="+pref.preferences.getInt(SharedPreference.AGE, 0)+
                         "&gender="+pref.preferences.getString(SharedPreference.GENDER, "")+
                         "&phone_number="+pref.preferences.getString(SharedPreference.PHONE, "")+
                         "&email="+pref.preferences.getString(SharedPreference.EMAIL, "none")+
-                        "&address=d" +
+                        "&address="+pref.preferences.getString(SharedPreference.ADDRESS,"")  +
                         "&birthday="+pref.preferences.getString(SharedPreference.BIRTH, "") );
                 // db에 저장
                 String php = getResources().getString(R.string.serverIP) + "user_save.php?" +
                         "user_id="+pref.preferences.getString(SharedPreference.USER_ID, "")+
-                        "&street_code=111102005001&main_no=0&additional_no=0" +
+                        "&street_code="+pref.preferences.getString(SharedPreference.STREET_CODE,"")+
+                        "&main_no=0&additional_no=0" +
                         "&name="+pref.preferences.getString(SharedPreference.NAME, "")+
                         "&age="+pref.preferences.getInt(SharedPreference.AGE, 0)+
                         "&gender="+pref.preferences.getString(SharedPreference.GENDER, "")+
                         "&phone_number="+pref.preferences.getString(SharedPreference.PHONE, "")+
                         "&email="+pref.preferences.getString(SharedPreference.EMAIL, "none")+
-                        "&address=d" +
+                        "&address="+pref.preferences.getString(SharedPreference.ADDRESS,"")  +
                         "&birthday="+pref.preferences.getString(SharedPreference.BIRTH, "");
                 URLConnector urlConnectorBookmark = new URLConnector(php);
                 urlConnectorBookmark.start();

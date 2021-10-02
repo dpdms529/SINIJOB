@@ -127,6 +127,8 @@ public class InformationFragment extends Fragment implements View.OnClickListene
                             pref.editor.remove(SharedPreference.AGE);
                             pref.editor.remove(SharedPreference.EMAIL);
                             pref.editor.remove(SharedPreference.USER_ID);
+                            pref.editor.remove(SharedPreference.STREET_CODE);
+                            pref.editor.remove(SharedPreference.ADDRESS);
                             pref.editor.commit();
 
                             Intent intent = new Intent(context, LoginActivity.class);
@@ -151,6 +153,8 @@ public class InformationFragment extends Fragment implements View.OnClickListene
                                         pref.editor.remove(SharedPreference.AGE);
                                         pref.editor.remove(SharedPreference.EMAIL);
                                         pref.editor.remove(SharedPreference.USER_ID);
+                                        pref.editor.remove(SharedPreference.STREET_CODE);
+                                        pref.editor.remove(SharedPreference.ADDRESS);
                                         pref.editor.commit();
 
                                         // db에서 삭제

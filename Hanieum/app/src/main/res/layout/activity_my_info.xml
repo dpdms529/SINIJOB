@@ -29,7 +29,17 @@
 
     </androidx.appcompat.widget.Toolbar>
 
+    <WebView
+        android:id="@+id/webview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <LinearLayout
+        android:id="@+id/linearLayout7"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -48,61 +58,61 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal"
             android:layout_marginTop="10dp"
+            android:orientation="horizontal"
             android:paddingHorizontal="25dp">
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="이름"
-                android:textSize="20sp"
                 android:layout_gravity="center_vertical"
-                android:gravity="center"/>
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="이름"
+                android:textSize="20sp" />
 
             <EditText
                 android:id="@+id/name"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="3"
+                android:gravity="center"
                 android:text="홍길동"
                 android:textColor="@color/black"
                 android:textSize="20sp"
-                android:textStyle="bold"
-                android:gravity="center" />
+                android:textStyle="bold" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal"
             android:layout_marginTop="10dp"
+            android:orientation="horizontal"
             android:paddingHorizontal="25dp">
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="성별"
-                android:textSize="20sp"
                 android:layout_gravity="center_vertical"
-                android:gravity="center"/>
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="성별"
+                android:textSize="20sp" />
 
             <Spinner
                 android:id="@+id/gender"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="3"
-                android:layout_gravity="center_vertical" />
+                android:layout_gravity="center_vertical"
+                android:layout_weight="3" />
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal"
             android:layout_marginTop="10dp"
+            android:orientation="horizontal"
             android:paddingHorizontal="25dp">
 
             <TextView
@@ -129,82 +139,83 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal"
             android:layout_marginTop="10dp"
+            android:orientation="horizontal"
             android:paddingHorizontal="25dp">
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="주소"
-                android:textSize="20sp"
                 android:layout_gravity="center_vertical"
-                android:gravity="center"/>
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="주소"
+                android:textSize="20sp" />
 
             <EditText
                 android:id="@+id/address"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="3"
-                android:text="전라북도 전주시 덕진구 덕진동 덕진로 333"
+                android:focusable="false"
+                android:gravity="center"
+                android:text=""
                 android:textColor="@color/black"
-                android:textSize="20sp"
-                android:gravity="center" />
+                android:textSize="20sp" />
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal"
             android:layout_marginTop="10dp"
+            android:orientation="horizontal"
             android:paddingHorizontal="25dp">
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:gravity="center"
                 android:text="휴대폰"
-                android:textSize="20sp"
-                android:gravity="center"/>
+                android:textSize="20sp" />
 
             <EditText
                 android:id="@+id/phone"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="3"
+                android:gravity="center"
                 android:text="010-0000-0000"
                 android:textColor="@color/black"
-                android:textSize="20sp"
-                android:gravity="center" />
+                android:textSize="20sp" />
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal"
             android:layout_marginTop="10dp"
+            android:orientation="horizontal"
             android:paddingHorizontal="25dp">
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:gravity="center"
                 android:text="이메일"
-                android:textSize="20sp"
-                android:gravity="center"/>
+                android:textSize="20sp" />
 
             <EditText
                 android:id="@+id/email"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="3"
+                android:gravity="center"
                 android:text="hong@xxx.com"
                 android:textColor="@color/black"
-                android:textSize="20sp"
-                android:gravity="center" />
+                android:textSize="20sp" />
 
         </LinearLayout>
 
