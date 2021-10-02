@@ -4,20 +4,25 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.DatePickerDialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 public class MyInfoActivity extends AppCompatActivity implements View.OnClickListener {
     EditText name, phone, email;
     TextView birth;
     Spinner gender;
+    Button saveButton;
     ArrayList<String> items = new ArrayList<>();
 
     SharedPreference pref;
@@ -34,6 +39,7 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
         phone = findViewById(R.id.phone);
         email = findViewById(R.id.email);
         gender = findViewById(R.id.gender);
+        saveButton = findViewById(R.id.saveButton);
 
         items.add("남");
         items.add("여");
@@ -55,13 +61,14 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
         birth.setText(pref.preferences.getString(SharedPreference.BIRTH,""));
         phone.setText(pref.preferences.getString(SharedPreference.PHONE,""));
         email.setText(pref.preferences.getString(SharedPreference.EMAIL,""));
-        if(pref.preferences.getString(SharedPreference.GENDER,"")=="M"){
+        if(pref.preferences.getString(SharedPreference.GENDER,"").equals("M")){
             gender.setSelection(0);
         }else{
             gender.setSelection(1);
         }
 
         birth.setOnClickListener(this);
+        saveButton.setOnClickListener(this);
     }
 
     @Override
@@ -89,6 +96,51 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
             };
             DatePickerDialog oDialog = new DatePickerDialog(this, android.R.style.Theme_DeviceDefault_Light_Dialog,mDateSetListener,year,month,day);
             oDialog.show();
+        } else if (v == saveButton) {
+            String tmpGender;
+            if (gender.getSelectedItem() == "남") {
+                tmpGender = "M";
+            } else {
+                tmpGender = "F";
+            }
+            int year = Integer.parseInt(birth.getText().toString().substring(0, 4));
+            Calendar calendar = new GregorianCalendar();
+            pref.editor.putString(SharedPreference.NAME, name.getText().toString());
+            pref.editor.putInt(SharedPreference.AGE, calendar.get(Calendar.YEAR) - year + 1);
+            pref.editor.putString(SharedPreference.GENDER, tmpGender);
+            pref.editor.putString(SharedPreference.PHONE, phone.getText().toString());
+            pref.editor.putString(SharedPreference.EMAIL, email.getText().toString());
+            pref.editor.putString(SharedPreference.BIRTH, birth.getText().toString());
+            pref.editor.commit();
+
+            Log.d("TAG","user_id="+pref.preferences.getString(SharedPreference.USER_ID, "")+
+                    "&street_code=111102005001&main_no=0&additional_no=0" +
+                    "&name="+pref.preferences.getString(SharedPreference.NAME, "")+
+                    "&age="+pref.preferences.getInt(SharedPreference.AGE, 0)+
+                    "&gender="+pref.preferences.getString(SharedPreference.GENDER, "")+
+                    "&phone_number="+pref.preferences.getString(SharedPreference.PHONE, "")+
+                    "&email="+pref.preferences.getString(SharedPreference.EMAIL, "none")+
+                    "&address=d" +
+                    "&birthday="+pref.preferences.getString(SharedPreference.BIRTH, "") );
+
+            String php = getResources().getString(R.string.serverIP) + "user_update.php?" +
+                    "user_id="+pref.preferences.getString(SharedPreference.USER_ID, "")+
+                    "&street_code=111102005001&main_no=0&additional_no=0" +
+                    "&name="+pref.preferences.getString(SharedPreference.NAME, "")+
+                    "&age="+pref.preferences.getInt(SharedPreference.AGE, 0)+
+                    "&gender="+pref.preferences.getString(SharedPreference.GENDER, "")+
+                    "&phone_number="+pref.preferences.getString(SharedPreference.PHONE, "")+
+                    "&email="+pref.preferences.getString(SharedPreference.EMAIL, "none")+
+                    "&address=d" +
+                    "&birthday="+pref.preferences.getString(SharedPreference.BIRTH, "");
+            URLConnector urlConnectorBookmark = new URLConnector(php);
+            urlConnectorBookmark.start();
+            try {
+                urlConnectorBookmark.join();
+            } catch (InterruptedException e) {
+            }
+            finish();
+            Log.d("TAG", "내 정보 수정 성공");
         }
     }
 }

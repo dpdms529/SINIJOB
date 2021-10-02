@@ -118,6 +118,16 @@ public class InformationFragment extends Fragment implements View.OnClickListene
                             pref.editor.remove(SharedPreference.EMAIL);
                             pref.editor.remove(SharedPreference.USER_ID);
                             pref.editor.commit();
+
+                            // db에서 삭제
+//                            String php = getResources().getString(R.string.serverIP) + "user_del.php?user_id=" + user.getId();
+//                            URLConnector urlConnector = new URLConnector(php);
+//                            urlConnector.start();
+//                            try {
+//                                urlConnector.join();
+//                            } catch (InterruptedException e) {
+//                            }
+
                             Intent intent = new Intent(context, LoginActivity.class);
                             startActivity(intent);
                             getActivity().finish();
@@ -141,6 +151,16 @@ public class InformationFragment extends Fragment implements View.OnClickListene
                                         pref.editor.remove(SharedPreference.EMAIL);
                                         pref.editor.remove(SharedPreference.USER_ID);
                                         pref.editor.commit();
+
+                                        // db에서 삭제
+                                        String php = getResources().getString(R.string.serverIP) + "user_del.php?user_id=" + user.getUid();
+                                        URLConnector urlConnector = new URLConnector(php);
+                                        urlConnector.start();
+                                        try {
+                                            urlConnector.join();
+                                        } catch (InterruptedException e) {
+                                        }
+
                                         Intent intent = new Intent(context, LoginActivity.class);
                                         startActivity(intent);
                                         getActivity().finish();

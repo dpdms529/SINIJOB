@@ -76,7 +76,7 @@ public class PhoneFragment extends Fragment implements View.OnClickListener {
                         "&age="+pref.preferences.getInt(SharedPreference.AGE, 0)+
                         "&gender="+pref.preferences.getString(SharedPreference.GENDER, "")+
                         "&phone_number="+pref.preferences.getString(SharedPreference.PHONE, "")+
-                        "&e-mail="+pref.preferences.getString(SharedPreference.EMAIL, "none")+
+                        "&email="+pref.preferences.getString(SharedPreference.EMAIL, "none")+
                         "&address=d" +
                         "&birthday="+pref.preferences.getString(SharedPreference.BIRTH, "") );
                 // db에 저장
@@ -87,7 +87,7 @@ public class PhoneFragment extends Fragment implements View.OnClickListener {
                         "&age="+pref.preferences.getInt(SharedPreference.AGE, 0)+
                         "&gender="+pref.preferences.getString(SharedPreference.GENDER, "")+
                         "&phone_number="+pref.preferences.getString(SharedPreference.PHONE, "")+
-                        "&e-mail="+pref.preferences.getString(SharedPreference.EMAIL, "none")+
+                        "&email="+pref.preferences.getString(SharedPreference.EMAIL, "none")+
                         "&address=d" +
                         "&birthday="+pref.preferences.getString(SharedPreference.BIRTH, "");
                 URLConnector urlConnectorBookmark = new URLConnector(php);
