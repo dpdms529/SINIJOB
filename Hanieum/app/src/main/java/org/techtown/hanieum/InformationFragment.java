@@ -63,7 +63,6 @@ public class InformationFragment extends Fragment implements View.OnClickListene
         faq = view.findViewById(R.id.FAQ);
         email = view.findViewById(R.id.email);
         name = view.findViewById(R.id.name);
-        name.setText(pref.preferences.getString(SharedPreference.NAME,"")+"님 안녕하세요 :)");
 
         logoutBtn.setOnClickListener(this);
         disconnectBtn.setOnClickListener(this);
@@ -73,6 +72,12 @@ public class InformationFragment extends Fragment implements View.OnClickListene
         faq.setOnClickListener(this);
         email.setOnClickListener(this);
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        name.setText(pref.preferences.getString(SharedPreference.NAME,"")+"님 안녕하세요 :)");
     }
 
     @Override
@@ -129,6 +134,10 @@ public class InformationFragment extends Fragment implements View.OnClickListene
                             pref.editor.remove(SharedPreference.USER_ID);
                             pref.editor.remove(SharedPreference.STREET_CODE);
                             pref.editor.remove(SharedPreference.ADDRESS);
+                            pref.editor.remove(SharedPreference.MAIN_NO);
+                            pref.editor.remove(SharedPreference.ADDITIONAL_NO);
+                            pref.editor.remove(SharedPreference.X);
+                            pref.editor.remove(SharedPreference.Y);
                             pref.editor.commit();
 
                             Intent intent = new Intent(context, LoginActivity.class);
@@ -155,6 +164,10 @@ public class InformationFragment extends Fragment implements View.OnClickListene
                                         pref.editor.remove(SharedPreference.USER_ID);
                                         pref.editor.remove(SharedPreference.STREET_CODE);
                                         pref.editor.remove(SharedPreference.ADDRESS);
+                                        pref.editor.remove(SharedPreference.MAIN_NO);
+                                        pref.editor.remove(SharedPreference.ADDITIONAL_NO);
+                                        pref.editor.remove(SharedPreference.X);
+                                        pref.editor.remove(SharedPreference.Y);
                                         pref.editor.commit();
 
                                         // db에서 삭제

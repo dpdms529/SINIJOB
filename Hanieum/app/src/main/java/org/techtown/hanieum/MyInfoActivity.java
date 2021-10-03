@@ -92,6 +92,7 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
         }else{
             gender.setSelection(1);
         }
+        streetCode = pref.preferences.getString(SharedPreference.STREET_CODE,"");
 
         birth.setOnClickListener(this);
         saveButton.setOnClickListener(this);
