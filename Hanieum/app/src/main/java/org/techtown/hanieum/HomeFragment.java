@@ -288,7 +288,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             e.printStackTrace();
         }
 
-        if (!lastUpdated.equals(dbLastUpdated)) {   // 최신 업데이트 일시 확인(불일치 -> 데이터 가져오기)
+        if (lastUpdated != null && !lastUpdated.equals(dbLastUpdated)) {   // 최신 업데이트 일시 확인(불일치 -> 데이터 가져오기)
             String recruitCertificatePhp = getResources().getString(R.string.serverIP) + "certificate_update.php?last_updated=" + lastUpdated;
             URLConnector urlConnectorRecruitCertificate = new URLConnector(recruitCertificatePhp);
 
@@ -469,6 +469,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 JSONObject jsonObject1 = jsonArray.getJSONObject(i);
 
                 String recruit_id = jsonObject1.getString("recruit_id");
+                Log.d("TAG", "loadListData: "+recruit_id);
                 List<Recruit> recruit = null;
                 try {
                     recruit = new RecruitGetListAsyncTask(db.RecruitDao()).execute(recruit_id).get();
@@ -477,6 +478,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+                Log.d("TAG", "loadListData: "+recruit);
 
                 int flag = 0;
                 String salaryType = new String();

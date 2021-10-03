@@ -75,7 +75,7 @@ public class PhoneFragment extends Fragment implements View.OnClickListener {
                         "&main_no="+pref.preferences.getString(SharedPreference.MAIN_NO,"")+
                         "&additional_no="+pref.preferences.getString(SharedPreference.ADDITIONAL_NO,"") +
                         "&name="+pref.preferences.getString(SharedPreference.NAME, "")+
-                        "&age="+pref.preferences.getInt(SharedPreference.AGE, 0)+
+                        "&age="+pref.preferences.getString(SharedPreference.AGE, "")+
                         "&gender="+pref.preferences.getString(SharedPreference.GENDER, "")+
                         "&phone_number="+pref.preferences.getString(SharedPreference.PHONE, "")+
                         "&email="+pref.preferences.getString(SharedPreference.EMAIL, "none")+
@@ -88,7 +88,7 @@ public class PhoneFragment extends Fragment implements View.OnClickListener {
                         "&main_no="+pref.preferences.getString(SharedPreference.MAIN_NO,"")+
                         "&additional_no="+pref.preferences.getString(SharedPreference.ADDITIONAL_NO,"") +
                         "&name="+pref.preferences.getString(SharedPreference.NAME, "")+
-                        "&age="+pref.preferences.getInt(SharedPreference.AGE, 0)+
+                        "&age="+pref.preferences.getString(SharedPreference.AGE, "")+
                         "&gender="+pref.preferences.getString(SharedPreference.GENDER, "")+
                         "&phone_number="+pref.preferences.getString(SharedPreference.PHONE, "")+
                         "&email="+pref.preferences.getString(SharedPreference.EMAIL, "none")+

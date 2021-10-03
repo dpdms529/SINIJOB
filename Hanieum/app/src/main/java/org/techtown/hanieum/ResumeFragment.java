@@ -118,9 +118,9 @@ public class ResumeFragment extends Fragment implements View.OnClickListener {
 
         name.setText(pref.preferences.getString(SharedPreference.NAME,""));
         if(pref.preferences.getString(SharedPreference.GENDER,"").equals("F")){
-            genderAge.setText("여자 / " + pref.preferences.getInt(SharedPreference.AGE,0)+"세");
+            genderAge.setText("여자 / " + pref.preferences.getString(SharedPreference.AGE,"")+"세");
         }else{
-            genderAge.setText("남자 / " + pref.preferences.getInt(SharedPreference.AGE,0)+"세");
+            genderAge.setText("남자 / " + pref.preferences.getString(SharedPreference.AGE,"")+"세");
         }
         address.setText(pref.preferences.getString(SharedPreference.ADDRESS,""));
         phone.setText(pref.preferences.getString(SharedPreference.PHONE,""));

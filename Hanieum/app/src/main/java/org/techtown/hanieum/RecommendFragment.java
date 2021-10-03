@@ -1067,7 +1067,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
             e.printStackTrace();
         }
         String lastUpdated = rows.get(0);
-        Log.d("date: ", "recruit: " + lastUpdated);
+        Log.d("TAG", "recruit: " + lastUpdated);
         String dbLastUpdated = "";
 
         String php = getResources().getString(R.string.serverIP) + "recruit_lastupdated.php";
@@ -1079,6 +1079,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
         } catch (InterruptedException e) {
         }
         String result = urlConnector.getResult();
+        Log.d("TAG", "recruit: " + result);
 
         try {
             JSONObject jsonObject = new JSONObject(result);
@@ -1188,7 +1189,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
         }
 //        db.recruitCertificateDao().getLastUpdated();
         String lastUpdated = rows.get(0);
-        Log.d("date: ", "certifi: " + lastUpdated);
+        Log.d("TAG", "certifi: " + rows);
         String dbLastUpdated = "";
 
         String php = getResources().getString(R.string.serverIP) + "recruit_lastupdated.php";
@@ -1200,6 +1201,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
         } catch (InterruptedException e) {
         }
         String result = urlConnector.getResult();
+        Log.d("TAG", "certifi :"+ result);
 
         try {
             JSONObject jsonObject = new JSONObject(result);
@@ -1209,7 +1211,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
             e.printStackTrace();
         }
 
-        if (!lastUpdated.equals(dbLastUpdated)) {   // 최신 업데이트 일시 확인(불일치 -> 데이터 가져오기)
+        if (lastUpdated!=null && !lastUpdated.equals(dbLastUpdated)) {   // 최신 업데이트 일시 확인(불일치 -> 데이터 가져오기)
             String recruitCertificatePhp = getResources().getString(R.string.serverIP) + "certificate_update.php?last_updated=" + lastUpdated;
             URLConnector urlConnectorRecruitCertificate = new URLConnector(recruitCertificatePhp);
 

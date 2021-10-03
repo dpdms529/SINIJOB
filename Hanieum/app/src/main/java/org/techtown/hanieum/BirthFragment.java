@@ -100,7 +100,7 @@ public class BirthFragment extends Fragment implements View.OnClickListener {
                 day = String.valueOf(birth.getDayOfMonth());
             }
             pref.editor.putString(SharedPreference.BIRTH, birth.getYear()+mon+day);
-            pref.editor.putInt(SharedPreference.AGE, calendar.get(Calendar.YEAR) - birth.getYear() + 1);
+            pref.editor.putString(SharedPreference.AGE, String.valueOf(calendar.get(Calendar.YEAR) - birth.getYear() + 1));
             pref.editor.commit();
             ((InfoGetActivity)getActivity()).replaceFragment(EmailFragment.newInstance());
         }

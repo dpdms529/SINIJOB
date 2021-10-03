@@ -145,7 +145,7 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
             String day = birth.getText().subSequence(10,12).toString();
             Calendar calendar = new GregorianCalendar();
             pref.editor.putString(SharedPreference.NAME, name.getText().toString());
-            pref.editor.putInt(SharedPreference.AGE, calendar.get(Calendar.YEAR) - year + 1);
+            pref.editor.putString(SharedPreference.AGE, String.valueOf(calendar.get(Calendar.YEAR) - year + 1));
             pref.editor.putString(SharedPreference.GENDER, tmpGender);
             pref.editor.putString(SharedPreference.PHONE, phone.getText().toString());
             pref.editor.putString(SharedPreference.EMAIL, email.getText().toString());
@@ -189,7 +189,7 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
                     "&main_no="+pref.preferences.getString(SharedPreference.MAIN_NO,"")+
                     "&additional_no="+pref.preferences.getString(SharedPreference.ADDITIONAL_NO,"") +
                     "&name="+pref.preferences.getString(SharedPreference.NAME, "")+
-                    "&age="+pref.preferences.getInt(SharedPreference.AGE, 0)+
+                    "&age="+pref.preferences.getString(SharedPreference.AGE, "")+
                     "&gender="+pref.preferences.getString(SharedPreference.GENDER, "")+
                     "&phone_number="+pref.preferences.getString(SharedPreference.PHONE, "")+
                     "&email="+pref.preferences.getString(SharedPreference.EMAIL, "none")+
@@ -202,7 +202,7 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
                     "&main_no="+pref.preferences.getString(SharedPreference.MAIN_NO,"")+
                     "&additional_no="+pref.preferences.getString(SharedPreference.ADDITIONAL_NO,"") +
                     "&name="+pref.preferences.getString(SharedPreference.NAME, "")+
-                    "&age="+pref.preferences.getInt(SharedPreference.AGE, 0)+
+                    "&age="+pref.preferences.getString(SharedPreference.AGE, "")+
                     "&gender="+pref.preferences.getString(SharedPreference.GENDER, "")+
                     "&phone_number="+pref.preferences.getString(SharedPreference.PHONE, "")+
                     "&email="+pref.preferences.getString(SharedPreference.EMAIL, "none")+
