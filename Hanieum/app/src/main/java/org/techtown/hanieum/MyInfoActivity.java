@@ -37,7 +37,7 @@ import java.util.GregorianCalendar;
 
 public class MyInfoActivity extends AppCompatActivity implements View.OnClickListener {
     EditText name, address, phone, email;
-    TextView birth;
+    EditText birth;
     Spinner gender;
     Button saveButton;
     WebView webView;
@@ -82,8 +82,13 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
             }
         });
 
+        String prefBirth = pref.preferences.getString(SharedPreference.BIRTH,"");
+        String year = prefBirth.substring(0, 4);
+        String mon = prefBirth.substring(4, 6);
+        String day = prefBirth.substring(6);
+
         name.setText(pref.preferences.getString(SharedPreference.NAME,""));
-        birth.setText(pref.preferences.getString(SharedPreference.BIRTH,""));
+        birth.setText(year + "년 " + mon + "월 " + day + "일");
         address.setText(pref.preferences.getString(SharedPreference.ADDRESS,""));
         phone.setText(pref.preferences.getString(SharedPreference.PHONE,""));
         email.setText(pref.preferences.getString(SharedPreference.EMAIL,""));
@@ -105,21 +110,21 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
     public void onClick(View v) {
         if(v==birth){
             int year = Integer.parseInt(birth.getText().subSequence(0,4).toString());
-            int month = Integer.parseInt(birth.getText().subSequence(4,6).toString())-1;
-            int day = Integer.parseInt(birth.getText().subSequence(6,8).toString());
+            int month = Integer.parseInt(birth.getText().subSequence(6,8).toString())-1;
+            int day = Integer.parseInt(birth.getText().subSequence(10,12).toString());
             DatePickerDialog.OnDateSetListener mDateSetListener = new DatePickerDialog.OnDateSetListener() {
                 @Override
                 public void onDateSet(DatePicker datePicker, int year, int month, int day) {
                     StringBuilder sb = new StringBuilder(String.valueOf(year));
                     if (month < 9) {
-                        sb.append("0"+(month+1));
+                        sb.append("년 0"+(month+1)+"월 ");
                     }else{
-                        sb.append(month+1);
+                        sb.append("년 "+month+1+"월 ");
                     }
                     if(day < 10){
-                        sb.append("0"+day);
+                        sb.append("0"+day+"일");
                     }else{
-                        sb.append(day);
+                        sb.append(day+"일");
                     }
                     birth.setText(sb.toString());
                 }
@@ -136,13 +141,15 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
                 tmpGender = "F";
             }
             int year = Integer.parseInt(birth.getText().toString().substring(0, 4));
+            String month = birth.getText().subSequence(6,8).toString();
+            String day = birth.getText().subSequence(10,12).toString();
             Calendar calendar = new GregorianCalendar();
             pref.editor.putString(SharedPreference.NAME, name.getText().toString());
             pref.editor.putInt(SharedPreference.AGE, calendar.get(Calendar.YEAR) - year + 1);
             pref.editor.putString(SharedPreference.GENDER, tmpGender);
             pref.editor.putString(SharedPreference.PHONE, phone.getText().toString());
             pref.editor.putString(SharedPreference.EMAIL, email.getText().toString());
-            pref.editor.putString(SharedPreference.BIRTH, birth.getText().toString());
+            pref.editor.putString(SharedPreference.BIRTH, year + month + day);
             pref.editor.putString(SharedPreference.STREET_CODE,streetCode);
             pref.editor.putString(SharedPreference.ADDRESS, address.getText().toString());
             pref.editor.commit();
@@ -201,10 +208,10 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
                     "&email="+pref.preferences.getString(SharedPreference.EMAIL, "none")+
                     "&address="+pref.preferences.getString(SharedPreference.ADDRESS,"")  +
                     "&birthday="+pref.preferences.getString(SharedPreference.BIRTH, "");
-            URLConnector urlConnectorBookmark = new URLConnector(php);
-            urlConnectorBookmark.start();
+            URLConnector urlConnectorUser = new URLConnector(php);
+            urlConnectorUser.start();
             try {
-                urlConnectorBookmark.join();
+                urlConnectorUser.join();
             } catch (InterruptedException e) {
             }
             finish();

@@ -124,7 +124,7 @@ public class InformationFragment extends Fragment implements View.OnClickListene
                                 urlConnector.join();
                             } catch (InterruptedException e) {
                             }
-                            
+
                             pref.editor.remove(SharedPreference.NAME);
                             pref.editor.remove(SharedPreference.BIRTH);
                             pref.editor.remove(SharedPreference.GENDER);

@@ -198,6 +198,41 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                     pref.editor.commit();
                                     intent = new Intent(getApplicationContext(), InfoGetActivity.class);
                                 }else{
+                                    try {
+                                        Log.d("TAG", "db 정보 불러오기 시작");
+                                        JSONObject jsonObject = new JSONObject(result);
+                                        JSONArray jsonArray = jsonObject.getJSONArray("result");
+                                        JSONObject jsonObject1 = jsonArray.getJSONObject(0);
+
+                                        String user_id = jsonObject1.getString("user_id");
+                                        String street_code = jsonObject1.getString("street_code");
+                                        String main_no = jsonObject1.getString("main_no");
+                                        String additional_no = jsonObject1.getString("additional_no");
+                                        String name = jsonObject1.getString("name");
+                                        String age = jsonObject1.getString("age");
+                                        String gender = jsonObject1.getString("gender");
+                                        String phone_number = jsonObject1.getString("phone_number");
+                                        String email = jsonObject1.getString("email");
+                                        String address = jsonObject1.getString("address");
+                                        String birthday = jsonObject1.getString("birthday");
+
+                                        pref.editor.putString(SharedPreference.USER_ID, user_id);
+                                        pref.editor.putString(SharedPreference.STREET_CODE, street_code);
+                                        pref.editor.putString(SharedPreference.MAIN_NO, main_no);
+                                        pref.editor.putString(SharedPreference.ADDITIONAL_NO, additional_no);
+                                        pref.editor.putString(SharedPreference.NAME, name);
+                                        pref.editor.putString(SharedPreference.AGE, age);
+                                        pref.editor.putString(SharedPreference.GENDER, gender);
+                                        pref.editor.putString(SharedPreference.PHONE, phone_number);
+                                        pref.editor.putString(SharedPreference.EMAIL, email);
+                                        pref.editor.putString(SharedPreference.ADDRESS, address);
+                                        pref.editor.putString(SharedPreference.BIRTH, birthday);
+                                        pref.editor.commit();
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                    Log.d("TAG", "db 정보 불러오기 끝");
+
                                     intent = new Intent(getApplicationContext(), MainActivity.class);
                                 }
                                 startActivity(intent);
@@ -247,17 +282,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
                                 Log.d("TAG", result);
 
-//                                String user_id = "123";
-//                                try {
-//                                    JSONObject jsonObject = new JSONObject(result);
-//                                    JSONArray jsonArray = jsonObject.getJSONArray("result");
-//                                    JSONObject jsonObject1 = jsonArray.getJSONObject(0);
-//                                    user_id = jsonObject1.getString("user_id");
-//                                    Log.d("@@@", user_id);
-//                                } catch (JSONException e) {
-//                                    e.printStackTrace();
-//                                }
-
                                 Intent intent;
                                 if(result.contains("\"result\":[]")){
                                     pref.editor.putString(SharedPreference.USER_ID, user.getUid());
@@ -271,6 +295,41 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
                                     intent = new Intent(getApplicationContext(), InfoGetActivity.class);
                                 }else{
+                                    try {
+                                        Log.d("TAG", "db 정보 불러오기 시작");
+                                        JSONObject jsonObject = new JSONObject(result);
+                                        JSONArray jsonArray = jsonObject.getJSONArray("result");
+                                        JSONObject jsonObject1 = jsonArray.getJSONObject(0);
+
+                                        String user_id = jsonObject1.getString("user_id");
+                                        String street_code = jsonObject1.getString("street_code");
+                                        String main_no = jsonObject1.getString("main_no");
+                                        String additional_no = jsonObject1.getString("additional_no");
+                                        String name = jsonObject1.getString("name");
+                                        String age = jsonObject1.getString("age");
+                                        String gender = jsonObject1.getString("gender");
+                                        String phone_number = jsonObject1.getString("phone_number");
+                                        String email = jsonObject1.getString("email");
+                                        String address = jsonObject1.getString("address");
+                                        String birthday = jsonObject1.getString("birthday");
+
+                                        pref.editor.putString(SharedPreference.USER_ID, user_id);
+                                        pref.editor.putString(SharedPreference.STREET_CODE, street_code);
+                                        pref.editor.putString(SharedPreference.MAIN_NO, main_no);
+                                        pref.editor.putString(SharedPreference.ADDITIONAL_NO, additional_no);
+                                        pref.editor.putString(SharedPreference.NAME, name);
+                                        pref.editor.putString(SharedPreference.AGE, age);
+                                        pref.editor.putString(SharedPreference.GENDER, gender);
+                                        pref.editor.putString(SharedPreference.PHONE, phone_number);
+                                        pref.editor.putString(SharedPreference.EMAIL, email);
+                                        pref.editor.putString(SharedPreference.ADDRESS, address);
+                                        pref.editor.putString(SharedPreference.BIRTH, birthday);
+                                        pref.editor.commit();
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                    Log.d("TAG", "db 정보 불러오기 끝");
+
                                     intent = new Intent(getApplicationContext(), MainActivity.class);
                                 }
                                 startActivity(intent);
