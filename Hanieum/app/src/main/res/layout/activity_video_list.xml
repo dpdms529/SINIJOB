@@ -24,7 +24,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="영상 자기소개서"
+            android:text="영상 자기소개서 촬영"
             android:textColor="@color/white"
             android:textSize="20dp"
             android:textStyle="bold" />

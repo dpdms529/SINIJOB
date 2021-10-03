@@ -118,7 +118,7 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
         });
 
         if (item != null) {
-            title.setText("글 자기소개서 수정");
+            title.setText("영상 자기소개서 수정");
 
             dirName = item.getFirst_item();
 
@@ -209,17 +209,23 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
                                 uri = Uri.parse(cv1Path);
                                 introducePlayer.setVideoURI(uri);
                                 getThumbNail(introducePlayer, cv1Path);
+                                getThumbNail(motivePlayer, cv2Path);
+                                getThumbNail(careerPlayer, cv3Path);
 
                             } else if (fileName.equals("motive")) {
 
                                 uri = Uri.parse(cv2Path);
                                 motivePlayer.setVideoURI(uri);
+                                getThumbNail(introducePlayer, cv1Path);
                                 getThumbNail(motivePlayer, cv2Path);
+                                getThumbNail(careerPlayer, cv3Path);
 
                             } else if (fileName.equals("career")) {
 
                                 uri = Uri.parse(cv3Path);
                                 careerPlayer.setVideoURI(uri);
+                                getThumbNail(introducePlayer, cv1Path);
+                                getThumbNail(motivePlayer, cv2Path);
                                 getThumbNail(careerPlayer, cv3Path);
 
                             }
