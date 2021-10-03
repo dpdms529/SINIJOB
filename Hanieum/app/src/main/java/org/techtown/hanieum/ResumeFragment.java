@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -37,7 +38,8 @@ public class ResumeFragment extends Fragment implements View.OnClickListener {
     LinearLayout selfIntroLayout;
     LinearLayout careerTextLayout;
     LinearLayout certifiTextLayout;
-    TextView school;
+    TextView name, genderAge, address, phone, email, school;
+    ImageView setting;
 
     RecyclerView selfInfoRecyclerView;
     SelfInfoAdapter selfInfoAdapter;
@@ -45,6 +47,8 @@ public class ResumeFragment extends Fragment implements View.OnClickListener {
     Context context;
 
     AppDatabase db;
+
+    SharedPreference pref;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -57,13 +61,21 @@ public class ResumeFragment extends Fragment implements View.OnClickListener {
         View view = inflater.inflate(R.layout.fragment_resume, container, false);
         context = getContext();
 
+        pref = new SharedPreference(context);
+
         schoolLayout = view.findViewById(R.id.schoolLayout);
         careerLayout = view.findViewById(R.id.careerLayout);
         certifiLayout = view.findViewById(R.id.certifiLayout);
         selfIntroLayout = view.findViewById(R.id.selfIntroLayout);
         careerTextLayout = view.findViewById(R.id.careerTextLayout);
         certifiTextLayout = view.findViewById(R.id.certifiTextLayout);
+        name = view.findViewById(R.id.name);
+        genderAge = view.findViewById(R.id.genderAge);
+        address = view.findViewById(R.id.address);
+        phone = view.findViewById(R.id.phone);
+        email = view.findViewById(R.id.email);
         school = view.findViewById(R.id.school);
+        setting = view.findViewById(R.id.setting);
 
         selfInfoRecyclerView = view.findViewById(R.id.selfInfoRecyclerView);
         LinearLayoutManager layoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
@@ -84,6 +96,7 @@ public class ResumeFragment extends Fragment implements View.OnClickListener {
             }
         });
 
+        setting.setOnClickListener(this);
         schoolLayout.setOnClickListener(this);
         careerLayout.setOnClickListener(this);
         certifiLayout.setOnClickListener(this);
@@ -102,6 +115,16 @@ public class ResumeFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onResume() {
         super.onResume();
+
+        name.setText(pref.preferences.getString(SharedPreference.NAME,""));
+        if(pref.preferences.getString(SharedPreference.GENDER,"").equals("F")){
+            genderAge.setText("여자 / " + pref.preferences.getInt(SharedPreference.AGE,0)+"세");
+        }else{
+            genderAge.setText("남자 / " + pref.preferences.getInt(SharedPreference.AGE,0)+"세");
+        }
+        address.setText(pref.preferences.getString(SharedPreference.ADDRESS,""));
+        phone.setText(pref.preferences.getString(SharedPreference.PHONE,""));
+        email.setText(pref.preferences.getString(SharedPreference.EMAIL,""));
 
         // 학력사항
         String education = null;
@@ -193,6 +216,9 @@ public class ResumeFragment extends Fragment implements View.OnClickListener {
             startActivity(intent);
         } else if (v == selfIntroLayout) {
             Intent intent = new Intent(getContext(), SelfInfoActivity.class);
+            startActivity(intent);
+        } else if(v == setting){
+            Intent intent = new Intent(getContext(), MyInfoActivity.class);
             startActivity(intent);
         }
     }
