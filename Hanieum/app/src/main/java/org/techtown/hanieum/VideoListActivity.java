@@ -11,6 +11,7 @@ import android.media.MediaPlayer;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
@@ -36,7 +37,9 @@ import com.arthenica.mobileffmpeg.FFmpeg;
 import org.techtown.hanieum.db.AppDatabase;
 import org.techtown.hanieum.db.entity.CoverLetter;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -257,7 +260,6 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
             }
             Intent intent = new Intent(this, SelfInfoActivity.class);
             startActivity(intent);
-            finish();
 
         } else if (v == delBtn) {
 
@@ -302,6 +304,7 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
         String dir = this.getFilesDir().toString() + "/videocv_" + dirName;
         File dest = new File(dir, "cv.mp4");
         String filePath = dest.getAbsolutePath();
+
         String exe;
         // the "exe" string contains the command to process video.The details of command are discussed later in this post.
         // "video_url" is the url of video which you want to edit. You can get this url from intent by selecting any video from gallery.
