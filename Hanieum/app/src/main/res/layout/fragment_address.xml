@@ -14,62 +14,34 @@
         android:layout_gravity="center"
         android:layout_marginTop="50dp"
         android:layout_marginBottom="25dp"
-        android:text="아래 주소가 맞나요?"
+        android:text="주소를 설정해주세요"
         android:textColor="@color/black"
         android:textSize="23sp" />
 
-    <Button
-        android:id="@+id/retryBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="40dp"
-        android:layout_gravity="right"
-        android:text="재검색" />
+    <WebView
+        android:id="@+id/webview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
 
     <EditText
         android:id="@+id/addressText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="40dp"
-        android:text="전라북도 전주시 덕진구 덕진동"
+        android:hint="클릭하세요"
+        android:gravity="center"
         android:textStyle="bold"
         android:textColor="@color/black"
-        android:enabled="false"/>
+        android:focusable="false"/>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal"
-        android:layout_marginTop="30dp"
-        android:layout_marginHorizontal="40dp">
+    <Button
+        android:id="@+id/nextBtn"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/border_sec_color"
+        android:text="다음"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="30dp"/>
 
-        <Button
-            android:id="@+id/noBtn"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="15dp"
-            android:layout_weight="1"
-            android:background="@drawable/border_txt_round"
-            android:text="아니요"
-            android:textColor="#437e96"
-            app:backgroundTint="@null"/>
-
-        <Button
-            android:id="@+id/yesBtn"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="15dp"
-            android:layout_weight="1"
-            android:background="@drawable/border_sec_color"
-            android:text="네, 맞아요" />
-
-        <Button
-            android:id="@+id/nextBtn"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@drawable/border_sec_color"
-            android:text="다음"
-            android:visibility="gone"/>
-    </LinearLayout>
 </LinearLayout>

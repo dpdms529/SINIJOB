@@ -3,9 +3,22 @@ package org.techtown.hanieum;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.DatePickerDialog;
+import android.app.Dialog;
+import android.net.http.SslError;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.webkit.JavascriptInterface;
+import android.webkit.JsResult;
+import android.webkit.SslErrorHandler;
+import android.webkit.WebChromeClient;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -19,13 +32,19 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 public class MyInfoActivity extends AppCompatActivity implements View.OnClickListener {
-    EditText name, phone, email;
+    EditText name, address, phone, email;
     TextView birth;
     Spinner gender;
     Button saveButton;
+    WebView webView;
+
+    Handler handler;
+
     ArrayList<String> items = new ArrayList<>();
 
     SharedPreference pref;
+
+    String streetCode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,10 +55,12 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
 
         name = findViewById(R.id.name);
         birth = findViewById(R.id.birth);
+        address = findViewById(R.id.address);
         phone = findViewById(R.id.phone);
         email = findViewById(R.id.email);
         gender = findViewById(R.id.gender);
         saveButton = findViewById(R.id.saveButton);
+        webView = findViewById(R.id.webview);
 
         items.add("남");
         items.add("여");
@@ -59,6 +80,7 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
 
         name.setText(pref.preferences.getString(SharedPreference.NAME,""));
         birth.setText(pref.preferences.getString(SharedPreference.BIRTH,""));
+        address.setText(pref.preferences.getString(SharedPreference.ADDRESS,""));
         phone.setText(pref.preferences.getString(SharedPreference.PHONE,""));
         email.setText(pref.preferences.getString(SharedPreference.EMAIL,""));
         if(pref.preferences.getString(SharedPreference.GENDER,"").equals("M")){
@@ -69,6 +91,9 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
 
         birth.setOnClickListener(this);
         saveButton.setOnClickListener(this);
+        address.setOnClickListener(this);
+
+        handler = new Handler();
     }
 
     @Override
@@ -96,6 +121,8 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
             };
             DatePickerDialog oDialog = new DatePickerDialog(this, android.R.style.Theme_DeviceDefault_Light_Dialog,mDateSetListener,year,month,day);
             oDialog.show();
+        }else if(v == address){
+            init_webView();
         } else if (v == saveButton) {
             String tmpGender;
             if (gender.getSelectedItem() == "남") {
@@ -111,27 +138,31 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
             pref.editor.putString(SharedPreference.PHONE, phone.getText().toString());
             pref.editor.putString(SharedPreference.EMAIL, email.getText().toString());
             pref.editor.putString(SharedPreference.BIRTH, birth.getText().toString());
+            pref.editor.putString(SharedPreference.STREET_CODE,streetCode);
+            pref.editor.putString(SharedPreference.ADDRESS, address.getText().toString());
             pref.editor.commit();
 
             Log.d("TAG","user_id="+pref.preferences.getString(SharedPreference.USER_ID, "")+
-                    "&street_code=111102005001&main_no=0&additional_no=0" +
+                    "&street_code="+pref.preferences.getString(SharedPreference.STREET_CODE,"")+
+                    "&main_no=0&additional_no=0" +
                     "&name="+pref.preferences.getString(SharedPreference.NAME, "")+
                     "&age="+pref.preferences.getInt(SharedPreference.AGE, 0)+
                     "&gender="+pref.preferences.getString(SharedPreference.GENDER, "")+
                     "&phone_number="+pref.preferences.getString(SharedPreference.PHONE, "")+
                     "&email="+pref.preferences.getString(SharedPreference.EMAIL, "none")+
-                    "&address=d" +
+                    "&address="+pref.preferences.getString(SharedPreference.ADDRESS,"")  +
                     "&birthday="+pref.preferences.getString(SharedPreference.BIRTH, "") );
 
             String php = getResources().getString(R.string.serverIP) + "user_update.php?" +
                     "user_id="+pref.preferences.getString(SharedPreference.USER_ID, "")+
-                    "&street_code=111102005001&main_no=0&additional_no=0" +
+                    "&street_code="+pref.preferences.getString(SharedPreference.STREET_CODE,"")+
+                    "&main_no=0&additional_no=0" +
                     "&name="+pref.preferences.getString(SharedPreference.NAME, "")+
                     "&age="+pref.preferences.getInt(SharedPreference.AGE, 0)+
                     "&gender="+pref.preferences.getString(SharedPreference.GENDER, "")+
                     "&phone_number="+pref.preferences.getString(SharedPreference.PHONE, "")+
                     "&email="+pref.preferences.getString(SharedPreference.EMAIL, "none")+
-                    "&address=d" +
+                    "&address="+pref.preferences.getString(SharedPreference.ADDRESS,"")  +
                     "&birthday="+pref.preferences.getString(SharedPreference.BIRTH, "");
             URLConnector urlConnectorBookmark = new URLConnector(php);
             urlConnectorBookmark.start();
@@ -143,4 +174,76 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
             Log.d("TAG", "내 정보 수정 성공");
         }
     }
+
+    public void init_webView(){
+        webView.getSettings().setJavaScriptEnabled(true);
+        webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
+        webView.getSettings().setSupportMultipleWindows(true);
+        webView.addJavascriptInterface(new AndroidBridge(),"hanium");
+        webView.setWebViewClient(client);
+        webView.setWebChromeClient(chromeClient);
+        webView.loadUrl(getResources().getString(R.string.serverIP)+"/address_api.php");
+    }
+
+    private class AndroidBridge{
+        @JavascriptInterface
+        public void getAddress(String sigunguCode, String roadnameCode, String roadAddress, String buildingName){
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if(buildingName.equals("")){
+                        address.setText(roadAddress);
+                    }else{
+                        address.setText(roadAddress+", "+buildingName);
+                    }
+                    streetCode = sigunguCode + roadnameCode;
+                    Log.d("TAG", "run: "+sigunguCode + roadnameCode);
+                }
+            });
+        }
+    }
+
+    WebViewClient client = new WebViewClient(){
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+            return false;
+        }
+
+        @Override
+        public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+            handler.proceed();
+        }
+    };
+
+    WebChromeClient chromeClient = new WebChromeClient(){
+        @Override
+        public boolean onCreateWindow(WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
+            WebView newWebView = new WebView(MyInfoActivity.this);
+            newWebView.getSettings().setJavaScriptEnabled(true);
+            Dialog dialog = new Dialog(MyInfoActivity.this);
+            dialog.setContentView(newWebView);
+            WindowManager.LayoutParams params = dialog.getWindow().getAttributes();
+            params.width = ViewGroup.LayoutParams.MATCH_PARENT;
+            params.height = ViewGroup.LayoutParams.MATCH_PARENT;
+            dialog.getWindow().setAttributes(params);
+            dialog.show();
+
+            newWebView.setWebChromeClient(new WebChromeClient(){
+                @Override
+                public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
+                    super.onJsAlert(view, url, message, result);
+                    return true;
+                }
+
+                @Override
+                public void onCloseWindow(WebView window) {
+                    dialog.dismiss();
+                }
+            });
+            ((WebView.WebViewTransport)resultMsg.obj).setWebView(newWebView);
+            resultMsg.sendToTarget();
+
+            return true;
+        }
+    };
 }
