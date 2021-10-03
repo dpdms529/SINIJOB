@@ -11,7 +11,6 @@ import android.media.MediaPlayer;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
@@ -37,9 +36,7 @@ import com.arthenica.mobileffmpeg.FFmpeg;
 import org.techtown.hanieum.db.AppDatabase;
 import org.techtown.hanieum.db.entity.CoverLetter;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -52,6 +49,7 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
     Button startRecord, introduceRecord, motiveRecord, careerRecord, saveBtn;
     ImageButton delBtn;
     VideoView introducePlayer, motivePlayer, careerPlayer;
+    View background1, background2, background3;
     TextView introduceNotice, motiveNotice, careerNotice, title;
     String cv1Path, cv2Path, cv3Path, dirName;
     private ProgressDialog progressDialog;
@@ -88,11 +86,16 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
         delBtn = findViewById(R.id.delBtn);
         saveBtn = findViewById(R.id.saveButton);
 
+        background1 = findViewById(R.id.video_background_1);
+        background2 = findViewById(R.id.video_background_2);
+        background3 = findViewById(R.id.video_background_3);
+
         MediaController introduceController = new MediaController(this);
         introducePlayer.setMediaController(introduceController);
         introducePlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mediaPlayer) {
+                introducePlayer.setBackground(null);
             }
         });
 
@@ -101,6 +104,7 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
         motivePlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mediaPlayer) {
+                motivePlayer.setBackground(null);
             }
         });
 
@@ -109,6 +113,7 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
         careerPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mediaPlayer) {
+                careerPlayer.setBackground(null);
             }
         });
 
@@ -123,14 +128,17 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
 
             Uri uri = Uri.parse(cv1Path);
             introducePlayer.setVideoURI(uri);
+            background1.setVisibility(View.GONE);
             getThumbNail(introducePlayer, cv1Path);
 
             uri = Uri.parse(cv2Path);
             motivePlayer.setVideoURI(uri);
+            background2.setVisibility(View.GONE);
             getThumbNail(motivePlayer, cv2Path);
 
             uri = Uri.parse(cv3Path);
             careerPlayer.setVideoURI(uri);
+            background3.setVisibility(View.GONE);
             getThumbNail(careerPlayer, cv3Path);
 
             saveBtn.setVisibility(View.VISIBLE);
@@ -178,18 +186,21 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
                                 introducePlayer.setVideoURI(uri);
                                 introduceRecord.setVisibility(View.VISIBLE);
                                 introduceNotice.setVisibility(View.GONE);
+                                background1.setVisibility(View.GONE);
                                 getThumbNail(introducePlayer, cv1Path);
 
                                 uri = Uri.parse(cv2Path);
                                 motivePlayer.setVideoURI(uri);
                                 motiveRecord.setVisibility(View.VISIBLE);
                                 motiveNotice.setVisibility(View.GONE);
+                                background2.setVisibility(View.GONE);
                                 getThumbNail(motivePlayer, cv2Path);
 
                                 uri = Uri.parse(cv3Path);
                                 careerPlayer.setVideoURI(uri);
                                 careerRecord.setVisibility(View.VISIBLE);
                                 careerNotice.setVisibility(View.GONE);
+                                background3.setVisibility(View.GONE);
                                 getThumbNail(careerPlayer, cv3Path);
 
                                 saveBtn.setVisibility(View.VISIBLE);
@@ -348,9 +359,10 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
 
     public void getThumbNail(VideoView videoView, String path) {
         videoView.seekTo(1);
+        videoView.setAlpha(1);
         Bitmap thumb = ThumbnailUtils.createVideoThumbnail(path, MediaStore.Images.Thumbnails.MINI_KIND);
         BitmapDrawable bitmapDrawable = new BitmapDrawable(thumb);
-        videoView.setBackgroundDrawable(bitmapDrawable);
+        videoView.setBackground(bitmapDrawable);
     }
 
 }
