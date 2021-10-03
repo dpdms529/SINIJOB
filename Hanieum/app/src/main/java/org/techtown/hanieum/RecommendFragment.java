@@ -1405,7 +1405,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
                 String[] tmp3 = tmp[1].split("만원|원");
                 sal = tmp2[0] + " ~ " + tmp3[0];
             }
-            DistanceCalculator distance = new DistanceCalculator("127.12934", "35.84688", row.x_coordinate, row.y_coordinate);
+            DistanceCalculator distance = new DistanceCalculator(pref.preferences.getString(SharedPreference.X,"127.12934"), pref.preferences.getString(SharedPreference.Y,"35.84688"), row.x_coordinate, row.y_coordinate);
             Double dist = distance.getStraightDist();   // 직선거리 구하는 함수
 
             // 북마크 확인하는 코드
