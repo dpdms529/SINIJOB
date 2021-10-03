@@ -16,6 +16,7 @@
         android:layout_marginBottom="25dp"
         android:text="주소를 설정해주세요"
         android:textColor="@color/black"
+        android:textStyle="bold"
         android:textSize="23sp" />
 
     <WebView
@@ -31,7 +32,6 @@
         android:layout_marginHorizontal="40dp"
         android:hint="클릭하세요"
         android:gravity="center"
-        android:textStyle="bold"
         android:textColor="@color/black"
         android:focusable="false"/>
 

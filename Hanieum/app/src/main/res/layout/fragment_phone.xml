@@ -14,6 +14,7 @@
         android:layout_marginTop="50dp"
         android:layout_marginBottom="25dp"
         android:text="전화번호를 입력해주세요"
+        android:textStyle="bold"
         android:textColor="@color/black"
         android:textSize="23sp" />
 
@@ -24,7 +25,6 @@
         android:layout_marginHorizontal="40dp"
         android:inputType="phone"
         android:hint="01012341234"
-        android:textStyle="bold"
         android:textColor="@color/black"/>
 
     <LinearLayout
