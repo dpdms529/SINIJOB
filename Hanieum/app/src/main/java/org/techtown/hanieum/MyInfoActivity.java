@@ -27,6 +27,10 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -148,10 +152,41 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
             pref.editor.putString(SharedPreference.STREET_CODE,streetCode);
             pref.editor.putString(SharedPreference.ADDRESS, address.getText().toString());
             pref.editor.commit();
+            String kakaoApi = getResources().getString(R.string.serverIP) + "kakao_api.php?" +
+                    "street_code="+pref.preferences.getString(SharedPreference.STREET_CODE,"")+
+                    "&address="+pref.preferences.getString(SharedPreference.ADDRESS,"");
+            URLConnector urlConnector = new URLConnector(kakaoApi);
+            urlConnector.start();
+            try {
+                urlConnector.join();
+            } catch (InterruptedException e) {
+            }
+            String result = urlConnector.getResult();
+            Log.d("TAG", "onClick: "+result);
+
+            try {
+                JSONObject jsonObject = new JSONObject(result);
+                JSONArray jsonArray = jsonObject.getJSONArray("result");
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject jsonObject1 = jsonArray.getJSONObject(i);
+                    String x = jsonObject1.getString("x");
+                    String y = jsonObject1.getString("y");
+                    String main_no = jsonObject1.getString("main_no");
+                    String additional_no = jsonObject1.getString("additional_no");
+                    pref.editor.putString(SharedPreference.X,x);
+                    pref.editor.putString(SharedPreference.Y,y);
+                    pref.editor.putString(SharedPreference.MAIN_NO,main_no);
+                    pref.editor.putString(SharedPreference.ADDITIONAL_NO,additional_no);
+                    pref.editor.commit();
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
 
             Log.d("TAG","user_id="+pref.preferences.getString(SharedPreference.USER_ID, "")+
                     "&street_code="+pref.preferences.getString(SharedPreference.STREET_CODE,"")+
-                    "&main_no=0&additional_no=0" +
+                    "&main_no="+pref.preferences.getString(SharedPreference.MAIN_NO,"")+
+                    "&additional_no="+pref.preferences.getString(SharedPreference.ADDITIONAL_NO,"") +
                     "&name="+pref.preferences.getString(SharedPreference.NAME, "")+
                     "&age="+pref.preferences.getInt(SharedPreference.AGE, 0)+
                     "&gender="+pref.preferences.getString(SharedPreference.GENDER, "")+
@@ -163,7 +198,8 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
             String php = getResources().getString(R.string.serverIP) + "user_update.php?" +
                     "user_id="+pref.preferences.getString(SharedPreference.USER_ID, "")+
                     "&street_code="+pref.preferences.getString(SharedPreference.STREET_CODE,"")+
-                    "&main_no=0&additional_no=0" +
+                    "&main_no="+pref.preferences.getString(SharedPreference.MAIN_NO,"")+
+                    "&additional_no="+pref.preferences.getString(SharedPreference.ADDITIONAL_NO,"") +
                     "&name="+pref.preferences.getString(SharedPreference.NAME, "")+
                     "&age="+pref.preferences.getInt(SharedPreference.AGE, 0)+
                     "&gender="+pref.preferences.getString(SharedPreference.GENDER, "")+

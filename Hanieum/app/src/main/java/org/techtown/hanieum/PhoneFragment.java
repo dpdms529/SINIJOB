@@ -72,7 +72,8 @@ public class PhoneFragment extends Fragment implements View.OnClickListener {
                 pref.editor.commit();
                 Log.d("TAG","user_id="+pref.preferences.getString(SharedPreference.USER_ID, "")+
                         "&street_code="+pref.preferences.getString(SharedPreference.STREET_CODE,"")+
-                        "&main_no=0&additional_no=0" +
+                        "&main_no="+pref.preferences.getString(SharedPreference.MAIN_NO,"")+
+                        "&additional_no="+pref.preferences.getString(SharedPreference.ADDITIONAL_NO,"") +
                         "&name="+pref.preferences.getString(SharedPreference.NAME, "")+
                         "&age="+pref.preferences.getInt(SharedPreference.AGE, 0)+
                         "&gender="+pref.preferences.getString(SharedPreference.GENDER, "")+
@@ -84,7 +85,8 @@ public class PhoneFragment extends Fragment implements View.OnClickListener {
                 String php = getResources().getString(R.string.serverIP) + "user_save.php?" +
                         "user_id="+pref.preferences.getString(SharedPreference.USER_ID, "")+
                         "&street_code="+pref.preferences.getString(SharedPreference.STREET_CODE,"")+
-                        "&main_no=0&additional_no=0" +
+                        "&main_no="+pref.preferences.getString(SharedPreference.MAIN_NO,"")+
+                        "&additional_no="+pref.preferences.getString(SharedPreference.ADDITIONAL_NO,"") +
                         "&name="+pref.preferences.getString(SharedPreference.NAME, "")+
                         "&age="+pref.preferences.getInt(SharedPreference.AGE, 0)+
                         "&gender="+pref.preferences.getString(SharedPreference.GENDER, "")+
