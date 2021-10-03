@@ -119,7 +119,7 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
                     if (month < 9) {
                         sb.append("년 0"+(month+1)+"월 ");
                     }else{
-                        sb.append("년 "+month+1+"월 ");
+                        sb.append("년 "+(month+1)+"월 ");
                     }
                     if(day < 10){
                         sb.append("0"+day+"일");
