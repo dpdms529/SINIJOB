@@ -94,10 +94,10 @@ public class PhoneFragment extends Fragment implements View.OnClickListener {
                         "&email="+pref.preferences.getString(SharedPreference.EMAIL, "none")+
                         "&address="+pref.preferences.getString(SharedPreference.ADDRESS,"")  +
                         "&birthday="+pref.preferences.getString(SharedPreference.BIRTH, "");
-                URLConnector urlConnectorBookmark = new URLConnector(php);
-                urlConnectorBookmark.start();
+                URLConnector urlConnector = new URLConnector(php);
+                urlConnector.start();
                 try {
-                    urlConnectorBookmark.join();
+                    urlConnector.join();
                 } catch (InterruptedException e) {
                 }
                 startActivity(intent);

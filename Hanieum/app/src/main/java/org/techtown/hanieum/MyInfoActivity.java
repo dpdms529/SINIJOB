@@ -207,10 +207,10 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
                     "&email="+pref.preferences.getString(SharedPreference.EMAIL, "none")+
                     "&address="+pref.preferences.getString(SharedPreference.ADDRESS,"")  +
                     "&birthday="+pref.preferences.getString(SharedPreference.BIRTH, "");
-            URLConnector urlConnector = new URLConnector(php);
-            urlConnector.start();
+            URLConnector urlConnectorUser = new URLConnector(php);
+            urlConnectorUser.start();
             try {
-                urlConnector.join();
+                urlConnectorUser.join();
             } catch (InterruptedException e) {
             }
             finish();
