@@ -47,6 +47,7 @@ public class SelfInfoActivity extends AppCompatActivity implements View.OnClickL
         db.CoverLetterDao().getAll().observe((LifecycleOwner) this, new Observer<List<CoverLetter>>() {
             @Override
             public void onChanged(List<CoverLetter> coverLetters) {
+                adapter.clearItems();
                 for (CoverLetter c : coverLetters) {
                     adapter.addItem(new SelfInfo(c));
                 }
@@ -66,7 +67,6 @@ public class SelfInfoActivity extends AppCompatActivity implements View.OnClickL
                 }
                 intent.putExtra("edit", item);
                 startActivity(intent);
-                finish();
             }
         });
         addButton.setOnClickListener(this);

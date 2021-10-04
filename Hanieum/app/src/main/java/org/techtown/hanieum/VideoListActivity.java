@@ -275,8 +275,6 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            Intent intent = new Intent(this, SelfInfoActivity.class);
-            startActivity(intent);
 
         } else if (v == delBtn) {
 
@@ -287,8 +285,6 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
                         public void onClick(DialogInterface dialogInterface, int i) {
                             new CoverLetterActivity.CoverLetterDeleteAsyncTask(db.CoverLetterDao()).execute(item.getNo());
                             Toast.makeText(getApplicationContext(), "자기소개서가 삭제되었습니다.", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(getApplicationContext(), SelfInfoActivity.class);
-                            startActivity(intent);
                             finish();
                         }
                     })
@@ -302,13 +298,6 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
             msgDlg.show();
 
         }
-    }
-
-    @Override
-    public void onBackPressed() {
-        Intent intent = new Intent(this, SelfInfoActivity.class);
-        startActivity(intent);
-        finish();
     }
 
     @Override

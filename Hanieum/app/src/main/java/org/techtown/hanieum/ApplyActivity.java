@@ -7,11 +7,13 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -26,17 +28,21 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.MediaController;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.VideoView;
 
 import org.techtown.hanieum.db.AppDatabase;
 import org.techtown.hanieum.db.dao.CoverLetterDao;
 import org.techtown.hanieum.db.entity.CoverLetter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public class ApplyActivity extends AppCompatActivity implements View.OnClickListener {
@@ -55,9 +61,10 @@ public class ApplyActivity extends AppCompatActivity implements View.OnClickList
     EditText textMsg;
     TextView textSys;
     Button finishButton;
+    VideoView videoView;
 
     Spinner spinner;
-    ArrayList<String> items = new ArrayList<>();
+    ArrayList<HashMap<String, String>> items = new ArrayList<>();
     LinearLayout coverLetterLayout;
     TextView coverLetter1, coverLetter2, coverLetter3;
     CoverLetter selectedCL;
@@ -83,17 +90,26 @@ public class ApplyActivity extends AppCompatActivity implements View.OnClickList
         coverLetterLayout = findViewById(R.id.coverLetterLayout);
 
         db = AppDatabase.getInstance(this);
-        items.add("선택");
+
+        HashMap<String, String> item = new HashMap<>();
+        item.put("cvname", "선택");
+        items.add(item);
         db.CoverLetterDao().getAll().observe((LifecycleOwner) this, new Observer<List<CoverLetter>>() {
             @Override
             public void onChanged(List<CoverLetter> coverLetters) {
                 for (CoverLetter c : coverLetters) {
-                    items.add("자기소개서 " + c.cover_letter_no);
+                    HashMap<String, String> dbitem = new HashMap<>();
+                    dbitem.put("cvname", "자기소개서 " + c.cover_letter_no);
+                    dbitem.put("dist", c.cover_dist_code);
+                    if (c.cover_dist_code.equals("0")) {
+                        dbitem.put("dirname", c.first_item);
+                    }
+                    items.add(dbitem);
                 }
             }
         });
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items);
+        ArrayAdapter<HashMap<String, String>> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items);
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -101,19 +117,37 @@ public class ApplyActivity extends AppCompatActivity implements View.OnClickList
                 if (i == 0) {
                     coverLetterLayout.setVisibility(View.GONE);
                 } else {
-                    int no = Integer.parseInt(items.get(i).substring(6));
-                    try {
-                        selectedCL = new CoverLetterGetSelectedAsyncTask(db.CoverLetterDao()).execute(no).get();
-                    } catch (ExecutionException e) {
-                        e.printStackTrace();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    if (selectedCL.cover_dist_code.equals("1")) {
-                        coverLetter1.setText(selectedCL.first_item);
-                        coverLetter2.setText(selectedCL.second_item);
-                        coverLetter3.setText(selectedCL.third_item);
-                        coverLetterLayout.setVisibility(View.VISIBLE);
+                    if (items.get(i).get("dist").equals("0")) {
+                        String dirName = items.get(i).get("dirname");
+                        String url = ApplyActivity.this.getFilesDir().toString() + "/videocv_" + dirName + "/cv.mp4";
+                        Uri videoUri = Uri.parse(url);
+
+                        //비디오뷰의 재생, 일시정지 등을 할 수 있는 '컨트롤바'를 붙여주는 작업
+                        videoView.setMediaController(new MediaController(ApplyActivity.this));
+
+                        //VideoView가 보여줄 동영상의 경로 주소(Uri) 설정하기
+                        videoView.setVideoURI(videoUri);
+
+                        videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                            @Override
+                            public void onPrepared(MediaPlayer mediaPlayer) {
+                            }
+                        });
+                    } else if (items.get(i).get("dist").equals("1")) {
+                        int no = Integer.parseInt(items.get(i).get("cvname").substring(6));
+                        try {
+                            selectedCL = new CoverLetterGetSelectedAsyncTask(db.CoverLetterDao()).execute(no).get();
+                        } catch (ExecutionException e) {
+                            e.printStackTrace();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        if (selectedCL.cover_dist_code.equals("1")) {
+                            coverLetter1.setText(selectedCL.first_item);
+                            coverLetter2.setText(selectedCL.second_item);
+                            coverLetter3.setText(selectedCL.third_item);
+                            coverLetterLayout.setVisibility(View.VISIBLE);
+                        }
                     }
                 }
             }
