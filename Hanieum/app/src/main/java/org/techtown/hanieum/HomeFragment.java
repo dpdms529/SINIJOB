@@ -206,7 +206,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
             // 북마크 업데이트 (삭제된 공고 제거)
             ArrayList<HashMap<String, String>> arrayList = new ArrayList<>();
-            String _uId = getResources().getString(R.string.user_id);  // 유저 아이디
+            String _uId = pref.preferences.getString(SharedPreference.USER_ID, "");  // 유저 아이디
             String bookmarkPhp = context.getResources().getString(R.string.serverIP) + "bookmark_read.php?user_id=" + _uId;
             URLConnector urlConnectorBookmark = new URLConnector(bookmarkPhp);
             urlConnectorBookmark.start();
@@ -431,14 +431,14 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     private void loadListData() {
         ArrayList<Recommendation> items = new ArrayList<>();
-        String recoPhp = getResources().getString(R.string.serverIP) + "reco_list.php?user_id=" + getResources().getString(R.string.user_id);
+        String recoPhp = getResources().getString(R.string.serverIP) + "reco_list.php?user_id=" + pref.preferences.getString(SharedPreference.USER_ID, "");
         URLConnector urlConnector = new URLConnector(recoPhp);
 
         ArrayList<String> jobNm = new ArrayList<>(); // 직종명과 추천순위 저장
 
         // 북마크 테이블 읽어오기
         ArrayList<String> arrayList = new ArrayList<>();
-        String bookmarkPhp = context.getResources().getString(R.string.serverIP) + "bookmark_read.php?user_id=" + getResources().getString(R.string.user_id);
+        String bookmarkPhp = context.getResources().getString(R.string.serverIP) + "bookmark_read.php?user_id=" + pref.preferences.getString(SharedPreference.USER_ID, "");
         URLConnector urlConnectorBookmark = new URLConnector(bookmarkPhp);
         urlConnectorBookmark.start();
         try {
