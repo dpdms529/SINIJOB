@@ -1132,7 +1132,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
 
             // 북마크 업데이트 (삭제된 공고 제거)
             ArrayList<String> arrayList = new ArrayList<>();
-            String bookmarkPhp = context.getResources().getString(R.string.serverIP) + "bookmark_read.php?user_id=" + getResources().getString(R.string.user_id);
+            String bookmarkPhp = context.getResources().getString(R.string.serverIP) + "bookmark_read.php?user_id=" + pref.preferences.getString(SharedPreference.USER_ID, "");
             URLConnector urlConnectorBookmark = new URLConnector(bookmarkPhp);
             urlConnectorBookmark.start();
             try {
@@ -1166,7 +1166,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
                 }
 
                 if (recruits.size() == 0) { // 삭제된 공고면 북마크 테이블에서 해당 공고 삭제
-                    String bookmarkDelPhp = context.getResources().getString(R.string.serverIP) + "bookmark_del.php?user_id=" + getResources().getString(R.string.user_id) + "&recruit_id=" + rId;
+                    String bookmarkDelPhp = context.getResources().getString(R.string.serverIP) + "bookmark_del.php?user_id=" + pref.preferences.getString(SharedPreference.USER_ID, "") + "&recruit_id=" + rId;
                     URLConnector urlConnectorBookmarkDel = new URLConnector(bookmarkDelPhp);
                     urlConnectorBookmarkDel.start();
                     try {
@@ -1355,7 +1355,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
 
         // 북마크 테이블 읽어오기
         ArrayList<String> arrayList = new ArrayList<>();
-        String bookmarkPhp = context.getResources().getString(R.string.serverIP) + "bookmark_read.php?user_id=" + getResources().getString(R.string.user_id);
+        String bookmarkPhp = context.getResources().getString(R.string.serverIP) + "bookmark_read.php?user_id=" + pref.preferences.getString(SharedPreference.USER_ID, "");
         URLConnector urlConnectorBookmark = new URLConnector(bookmarkPhp);
         urlConnectorBookmark.start();
         try {

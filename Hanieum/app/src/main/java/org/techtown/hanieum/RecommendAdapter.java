@@ -17,6 +17,7 @@ public class RecommendAdapter extends RecyclerView.Adapter<RecommendAdapter.View
     static ArrayList<Recommendation> items = new ArrayList<Recommendation>();
     OnRecoItemClickListener listener;
     Context context;
+    SharedPreference pref;
 
     @NonNull
     @Override
@@ -24,6 +25,7 @@ public class RecommendAdapter extends RecyclerView.Adapter<RecommendAdapter.View
         LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
         View view = inflater.inflate(R.layout.recommendation_item, viewGroup, false);
         context = viewGroup.getContext();
+        pref = new SharedPreference(context);
 
         return new ViewHolder(view, this);
     }
@@ -97,7 +99,7 @@ public class RecommendAdapter extends RecyclerView.Adapter<RecommendAdapter.View
                         item.setBookmark(false);
                         bookmark.setImageResource(R.drawable.star);
 
-                        String uId = context.getString(R.string.user_id);   // 유저 아이디
+                        String uId = pref.preferences.getString(SharedPreference.USER_ID, "");   // 유저 아이디
                         String rId = item.getId();
                         String bookmarkPhp = context.getResources().getString(R.string.serverIP) + "bookmark_del.php?user_id=" + uId + "&recruit_id=" + rId;
                         URLConnector urlConnectorBookmark = new URLConnector(bookmarkPhp);
@@ -110,7 +112,7 @@ public class RecommendAdapter extends RecyclerView.Adapter<RecommendAdapter.View
                         item.setBookmark(true);
                         bookmark.setImageResource(R.drawable.bookmark);
 
-                        String uId = context.getString(R.string.user_id);   // 유저 아이디
+                        String uId = pref.preferences.getString(SharedPreference.USER_ID, "");   // 유저 아이디
                         String rId = item.getId();
                         String bookmarkPhp = context.getResources().getString(R.string.serverIP) + "bookmark_save.php?user_id=" + uId + "&recruit_id=" + rId;
                         URLConnector urlConnectorBookmark = new URLConnector(bookmarkPhp);
