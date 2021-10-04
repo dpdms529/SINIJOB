@@ -91,7 +91,7 @@ public class SelfInfoActivity extends AppCompatActivity implements View.OnClickL
             } else {
                 List<CharSequence> items = new ArrayList<>();
                 items.add("영상");
-                items.add("일반");
+                items.add("일반(글)");
                 CharSequence[] charSequences = items.toArray(new CharSequence[items.size()]);
 
                 AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
@@ -102,7 +102,7 @@ public class SelfInfoActivity extends AppCompatActivity implements View.OnClickL
                         if (charSequences[which] == "영상") {
                             Intent intent = new Intent(getApplicationContext(), VideoListActivity.class);
                             startActivity(intent);
-                        } else if (charSequences[which] == "일반") {
+                        } else if (charSequences[which] == "일반(글)") {
                             Intent intent = new Intent(getApplicationContext(), CoverLetterActivity.class);
                             startActivity(intent);
                             finish();

@@ -24,7 +24,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="영상 자기소개서"
+            android:text="영상 자기소개서 촬영"
             android:textColor="@color/white"
             android:textSize="20dp"
             android:textStyle="bold" />
@@ -90,14 +90,15 @@
 
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="350dp"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="15dp"
                 android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="40dp"
                     android:layout_marginTop="14dp"
                     android:layout_marginBottom="14dp"
                     android:text="자기소개"
@@ -115,7 +116,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:layout_marginRight="40dp"
                     android:layout_marginBottom="10dp"
                     android:background="@drawable/border_sec_color"
                     android:text="다시 촬영"
@@ -132,30 +132,41 @@
                     android:id="@+id/introduce_player"
                     android:layout_width="350dp"
                     android:layout_height="200dp"
-                    android:layout_gravity="center" />
+                    android:layout_gravity="center"
+                    android:alpha="0" />
+
+                <View
+                    android:id="@+id/video_background_1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/browser_actions_divider_color" />
 
                 <TextView
                     android:id="@+id/introduce_notice"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:layout_gravity="center"
+                    android:layout_margin="20dp"
+                    android:autoSizeMinTextSize="18dp"
+                    android:autoSizeTextType="uniform"
                     android:gravity="center"
+                    android:maxLines="2"
                     android:text="아직 촬영된 영상이 없습니다.\n상단의 버튼을 눌러 촬영을 시작해주세요."
-                    android:textColor="@color/white"
-                    android:textSize="20sp"
+                    android:textColor="@color/cardview_dark_background"
                     android:visibility="visible" />
 
             </FrameLayout>
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="350dp"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="20dp"
                 android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="40dp"
                     android:layout_marginTop="14dp"
                     android:layout_marginBottom="14dp"
                     android:text="지원동기"
@@ -173,7 +184,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:layout_marginRight="40dp"
                     android:layout_marginBottom="10dp"
                     android:background="@drawable/border_sec_color"
                     android:text="다시 촬영"
@@ -190,29 +200,40 @@
                     android:id="@+id/motive_player"
                     android:layout_width="350dp"
                     android:layout_height="200dp"
-                    android:layout_gravity="center" />
+                    android:layout_gravity="center"
+                    android:alpha="0" />
+
+                <View
+                    android:id="@+id/video_background_2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/browser_actions_divider_color" />
 
                 <TextView
                     android:id="@+id/motive_notice"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:layout_gravity="center"
+                    android:layout_margin="20dp"
+                    android:autoSizeMinTextSize="18dp"
+                    android:autoSizeTextType="uniform"
                     android:gravity="center"
+                    android:maxLines="2"
                     android:text="아직 촬영된 영상이 없습니다.\n상단의 버튼을 눌러 촬영을 시작해주세요."
-                    android:textColor="@color/white"
-                    android:textSize="20sp"
+                    android:textColor="@color/cardview_dark_background"
                     android:visibility="visible" />
             </FrameLayout>
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="350dp"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="20dp"
                 android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="40dp"
                     android:layout_marginTop="14dp"
                     android:layout_marginBottom="14dp"
                     android:text="경험 및 경력 소개"
@@ -230,7 +251,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:layout_marginRight="40dp"
                     android:layout_marginBottom="10dp"
                     android:background="@drawable/border_sec_color"
                     android:text="다시 촬영"
@@ -247,17 +267,27 @@
                     android:id="@+id/career_player"
                     android:layout_width="350dp"
                     android:layout_height="200dp"
-                    android:layout_gravity="center" />
+                    android:layout_gravity="center"
+                    android:alpha="0" />
+
+                <View
+                    android:id="@+id/video_background_3"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/browser_actions_divider_color" />
 
                 <TextView
                     android:id="@+id/career_notice"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:layout_gravity="center"
+                    android:layout_margin="20dp"
+                    android:autoSizeMinTextSize="18dp"
+                    android:autoSizeTextType="uniform"
                     android:gravity="center"
+                    android:maxLines="2"
                     android:text="아직 촬영된 영상이 없습니다.\n상단의 버튼을 눌러 촬영을 시작해주세요."
-                    android:textColor="@color/white"
-                    android:textSize="20sp"
+                    android:textColor="@color/cardview_dark_background"
                     android:visibility="visible" />
 
             </FrameLayout>

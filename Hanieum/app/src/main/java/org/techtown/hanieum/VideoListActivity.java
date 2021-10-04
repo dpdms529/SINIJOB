@@ -49,6 +49,7 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
     Button startRecord, introduceRecord, motiveRecord, careerRecord, saveBtn;
     ImageButton delBtn;
     VideoView introducePlayer, motivePlayer, careerPlayer;
+    View background1, background2, background3;
     TextView introduceNotice, motiveNotice, careerNotice, title;
     String cv1Path, cv2Path, cv3Path, dirName;
     private ProgressDialog progressDialog;
@@ -85,11 +86,16 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
         delBtn = findViewById(R.id.delBtn);
         saveBtn = findViewById(R.id.saveButton);
 
+        background1 = findViewById(R.id.video_background_1);
+        background2 = findViewById(R.id.video_background_2);
+        background3 = findViewById(R.id.video_background_3);
+
         MediaController introduceController = new MediaController(this);
         introducePlayer.setMediaController(introduceController);
         introducePlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mediaPlayer) {
+                introducePlayer.setBackground(null);
             }
         });
 
@@ -98,6 +104,7 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
         motivePlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mediaPlayer) {
+                motivePlayer.setBackground(null);
             }
         });
 
@@ -106,11 +113,12 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
         careerPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mediaPlayer) {
+                careerPlayer.setBackground(null);
             }
         });
 
         if (item != null) {
-            title.setText("글 자기소개서 수정");
+            title.setText("영상 자기소개서 수정");
 
             dirName = item.getFirst_item();
 
@@ -120,14 +128,17 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
 
             Uri uri = Uri.parse(cv1Path);
             introducePlayer.setVideoURI(uri);
+            background1.setVisibility(View.GONE);
             getThumbNail(introducePlayer, cv1Path);
 
             uri = Uri.parse(cv2Path);
             motivePlayer.setVideoURI(uri);
+            background2.setVisibility(View.GONE);
             getThumbNail(motivePlayer, cv2Path);
 
             uri = Uri.parse(cv3Path);
             careerPlayer.setVideoURI(uri);
+            background3.setVisibility(View.GONE);
             getThumbNail(careerPlayer, cv3Path);
 
             saveBtn.setVisibility(View.VISIBLE);
@@ -175,18 +186,21 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
                                 introducePlayer.setVideoURI(uri);
                                 introduceRecord.setVisibility(View.VISIBLE);
                                 introduceNotice.setVisibility(View.GONE);
+                                background1.setVisibility(View.GONE);
                                 getThumbNail(introducePlayer, cv1Path);
 
                                 uri = Uri.parse(cv2Path);
                                 motivePlayer.setVideoURI(uri);
                                 motiveRecord.setVisibility(View.VISIBLE);
                                 motiveNotice.setVisibility(View.GONE);
+                                background2.setVisibility(View.GONE);
                                 getThumbNail(motivePlayer, cv2Path);
 
                                 uri = Uri.parse(cv3Path);
                                 careerPlayer.setVideoURI(uri);
                                 careerRecord.setVisibility(View.VISIBLE);
                                 careerNotice.setVisibility(View.GONE);
+                                background3.setVisibility(View.GONE);
                                 getThumbNail(careerPlayer, cv3Path);
 
                                 saveBtn.setVisibility(View.VISIBLE);
@@ -195,17 +209,23 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
                                 uri = Uri.parse(cv1Path);
                                 introducePlayer.setVideoURI(uri);
                                 getThumbNail(introducePlayer, cv1Path);
+                                getThumbNail(motivePlayer, cv2Path);
+                                getThumbNail(careerPlayer, cv3Path);
 
                             } else if (fileName.equals("motive")) {
 
                                 uri = Uri.parse(cv2Path);
                                 motivePlayer.setVideoURI(uri);
+                                getThumbNail(introducePlayer, cv1Path);
                                 getThumbNail(motivePlayer, cv2Path);
+                                getThumbNail(careerPlayer, cv3Path);
 
                             } else if (fileName.equals("career")) {
 
                                 uri = Uri.parse(cv3Path);
                                 careerPlayer.setVideoURI(uri);
+                                getThumbNail(introducePlayer, cv1Path);
+                                getThumbNail(motivePlayer, cv2Path);
                                 getThumbNail(careerPlayer, cv3Path);
 
                             }
@@ -257,7 +277,6 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
             }
             Intent intent = new Intent(this, SelfInfoActivity.class);
             startActivity(intent);
-            finish();
 
         } else if (v == delBtn) {
 
@@ -302,6 +321,7 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
         String dir = this.getFilesDir().toString() + "/videocv_" + dirName;
         File dest = new File(dir, "cv.mp4");
         String filePath = dest.getAbsolutePath();
+
         String exe;
         // the "exe" string contains the command to process video.The details of command are discussed later in this post.
         // "video_url" is the url of video which you want to edit. You can get this url from intent by selecting any video from gallery.
@@ -345,9 +365,10 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
 
     public void getThumbNail(VideoView videoView, String path) {
         videoView.seekTo(1);
+        videoView.setAlpha(1);
         Bitmap thumb = ThumbnailUtils.createVideoThumbnail(path, MediaStore.Images.Thumbnails.MINI_KIND);
         BitmapDrawable bitmapDrawable = new BitmapDrawable(thumb);
-        videoView.setBackgroundDrawable(bitmapDrawable);
+        videoView.setBackground(bitmapDrawable);
     }
 
 }
