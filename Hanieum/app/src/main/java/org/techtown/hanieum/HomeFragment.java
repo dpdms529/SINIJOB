@@ -6,6 +6,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -40,7 +42,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     Button changeButton; // 조건 변경 화면으로 이동하는 버튼
     Button summaryButton; // 음성 요약 버튼
     ImageButton helpButton; // 도움말 버튼
-    TextView itemNum;
+    TextView itemNum, name;
     String msg; // 음성 요약 메세지
 
     AppDatabase db;
@@ -48,6 +50,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     Context context;
 
     TextToSpeech tts;
+
+    SharedPreference pref;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -69,7 +73,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         summaryButton = view.findViewById(R.id.voice_summary_rec);
         helpButton = view.findViewById(R.id.helpButton);
         itemNum = view.findViewById(R.id.itemNum);
+        name = view.findViewById(R.id.name);
         msg = "추천된 일자리가 없습니다.";
+
+        pref = new SharedPreference(context);
+
+        name.setText(pref.preferences.getString(SharedPreference.NAME,"")+"님을 위한\n추천 일자리입니다!");
 
         db = AppDatabase.getInstance(this.getContext());
 
@@ -264,6 +273,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         }
 //        db.recruitCertificateDao().getLastUpdated();
         String lastUpdated = rows.get(0);
+        Log.d("lastUpdated", "checkCertifiLastUpdated: " + lastUpdated);
         Log.d("date: ", "certifi: " + lastUpdated);
         String dbLastUpdated = "";
 
@@ -285,7 +295,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             e.printStackTrace();
         }
 
-        if (!lastUpdated.equals(dbLastUpdated)) {   // 최신 업데이트 일시 확인(불일치 -> 데이터 가져오기)
+        if (lastUpdated != null && !lastUpdated.equals(dbLastUpdated)) {   // 최신 업데이트 일시 확인(불일치 -> 데이터 가져오기)
             String recruitCertificatePhp = getResources().getString(R.string.serverIP) + "certificate_update.php?last_updated=" + lastUpdated;
             URLConnector urlConnectorRecruitCertificate = new URLConnector(recruitCertificatePhp);
 
@@ -466,6 +476,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 JSONObject jsonObject1 = jsonArray.getJSONObject(i);
 
                 String recruit_id = jsonObject1.getString("recruit_id");
+                Log.d("TAG", "loadListData: "+recruit_id);
                 List<Recruit> recruit = null;
                 try {
                     recruit = new RecruitGetListAsyncTask(db.RecruitDao()).execute(recruit_id).get();
@@ -474,6 +485,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+                Log.d("TAG", "loadListData: "+recruit);
 
                 int flag = 0;
                 String salaryType = new String();
@@ -501,7 +513,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     String[] tmp3 = tmp[1].split("만원|원");
                     sal = tmp2[0] + " ~ " + tmp3[0];
                 }
-                DistanceCalculator distance = new DistanceCalculator("127.12934", "35.84688", recruit.get(0).x_coordinate, recruit.get(0).y_coordinate);
+                DistanceCalculator distance = new DistanceCalculator(pref.preferences.getString(SharedPreference.X,"127.12934"), pref.preferences.getString(SharedPreference.Y,"35.84688"), recruit.get(0).x_coordinate, recruit.get(0).y_coordinate);
                 Double dist = distance.getStraightDist();   // 직선거리 구하는 함수
                 if (dist > 15000) {
                     continue;

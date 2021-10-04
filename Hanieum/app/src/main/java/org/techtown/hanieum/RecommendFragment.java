@@ -1067,7 +1067,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
             e.printStackTrace();
         }
         String lastUpdated = rows.get(0);
-        Log.d("date: ", "recruit: " + lastUpdated);
+        Log.d("TAG", "recruit: " + lastUpdated);
         String dbLastUpdated = "";
 
         String php = getResources().getString(R.string.serverIP) + "recruit_lastupdated.php";
@@ -1079,6 +1079,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
         } catch (InterruptedException e) {
         }
         String result = urlConnector.getResult();
+        Log.d("TAG", "recruit: " + result);
 
         try {
             JSONObject jsonObject = new JSONObject(result);
@@ -1188,7 +1189,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
         }
 //        db.recruitCertificateDao().getLastUpdated();
         String lastUpdated = rows.get(0);
-        Log.d("date: ", "certifi: " + lastUpdated);
+        Log.d("TAG", "certifi: " + rows);
         String dbLastUpdated = "";
 
         String php = getResources().getString(R.string.serverIP) + "recruit_lastupdated.php";
@@ -1200,6 +1201,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
         } catch (InterruptedException e) {
         }
         String result = urlConnector.getResult();
+        Log.d("TAG", "certifi :"+ result);
 
         try {
             JSONObject jsonObject = new JSONObject(result);
@@ -1209,7 +1211,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
             e.printStackTrace();
         }
 
-        if (!lastUpdated.equals(dbLastUpdated)) {   // 최신 업데이트 일시 확인(불일치 -> 데이터 가져오기)
+        if (lastUpdated!=null && !lastUpdated.equals(dbLastUpdated)) {   // 최신 업데이트 일시 확인(불일치 -> 데이터 가져오기)
             String recruitCertificatePhp = getResources().getString(R.string.serverIP) + "certificate_update.php?last_updated=" + lastUpdated;
             URLConnector urlConnectorRecruitCertificate = new URLConnector(recruitCertificatePhp);
 
@@ -1403,7 +1405,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
                 String[] tmp3 = tmp[1].split("만원|원");
                 sal = tmp2[0] + " ~ " + tmp3[0];
             }
-            DistanceCalculator distance = new DistanceCalculator("127.12934", "35.84688", row.x_coordinate, row.y_coordinate);
+            DistanceCalculator distance = new DistanceCalculator(pref.preferences.getString(SharedPreference.X,"127.12934"), pref.preferences.getString(SharedPreference.Y,"35.84688"), row.x_coordinate, row.y_coordinate);
             Double dist = distance.getStraightDist();   // 직선거리 구하는 함수
 
             // 북마크 확인하는 코드
