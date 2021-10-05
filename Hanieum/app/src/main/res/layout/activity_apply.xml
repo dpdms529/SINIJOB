@@ -135,7 +135,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:visibility="visible">
+                android:visibility="gone">
 
                 <TextView
                     android:layout_width="match_parent"
@@ -143,8 +143,7 @@
                     android:layout_marginStart="25dp"
                     android:layout_marginTop="20dp"
                     android:text="다음 영상을 전송합니다."
-                    android:textColor="@color/black"
-                    android:textSize="16sp" />
+                    android:textSize="20dp" />
 
                 <VideoView
                     android:id="@+id/video_view"
