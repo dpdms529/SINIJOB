@@ -231,6 +231,36 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                     } catch (JSONException e) {
                                         e.printStackTrace();
                                     }
+
+                                    String AddressPhp = getResources().getString(R.string.serverIP) + "address_read.php?" +
+                                            "street_code=" + pref.preferences.getString(SharedPreference.STREET_CODE, "") +
+                                            "&main_no=" + pref.preferences.getString(SharedPreference.MAIN_NO, "") +
+                                            "&additional_no=" + pref.preferences.getString(SharedPreference.ADDITIONAL_NO, "");
+                                    URLConnector AddressUrlConnector = new URLConnector(AddressPhp);
+                                    AddressUrlConnector.start();
+                                    try {
+                                        AddressUrlConnector.join();
+                                    } catch (InterruptedException e) {
+                                    }
+                                    String AddressResult = AddressUrlConnector.getResult();
+                                    Log.d("TAG", AddressResult);
+                                    try {
+                                        JSONObject jsonObject = new JSONObject(AddressResult);
+                                        JSONArray jsonArray = jsonObject.getJSONArray("result");
+                                        JSONObject jsonObject1 = jsonArray.getJSONObject(0);
+
+                                        String x = jsonObject1.getString("x");
+                                        String y = jsonObject1.getString("y");
+
+                                        pref.editor.putString(SharedPreference.X, x);
+                                        pref.editor.putString(SharedPreference.Y, y);
+                                        pref.editor.commit();
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+
+                                    Log.d("@@@", pref.preferences.getString(SharedPreference.X, ""));
+                                    Log.d("@@@", pref.preferences.getString(SharedPreference.Y, ""));
                                     Log.d("TAG", "db 정보 불러오기 끝");
 
                                     intent = new Intent(getApplicationContext(), MainActivity.class);
@@ -328,6 +358,34 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                     } catch (JSONException e) {
                                         e.printStackTrace();
                                     }
+
+                                    String AddressPhp = getResources().getString(R.string.serverIP) + "address_read.php?" +
+                                            "street_code=" + pref.preferences.getString(SharedPreference.STREET_CODE, "") +
+                                            "main_no=" + pref.preferences.getString(SharedPreference.MAIN_NO, "") +
+                                            "additional_no=" + pref.preferences.getString(SharedPreference.ADDITIONAL_NO, "");
+                                    URLConnector AddressUrlConnector = new URLConnector(AddressPhp);
+                                    AddressUrlConnector.start();
+                                    try {
+                                        AddressUrlConnector.join();
+                                    } catch (InterruptedException e) {
+                                    }
+                                    String AddressResult = AddressUrlConnector.getResult();
+                                    Log.d("TAG", AddressResult);
+                                    try {
+                                        JSONObject jsonObject = new JSONObject(AddressResult);
+                                        JSONArray jsonArray = jsonObject.getJSONArray("result");
+                                        JSONObject jsonObject1 = jsonArray.getJSONObject(0);
+
+                                        String x = jsonObject1.getString("x");
+                                        String y = jsonObject1.getString("y");
+
+                                        pref.editor.putString(SharedPreference.X, x);
+                                        pref.editor.putString(SharedPreference.Y, y);
+                                        pref.editor.commit();
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+
                                     Log.d("TAG", "db 정보 불러오기 끝");
 
                                     intent = new Intent(getApplicationContext(), MainActivity.class);
