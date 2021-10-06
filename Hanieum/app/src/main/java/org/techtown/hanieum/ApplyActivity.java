@@ -124,12 +124,14 @@ public class ApplyActivity extends AppCompatActivity implements View.OnClickList
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 if (i == 0) {
                     coverLetterLayout.setVisibility(View.GONE);
+                    videoLayout.setVisibility(View.GONE);
                 } else {
                     if (items.get(i).get("dist").equals("0")) {
                         String dirName = items.get(i).get("dirname");
                         String url = ApplyActivity.this.getFilesDir().toString() + "/videocv_" + dirName + "/cv.mp4";
                         Uri videoUri = Uri.parse(url);
 
+                        coverLetterLayout.setVisibility(View.GONE);
                         videoLayout.setVisibility(View.VISIBLE);
 
                         //비디오뷰의 재생, 일시정지 등을 할 수 있는 '컨트롤바'를 붙여주는 작업
@@ -149,7 +151,7 @@ public class ApplyActivity extends AppCompatActivity implements View.OnClickList
                     } else if (items.get(i).get("dist").equals("1")) {
                         int no = Integer.parseInt(spinnerArray.get(i).substring(6));
                         try {
-                            selectedCL = new CoverLetterGetSelectedAsyncTask(db.CoverLetterDao()).execute(no).get();
+                            selectedCL = new Query.CoverLetterGetSelectedAsyncTask(db.CoverLetterDao()).execute(no).get();
                         } catch (ExecutionException e) {
                             e.printStackTrace();
                         } catch (InterruptedException e) {
@@ -160,6 +162,7 @@ public class ApplyActivity extends AppCompatActivity implements View.OnClickList
                             coverLetter2.setText(selectedCL.second_item);
                             coverLetter3.setText(selectedCL.third_item);
                             coverLetterLayout.setVisibility(View.VISIBLE);
+                            videoLayout.setVisibility(View.GONE);
                         }
                     }
                 }
@@ -313,19 +316,6 @@ public class ApplyActivity extends AppCompatActivity implements View.OnClickList
         tts.setPitch(0.8f); //목소리 톤1.0
         tts.setSpeechRate(0.9f);    //목소리 속도
         tts.speak(msg, TextToSpeech.QUEUE_FLUSH, null, null);
-    }
-
-    public static class CoverLetterGetSelectedAsyncTask extends AsyncTask<Integer, Void, CoverLetter> {
-        private CoverLetterDao mCoverLetterDao;
-
-        public CoverLetterGetSelectedAsyncTask(CoverLetterDao coverLetterDao) {
-            this.mCoverLetterDao = coverLetterDao;
-        }
-
-        @Override
-        protected CoverLetter doInBackground(Integer... integers) {
-            return mCoverLetterDao.getSelected(integers[0]);
-        }
     }
 
     private void getThumbNail(VideoView videoView, String path) {

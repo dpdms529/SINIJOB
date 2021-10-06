@@ -26,6 +26,7 @@ import org.techtown.hanieum.db.entity.Bdong;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class RegionSearchActivity extends AppCompatActivity {
     Toolbar toolbar;
@@ -46,7 +47,14 @@ public class RegionSearchActivity extends AppCompatActivity {
 
         AppDatabase db = AppDatabase.getInstance(this);
         Log.e("BdongDatabase", "region data 조회");
-        bDong = db.BdongDao().getAll();
+        try {
+            bDong = new Query.BdongGetAllAsyncTask(db.BdongDao()).execute().get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+//        bDong = db.BdongDao().getAll();
 
         toolbar = findViewById(R.id.toolbar4);
         recyclerView = findViewById(R.id.searchView);

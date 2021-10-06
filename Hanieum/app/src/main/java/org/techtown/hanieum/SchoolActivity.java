@@ -34,7 +34,7 @@ public class SchoolActivity extends AppCompatActivity {
         db = AppDatabase.getInstance(this);
         String education = null;
         try {
-            education = new ResumeFragment.GetCvInfoAsyncTask(db.CvInfoDao()).execute().get();
+            education = new Query.CvInfoGetInfoCodeAsyncTask(db.CvInfoDao()).execute("E").get();
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -80,25 +80,25 @@ public class SchoolActivity extends AppCompatActivity {
                     code = "01";
                 }
                 CvInfo cvInfo = new CvInfo("E", 0, code, spinner.getSelectedItem().toString(), null, null, null, null, 0);
-                new CvInfoInsertAsyncTask(db.CvInfoDao()).execute(cvInfo);
+                new Query.CvInfoInsertAsyncTask(db.CvInfoDao()).execute(cvInfo);
 
                 finish();
             }
         });
     }
 
-    // 사용처: SchoolActivity, CarCerActivity
-    public static class CvInfoInsertAsyncTask extends AsyncTask<CvInfo, Void, Void> {
-        private CvInfoDao mCvInfoDao;
-
-        public CvInfoInsertAsyncTask(CvInfoDao cvInfoDao) {
-            this.mCvInfoDao = cvInfoDao;
-        }
-
-        @Override
-        protected Void doInBackground(CvInfo... cvInfos) {
-            mCvInfoDao.insertCvInfo(cvInfos[0]);
-            return null;
-        }
-    }
+//    // 사용처: SchoolActivity, CarCerActivity
+//    public static class CvInfoInsertAsyncTask extends AsyncTask<CvInfo, Void, Void> {
+//        private CvInfoDao mCvInfoDao;
+//
+//        public CvInfoInsertAsyncTask(CvInfoDao cvInfoDao) {
+//            this.mCvInfoDao = cvInfoDao;
+//        }
+//
+//        @Override
+//        protected Void doInBackground(CvInfo... cvInfos) {
+//            mCvInfoDao.insertCvInfo(cvInfos[0]);
+//            return null;
+//        }
+//    }
 }

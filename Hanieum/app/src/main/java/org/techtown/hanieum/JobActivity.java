@@ -54,7 +54,7 @@ public class JobActivity extends AppCompatActivity implements View.OnClickListen
         Log.e("JobDatabase", "job data 조회");
         List<JobCategory> category = null;
         try {
-            category = new JobGetCategoryAsyncTask(db.jobCategoryDao()).execute().get();
+            category = new Query.JobGetCategoryAsyncTask(db.jobCategoryDao()).execute().get();
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -170,7 +170,7 @@ public class JobActivity extends AppCompatActivity implements View.OnClickListen
         AppDatabase db = AppDatabase.getInstance(this);
         List<JobCategory> category = null;
         try {
-            category = new JobGetCategoryAsyncTask(db.jobCategoryDao()).execute().get();
+            category = new Query.JobGetCategoryAsyncTask(db.jobCategoryDao()).execute().get();
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -240,16 +240,16 @@ public class JobActivity extends AppCompatActivity implements View.OnClickListen
         }
     }
 
-    public static class JobGetCategoryAsyncTask extends AsyncTask<Void, Void, List<JobCategory>> {
-        private JobCategoryDao mJobCategoryDao;
-
-        public JobGetCategoryAsyncTask(JobCategoryDao jobCategoryDao) {
-            this.mJobCategoryDao = jobCategoryDao;
-        }
-
-        @Override
-        protected List<JobCategory> doInBackground(Void... voids) {
-            return mJobCategoryDao.getCategory();
-        }
-    }
+//    public static class JobGetCategoryAsyncTask extends AsyncTask<Void, Void, List<JobCategory>> {
+//        private JobCategoryDao mJobCategoryDao;
+//
+//        public JobGetCategoryAsyncTask(JobCategoryDao jobCategoryDao) {
+//            this.mJobCategoryDao = jobCategoryDao;
+//        }
+//
+//        @Override
+//        protected List<JobCategory> doInBackground(Void... voids) {
+//            return mJobCategoryDao.getCategory();
+//        }
+//    }
 }
