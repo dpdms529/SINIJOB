@@ -26,6 +26,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -134,88 +135,96 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
         }else if(v == address){
             init_webView();
         } else if (v == saveButton) {
-            String tmpGender;
-            if (gender.getSelectedItem() == "남") {
-                tmpGender = "M";
+            if (name.getText().length() == 0) {
+                Toast.makeText(getApplicationContext(), "이름을 입력하세요", Toast.LENGTH_SHORT).show();
+            } else if (phone.getText().length() < 11) {
+                Toast.makeText(getApplicationContext(), "전화번호를 입력하세요", Toast.LENGTH_SHORT).show();
+            } else if (email.getText().length() == 0) {
+                Toast.makeText(getApplicationContext(), "이메일을 입력하세요", Toast.LENGTH_SHORT).show();
             } else {
-                tmpGender = "F";
-            }
-            int year = Integer.parseInt(birth.getText().toString().substring(0, 4));
-            String month = birth.getText().subSequence(6,8).toString();
-            String day = birth.getText().subSequence(10,12).toString();
-            Calendar calendar = new GregorianCalendar();
-            pref.editor.putString(SharedPreference.NAME, name.getText().toString());
-            pref.editor.putString(SharedPreference.AGE, String.valueOf(calendar.get(Calendar.YEAR) - year + 1));
-            pref.editor.putString(SharedPreference.GENDER, tmpGender);
-            pref.editor.putString(SharedPreference.PHONE, phone.getText().toString());
-            pref.editor.putString(SharedPreference.EMAIL, email.getText().toString());
-            pref.editor.putString(SharedPreference.BIRTH, year + month + day);
-            pref.editor.putString(SharedPreference.STREET_CODE,streetCode);
-            pref.editor.putString(SharedPreference.ADDRESS, address.getText().toString());
-            pref.editor.commit();
-            String kakaoApi = getResources().getString(R.string.serverIP) + "kakao_api.php?" +
-                    "street_code="+pref.preferences.getString(SharedPreference.STREET_CODE,"")+
-                    "&address="+pref.preferences.getString(SharedPreference.ADDRESS,"");
-            URLConnector urlConnector = new URLConnector(kakaoApi);
-            urlConnector.start();
-            try {
-                urlConnector.join();
-            } catch (InterruptedException e) {
-            }
-            String result = urlConnector.getResult();
-            Log.d("TAG", "onClick: "+result);
-
-            try {
-                JSONObject jsonObject = new JSONObject(result);
-                JSONArray jsonArray = jsonObject.getJSONArray("result");
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    JSONObject jsonObject1 = jsonArray.getJSONObject(i);
-                    String x = jsonObject1.getString("x");
-                    String y = jsonObject1.getString("y");
-                    String main_no = jsonObject1.getString("main_no");
-                    String additional_no = jsonObject1.getString("additional_no");
-                    pref.editor.putString(SharedPreference.X,x);
-                    pref.editor.putString(SharedPreference.Y,y);
-                    pref.editor.putString(SharedPreference.MAIN_NO,main_no);
-                    pref.editor.putString(SharedPreference.ADDITIONAL_NO,additional_no);
-                    pref.editor.commit();
+                String tmpGender;
+                if (gender.getSelectedItem() == "남") {
+                    tmpGender = "M";
+                } else {
+                    tmpGender = "F";
                 }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+                int year = Integer.parseInt(birth.getText().toString().substring(0, 4));
+                String month = birth.getText().subSequence(6, 8).toString();
+                String day = birth.getText().subSequence(10, 12).toString();
+                Calendar calendar = new GregorianCalendar();
+                pref.editor.putString(SharedPreference.NAME, name.getText().toString());
+                pref.editor.putString(SharedPreference.AGE, String.valueOf(calendar.get(Calendar.YEAR) - year + 1));
+                pref.editor.putString(SharedPreference.GENDER, tmpGender);
+                pref.editor.putString(SharedPreference.PHONE, phone.getText().toString());
+                pref.editor.putString(SharedPreference.EMAIL, email.getText().toString());
+                pref.editor.putString(SharedPreference.BIRTH, year + month + day);
+                pref.editor.putString(SharedPreference.STREET_CODE, streetCode);
+                pref.editor.putString(SharedPreference.ADDRESS, address.getText().toString());
+                pref.editor.commit();
+                String kakaoApi = getResources().getString(R.string.serverIP) + "kakao_api.php?" +
+                        "street_code=" + pref.preferences.getString(SharedPreference.STREET_CODE, "") +
+                        "&address=" + pref.preferences.getString(SharedPreference.ADDRESS, "");
+                URLConnector urlConnector = new URLConnector(kakaoApi);
+                urlConnector.start();
+                try {
+                    urlConnector.join();
+                } catch (InterruptedException e) {
+                }
+                String result = urlConnector.getResult();
+                Log.d("TAG", "onClick: " + result);
 
-            Log.d("TAG","user_id="+pref.preferences.getString(SharedPreference.USER_ID, "")+
-                    "&street_code="+pref.preferences.getString(SharedPreference.STREET_CODE,"")+
-                    "&main_no="+pref.preferences.getString(SharedPreference.MAIN_NO,"")+
-                    "&additional_no="+pref.preferences.getString(SharedPreference.ADDITIONAL_NO,"") +
-                    "&name="+pref.preferences.getString(SharedPreference.NAME, "")+
-                    "&age="+pref.preferences.getString(SharedPreference.AGE, "")+
-                    "&gender="+pref.preferences.getString(SharedPreference.GENDER, "")+
-                    "&phone_number="+pref.preferences.getString(SharedPreference.PHONE, "")+
-                    "&email="+pref.preferences.getString(SharedPreference.EMAIL, "none")+
-                    "&address="+pref.preferences.getString(SharedPreference.ADDRESS,"")  +
-                    "&birthday="+pref.preferences.getString(SharedPreference.BIRTH, "") );
+                try {
+                    JSONObject jsonObject = new JSONObject(result);
+                    JSONArray jsonArray = jsonObject.getJSONArray("result");
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject jsonObject1 = jsonArray.getJSONObject(i);
+                        String x = jsonObject1.getString("x");
+                        String y = jsonObject1.getString("y");
+                        String main_no = jsonObject1.getString("main_no");
+                        String additional_no = jsonObject1.getString("additional_no");
+                        pref.editor.putString(SharedPreference.X, x);
+                        pref.editor.putString(SharedPreference.Y, y);
+                        pref.editor.putString(SharedPreference.MAIN_NO, main_no);
+                        pref.editor.putString(SharedPreference.ADDITIONAL_NO, additional_no);
+                        pref.editor.commit();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
 
-            String php = getResources().getString(R.string.serverIP) + "user_update.php?" +
-                    "user_id="+pref.preferences.getString(SharedPreference.USER_ID, "")+
-                    "&street_code="+pref.preferences.getString(SharedPreference.STREET_CODE,"")+
-                    "&main_no="+pref.preferences.getString(SharedPreference.MAIN_NO,"")+
-                    "&additional_no="+pref.preferences.getString(SharedPreference.ADDITIONAL_NO,"") +
-                    "&name="+pref.preferences.getString(SharedPreference.NAME, "")+
-                    "&age="+pref.preferences.getString(SharedPreference.AGE, "")+
-                    "&gender="+pref.preferences.getString(SharedPreference.GENDER, "")+
-                    "&phone_number="+pref.preferences.getString(SharedPreference.PHONE, "")+
-                    "&email="+pref.preferences.getString(SharedPreference.EMAIL, "none")+
-                    "&address="+pref.preferences.getString(SharedPreference.ADDRESS,"")  +
-                    "&birthday="+pref.preferences.getString(SharedPreference.BIRTH, "");
-            URLConnector urlConnectorUser = new URLConnector(php);
-            urlConnectorUser.start();
-            try {
-                urlConnectorUser.join();
-            } catch (InterruptedException e) {
+                Log.d("TAG", "user_id=" + pref.preferences.getString(SharedPreference.USER_ID, "") +
+                        "&street_code=" + pref.preferences.getString(SharedPreference.STREET_CODE, "") +
+                        "&main_no=" + pref.preferences.getString(SharedPreference.MAIN_NO, "") +
+                        "&additional_no=" + pref.preferences.getString(SharedPreference.ADDITIONAL_NO, "") +
+                        "&name=" + pref.preferences.getString(SharedPreference.NAME, "") +
+                        "&age=" + pref.preferences.getString(SharedPreference.AGE, "") +
+                        "&gender=" + pref.preferences.getString(SharedPreference.GENDER, "") +
+                        "&phone_number=" + pref.preferences.getString(SharedPreference.PHONE, "") +
+                        "&email=" + pref.preferences.getString(SharedPreference.EMAIL, "none") +
+                        "&address=" + pref.preferences.getString(SharedPreference.ADDRESS, "") +
+                        "&birthday=" + pref.preferences.getString(SharedPreference.BIRTH, ""));
+
+                String php = getResources().getString(R.string.serverIP) + "user_update.php?" +
+                        "user_id=" + pref.preferences.getString(SharedPreference.USER_ID, "") +
+                        "&street_code=" + pref.preferences.getString(SharedPreference.STREET_CODE, "") +
+                        "&main_no=" + pref.preferences.getString(SharedPreference.MAIN_NO, "") +
+                        "&additional_no=" + pref.preferences.getString(SharedPreference.ADDITIONAL_NO, "") +
+                        "&name=" + pref.preferences.getString(SharedPreference.NAME, "") +
+                        "&age=" + pref.preferences.getString(SharedPreference.AGE, "") +
+                        "&gender=" + pref.preferences.getString(SharedPreference.GENDER, "") +
+                        "&phone_number=" + pref.preferences.getString(SharedPreference.PHONE, "") +
+                        "&email=" + pref.preferences.getString(SharedPreference.EMAIL, "none") +
+                        "&address=" + pref.preferences.getString(SharedPreference.ADDRESS, "") +
+                        "&birthday=" + pref.preferences.getString(SharedPreference.BIRTH, "");
+                URLConnector urlConnectorUser = new URLConnector(php);
+                urlConnectorUser.start();
+                try {
+                    urlConnectorUser.join();
+                } catch (InterruptedException e) {
+                }
+                finish();
+                Log.d("TAG", "내 정보 수정 성공");
             }
-            finish();
-            Log.d("TAG", "내 정보 수정 성공");
         }
     }
 

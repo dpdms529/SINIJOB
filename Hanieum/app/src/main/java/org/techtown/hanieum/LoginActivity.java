@@ -259,8 +259,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                         e.printStackTrace();
                                     }
 
-                                    Log.d("@@@", pref.preferences.getString(SharedPreference.X, ""));
-                                    Log.d("@@@", pref.preferences.getString(SharedPreference.Y, ""));
                                     Log.d("TAG", "db 정보 불러오기 끝");
 
                                     intent = new Intent(getApplicationContext(), MainActivity.class);
