@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.core.app.ActivityCompat;
@@ -38,8 +37,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.techtown.hanieum.db.AppDatabase;
-import org.techtown.hanieum.db.dao.RecruitCertificateDao;
-import org.techtown.hanieum.db.dao.RecruitDao;
 import org.techtown.hanieum.db.entity.Recruit;
 import org.techtown.hanieum.db.entity.RecruitCertificate;
 
@@ -186,13 +183,29 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
         List<String> bDongCode = new ArrayList<>(); //지역
         for (ChipList i : regions) {
             if (i.getCode().length() == 2) {    //시도 전체 법정동 코드 가져오기
-                List<String> sido = db.BdongDao().getAllSidoCode(i.getCode());
+//                List<String> sido = db.BdongDao().getAllSidoCode(i.getCode());
+                List<String> sido = null;
+                try {
+                    sido = new Query.BdongGetSidoCodeAsyncTask(db.BdongDao()).execute(i.getCode()).get();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 for (String j : sido) {
                     bDongCode.add(j);
                     Log.d("recruit", "onResume: bDongCode : " + j);
                 }
             } else if (i.getCode().length() == 5) {  //시군구 전체 법정도 코드 가져오기
-                List<String> sigungu = db.BdongDao().getAllSigunguCode(i.getCode());
+//                List<String> sigungu = db.BdongDao().getAllSigunguCode(i.getCode());
+                List<String> sigungu = null;
+                try {
+                    sigungu = new Query.BdongGetSigunguCodeAsyncTask(db.BdongDao()).execute(i.getCode()).get();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 for (String j : sigungu) {
                     bDongCode.add(j);
                     Log.d("recruit", "onResume: bDongCode : " + j);
@@ -206,7 +219,15 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
         List<String> jobCode = new ArrayList<>();   //직종
         for (ChipList i : jobs) {
             if (i.getCode().length() == 2) {    //1차분류 전체 직종코드 가져오기
-                List<String> allJob = db.jobCategoryDao().getAllJobCode(i.getCode());
+//                List<String> allJob = db.jobCategoryDao().getAllJobCode(i.getCode());
+                List<String> allJob = null;
+                try {
+                    allJob = new Query.JobGetAllJobCodeAsyncTask(db.jobCategoryDao()).execute(i.getCode()).get();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 for (String j : allJob) {
                     jobCode.add(j);
                 }
@@ -1060,7 +1081,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
     private void checkLastUpdated() { // 기기의 업데이트 일시와 DB의 업데이트 일시를 확인
         List<String> rows = null;//db.RecruitDao().getLastUpdated();
         try {
-            rows = new RecruitLastUpdateAsyncTask(db.RecruitDao()).execute().get();
+            rows = new Query.RecruitLastUpdateAsyncTask(db.RecruitDao()).execute().get();
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -1121,9 +1142,9 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
                         String y = jsonObject1.getString("y");
                         String update_dt = jsonObject1.getString("update_dt");
                         Recruit newRecruit = new Recruit(recruit_id, title, organization, salary_type_code, salary, b_dong_code, job_code, career_required, career_min, enrollment_code, certificate_required, x, y, update_dt);
-                        new RecruitInsertAsyncTask(db.RecruitDao()).execute(newRecruit);   // 백그라운드 INSERT 실행
+                        new Query.RecruitInsertAsyncTask(db.RecruitDao()).execute(newRecruit);   // 백그라운드 INSERT 실행
                     } else {    // 지워진 기존 데이터
-                        new RecruitDeleteAsyncTask(db.RecruitDao()).execute(jsonObject1.getString("recruit_id"));   // 백그라운드 DELETE 실행
+                        new Query.RecruitDeleteAsyncTask(db.RecruitDao()).execute(jsonObject1.getString("recruit_id"));   // 백그라운드 DELETE 실행
                     }
                 }
             } catch (JSONException e) {
@@ -1158,7 +1179,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
                 String rId = arrayList.get(j);
                 List<Recruit> recruits = null;
                 try {
-                    recruits = new RecruitGetListAsyncTask(db.RecruitDao()).execute(rId).get();
+                    recruits = new Query.RecruitGetListAsyncTask(db.RecruitDao()).execute(rId).get();
                 } catch (ExecutionException e) {
                     e.printStackTrace();
                 } catch (InterruptedException e) {
@@ -1181,7 +1202,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
     private void checkCertifiLastUpdated() { // 기기의 업데이트 일시와 DB의 업데이트 일시를 확인
         List<String> rows = null;
         try {
-            rows = new CertifiLastUpdateAsyncTask(db.recruitCertificateDao()).execute().get();
+            rows = new Query.CertifiLastUpdateAsyncTask(db.recruitCertificateDao()).execute().get();
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -1232,116 +1253,18 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
                         Integer certificate_no = jsonObject1.getInt("certificate_no");
                         String certificate_id = jsonObject1.getString("certificate_id");
                         RecruitCertificate newRecruitCertificate = new RecruitCertificate(certificate_no, recruit_id, certificate_id);
-                        new CertifiInsertAsyncTask(db.recruitCertificateDao()).execute(newRecruitCertificate);   // 백그라운드 INSERT 실행
+                        new Query.CertifiInsertAsyncTask(db.recruitCertificateDao()).execute(newRecruitCertificate);   // 백그라운드 INSERT 실행
                     } else {    // 지워진 기존 데이터
                         String recruit_id = jsonObject1.getString("recruit_id");
                         Integer certificate_no = jsonObject1.getInt("certificate_no");
                         String certificate_id = jsonObject1.getString("certificate_id");
                         RecruitCertificate newRecruitCertificate = new RecruitCertificate(certificate_no, recruit_id, certificate_id);
-                        new CertifiDeleteAsyncTask(db.recruitCertificateDao()).execute(newRecruitCertificate);   // 백그라운드 DELETE 실행
+                        new Query.CertifiDeleteAsyncTask(db.recruitCertificateDao()).execute(newRecruitCertificate);   // 백그라운드 DELETE 실행
                     }
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-        }
-    }
-
-    public static class RecruitGetListAsyncTask extends AsyncTask<String, Void, List<Recruit>> {
-        private RecruitDao mRecruitDao;
-
-        public RecruitGetListAsyncTask(RecruitDao recruitDao) {
-            this.mRecruitDao = recruitDao;
-        }
-
-        @Override
-        protected List<Recruit> doInBackground(String... strings) {
-            return mRecruitDao.getList(strings[0]);
-        }
-    }
-
-    public static class RecruitLastUpdateAsyncTask extends AsyncTask<Void, Void, List<String>> {
-        private RecruitDao mRecruitDao;
-
-        public RecruitLastUpdateAsyncTask(RecruitDao recruitDao) {
-            this.mRecruitDao = recruitDao;
-        }
-
-        @Override
-        protected List<String> doInBackground(Void... voids) {
-            return mRecruitDao.getLastUpdated();
-        }
-
-    }
-
-    public static class CertifiLastUpdateAsyncTask extends AsyncTask<Void, Void, List<String>> {
-        private RecruitCertificateDao mRecruitCertifiDao;
-
-        public CertifiLastUpdateAsyncTask(RecruitCertificateDao recruitCertificateDao) {
-            this.mRecruitCertifiDao = recruitCertificateDao;
-        }
-
-        @Override
-        protected List<String> doInBackground(Void... voids) {
-            return mRecruitCertifiDao.getLastUpdated();
-        }
-    }
-
-    // 메인스레드에서 데이터베이스에 접근할 수 없으므로 AsyncTask 사용 - INSERT
-    public static class RecruitInsertAsyncTask extends AsyncTask<Recruit, Void, Void> {
-        private RecruitDao mRecruitDao;
-
-        public RecruitInsertAsyncTask(RecruitDao recruitDao) {
-            this.mRecruitDao = recruitDao;
-        }
-
-        @Override // 백그라운드작업(메인스레드 X)
-        protected Void doInBackground(Recruit... recruits) {
-            mRecruitDao.insertNewRecruit(recruits[0]);
-            return null;
-        }
-    }
-
-    public static class CertifiInsertAsyncTask extends AsyncTask<RecruitCertificate, Void, Void> {
-        private RecruitCertificateDao mRecruitCertifiDao;
-
-        public CertifiInsertAsyncTask(RecruitCertificateDao recruitCertificateDao) {
-            this.mRecruitCertifiDao = recruitCertificateDao;
-        }
-
-        @Override // 백그라운드작업(메인스레드 X)
-        protected Void doInBackground(RecruitCertificate... recruits) {
-            mRecruitCertifiDao.insertNewRecruit(recruits[0]);
-            return null;
-        }
-    }
-
-    // 메인스레드에서 데이터베이스에 접근할 수 없으므로 AsyncTask 사용 - DELETE
-    public static class RecruitDeleteAsyncTask extends AsyncTask<String, Void, Void> {
-        private RecruitDao mRecruitDao;
-
-        public RecruitDeleteAsyncTask(RecruitDao recruitDao) {
-            this.mRecruitDao = recruitDao;
-        }
-
-        @Override // 백그라운드작업(메인스레드 X)
-        protected Void doInBackground(String... strings) {
-            mRecruitDao.deleteGoneRecruit(strings[0]);
-            return null;
-        }
-    }
-
-    public static class CertifiDeleteAsyncTask extends AsyncTask<RecruitCertificate, Void, Void> {
-        private RecruitCertificateDao mRecruitCertifiDao;
-
-        public CertifiDeleteAsyncTask(RecruitCertificateDao recruitCertificateDao) {
-            this.mRecruitCertifiDao = recruitCertificateDao;
-        }
-
-        @Override // 백그라운드작업(메인스레드 X)
-        protected Void doInBackground(RecruitCertificate... recruitCertificates) {
-            mRecruitCertifiDao.deleteGoneRecruit(recruitCertificates[0]);
-            return null;
         }
     }
 
