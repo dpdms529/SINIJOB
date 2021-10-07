@@ -306,6 +306,7 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
 
     @Override
     public void onBackPressed() {
+        fileDelete();
         Intent intent = new Intent(this, SelfInfoActivity.class);
         startActivity(intent);
         finish();
@@ -369,6 +370,26 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
         Bitmap thumb = ThumbnailUtils.createVideoThumbnail(path, MediaStore.Images.Thumbnails.MINI_KIND);
         BitmapDrawable bitmapDrawable = new BitmapDrawable(thumb);
         videoView.setBackground(bitmapDrawable);
+    }
+
+    private void fileDelete() {
+        File file = new File(this.getFilesDir().toString() + "/videocv_" + dirName);
+        File[] childFileList = file.listFiles();
+
+        String[] testDir = file.list();
+
+        for (int i = 0; i < testDir.length; i++) {
+            Log.e("testDirfilepath", testDir[i]);
+        }
+
+        for(File childFile : childFileList) {
+            childFile.delete();
+        }
+
+        file.delete();
+
+        Log.e("몇갤까",Integer.toString(testDir.length));
+
     }
 
 }
