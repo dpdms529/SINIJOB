@@ -131,6 +131,30 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/coverVideoLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="25dp"
+                    android:layout_marginTop="20dp"
+                    android:text="다음 영상을 전송합니다."
+                    android:textSize="20dp" />
+
+                <VideoView
+                    android:id="@+id/video_view"
+                    android:layout_width="350dp"
+                    android:layout_height="200dp"
+                    android:layout_marginStart="25dp"
+                    android:layout_marginTop="5dp" />
+
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/coverLetterLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

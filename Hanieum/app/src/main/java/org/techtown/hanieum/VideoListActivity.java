@@ -275,8 +275,6 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            Intent intent = new Intent(this, SelfInfoActivity.class);
-            startActivity(intent);
 
         } else if (v == delBtn) {
 
@@ -287,8 +285,6 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
                         public void onClick(DialogInterface dialogInterface, int i) {
                             new CoverLetterActivity.CoverLetterDeleteAsyncTask(db.CoverLetterDao()).execute(item.getNo());
                             Toast.makeText(getApplicationContext(), "자기소개서가 삭제되었습니다.", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(getApplicationContext(), SelfInfoActivity.class);
-                            startActivity(intent);
                             finish();
                         }
                     })
@@ -306,10 +302,10 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
 
     @Override
     public void onBackPressed() {
-        fileDelete();
-        Intent intent = new Intent(this, SelfInfoActivity.class);
-        startActivity(intent);
-        finish();
+        if(item == null) {
+            fileDelete();
+        }
+        finishActivity();
     }
 
     @Override
@@ -376,19 +372,19 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
         File file = new File(this.getFilesDir().toString() + "/videocv_" + dirName);
         File[] childFileList = file.listFiles();
 
-        String[] testDir = file.list();
-
-        for (int i = 0; i < testDir.length; i++) {
-            Log.e("testDirfilepath", testDir[i]);
+//        String[] testDir = file.list();
+//
+//        for (int i = 0; i < testDir.length; i++) {
+//            Log.e("testDirfilepath", testDir[i]);
+//        }
+        if(childFileList != null) {
+            for(File childFile : childFileList) {
+                childFile.delete();
+            }
         }
 
-        for(File childFile : childFileList) {
-            childFile.delete();
-        }
 
         file.delete();
-
-        Log.e("몇갤까",Integer.toString(testDir.length));
 
     }
 
