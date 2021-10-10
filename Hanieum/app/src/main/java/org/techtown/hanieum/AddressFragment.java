@@ -74,6 +74,7 @@ public class AddressFragment extends Fragment implements View.OnClickListener {
 
         pref = new SharedPreference(context);
 
+        Log.d("TAG", pref.preferences.getString(SharedPreference.ADDRESS,""));
         addressText.setText(pref.preferences.getString(SharedPreference.ADDRESS,""));
 
         nextBtn.setOnClickListener(this);
