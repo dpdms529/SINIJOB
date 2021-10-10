@@ -300,13 +300,13 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
         }
     }
 
-    @Override
-    public void onBackPressed() {
-        if(item == null) {
-            fileDelete();
-        }
-        finishActivity();
-    }
+//    @Override
+//    public void onBackPressed() {
+//        if(item == null) {
+//            fileDelete();
+//        }
+//        finishActivity();
+//    }
 
     @Override
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
