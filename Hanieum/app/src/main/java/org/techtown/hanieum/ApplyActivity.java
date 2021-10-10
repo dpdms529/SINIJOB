@@ -223,10 +223,10 @@ public class ApplyActivity extends AppCompatActivity implements View.OnClickList
         } else if (v == finishButton) {
             Intent i = getIntent();
             if (i.getStringExtra("type").equals("sms")) {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("tel:"));
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("tel:010-0000-0000"));
                 intent.setType("vnd.android-dir/mms-sms");
-                intent.putExtra("address", "");
-                intent.putExtra("sms_body", textMsg.getText().toString());
+                intent.putExtra("address", "010-0000-0000");
+                intent.putExtra("sms_body", textMsg.getText().toString() + "\n자기소개 : " + selectedCL.first_item + "\n지원동기 : " + selectedCL.second_item + "\n경력 및 경험 : " + selectedCL.third_item);
                 startActivity(intent);
             } else {    // email
                 String uriText = "mailto:8bangwomen@hanium.com" + "?subject=" +
