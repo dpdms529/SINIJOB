@@ -11,7 +11,6 @@ import android.graphics.drawable.shapes.OvalShape;
 import android.media.MediaPlayer;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.speech.RecognitionListener;
@@ -39,7 +38,6 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
 
 import org.techtown.hanieum.db.AppDatabase;
-import org.techtown.hanieum.db.dao.CoverLetterDao;
 import org.techtown.hanieum.db.entity.CoverLetter;
 
 import java.io.File;
@@ -223,13 +221,6 @@ public class ApplyActivity extends AppCompatActivity implements View.OnClickList
                 voiceOut(msg);
             }
         } else if (v == finishButton) {
-//            Intent i = getIntent();
-//            if (i.getStringExtra("type").equals("sms")) {
-//                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("tel:010-0000-0000"));
-//                intent.setType("vnd.android-dir/mms-sms");
-//                intent.putExtra("address", "010-0000-0000");
-//                intent.putExtra("sms_body", textMsg.getText().toString() + "\n자기소개 : " + selectedCL.first_item + "\n지원동기 : " + selectedCL.second_item + "\n경력 및 경험 : " + selectedCL.third_item);
-//                startActivity(intent);
             Intent i = getIntent();
             if (i.getStringExtra("type").equals("sms")) {
                 Intent intent;

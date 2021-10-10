@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -14,7 +13,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.techtown.hanieum.db.AppDatabase;
-import org.techtown.hanieum.db.dao.CoverLetterDao;
 import org.techtown.hanieum.db.entity.CoverLetter;
 
 import java.util.HashMap;
@@ -108,45 +106,4 @@ public class CoverLetterActivity extends AppCompatActivity implements View.OnCli
         }
     }
 
-//    public static class CoverLetterInsertAsyncTask extends AsyncTask<CoverLetter, Void, Void> {
-//        private CoverLetterDao mCoverLetterDao;
-//
-//        public CoverLetterInsertAsyncTask(CoverLetterDao coverLetterDao) {
-//            this.mCoverLetterDao = coverLetterDao;
-//        }
-//
-//        @Override
-//        protected Void doInBackground(CoverLetter... coverLetters) {
-//            mCoverLetterDao.insertCoverLetter(coverLetters[0]);
-//            return null;
-//        }
-//    }
-//
-//    public static class CoverLetterUpdateAsyncTask extends AsyncTask<HashMap<Integer, String>, Void, Void> {
-//        private CoverLetterDao mCoverLetterDao;
-//
-//        public CoverLetterUpdateAsyncTask(CoverLetterDao coverLetterDao) {
-//            this.mCoverLetterDao = coverLetterDao;
-//        }
-//
-//        @Override
-//        protected Void doInBackground(HashMap<Integer, String>... hashMaps) {
-//            mCoverLetterDao.updateCoverLetter(hashMaps[0].get(1), hashMaps[0].get(2), hashMaps[0].get(3), Integer.parseInt(hashMaps[0].get(4)));
-//            return null;
-//        }
-//    }
-//
-//    public static class CoverLetterDeleteAsyncTask extends AsyncTask<Integer, Void, Void> {
-//        private CoverLetterDao mCoverLetterDao;
-//
-//        public CoverLetterDeleteAsyncTask(CoverLetterDao coverLetterDao) {
-//            this.mCoverLetterDao = coverLetterDao;
-//        }
-//
-//        @Override
-//        protected Void doInBackground(Integer... integers) {
-//            mCoverLetterDao.deleteCoverLetter(integers[0]);
-//            return null;
-//        }
-//    }
 }

@@ -38,10 +38,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.HashMap;
-
-import retrofit2.http.HEAD;
-
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
     ImageButton kakaoLoginBtn;

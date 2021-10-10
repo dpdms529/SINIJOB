@@ -2,7 +2,6 @@ package org.techtown.hanieum;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -10,7 +9,6 @@ import android.widget.Button;
 import android.widget.Spinner;
 
 import org.techtown.hanieum.db.AppDatabase;
-import org.techtown.hanieum.db.dao.CvInfoDao;
 import org.techtown.hanieum.db.entity.CvInfo;
 
 import java.util.concurrent.ExecutionException;
@@ -86,19 +84,4 @@ public class SchoolActivity extends AppCompatActivity {
             }
         });
     }
-
-//    // 사용처: SchoolActivity, CarCerActivity
-//    public static class CvInfoInsertAsyncTask extends AsyncTask<CvInfo, Void, Void> {
-//        private CvInfoDao mCvInfoDao;
-//
-//        public CvInfoInsertAsyncTask(CvInfoDao cvInfoDao) {
-//            this.mCvInfoDao = cvInfoDao;
-//        }
-//
-//        @Override
-//        protected Void doInBackground(CvInfo... cvInfos) {
-//            mCvInfoDao.insertCvInfo(cvInfos[0]);
-//            return null;
-//        }
-//    }
 }
