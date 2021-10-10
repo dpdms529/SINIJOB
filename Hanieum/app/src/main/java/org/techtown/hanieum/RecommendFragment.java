@@ -168,7 +168,6 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
         super.onResume();
 
         checkLastUpdated();     // 최신 업데이트 일시 확인(일치 -> 유지, 불일치 -> 데이터 가져오기)
-        checkCertifiLastUpdated();
 
         ArrayList<ChipList> regions = pref.getArrayPref(SharedPreference.REGION_LIST);
         ArrayList<ChipList> jobs = pref.getArrayPref(SharedPreference.JOB_LIST);
@@ -1079,7 +1078,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
     }
 
     private void checkLastUpdated() { // 기기의 업데이트 일시와 DB의 업데이트 일시를 확인
-        List<String> rows = null;//db.RecruitDao().getLastUpdated();
+        List<String> rows = null;
         try {
             rows = new Query.RecruitLastUpdateAsyncTask(db.RecruitDao()).execute().get();
         } catch (ExecutionException e) {
@@ -1112,7 +1111,9 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
 
         if (!lastUpdated.equals(dbLastUpdated)) {   // 최신 업데이트 일시 확인(불일치 -> 데이터 가져오기)
             String recruitPhp = getResources().getString(R.string.serverIP) + "recruit_update.php?last_updated=" + lastUpdated;
+            String recruitCertificatePhp = getResources().getString(R.string.serverIP) + "certificate_update.php?last_updated=" + lastUpdated;
             URLConnector urlConnectorRecruit = new URLConnector(recruitPhp);
+            URLConnector urlConnectorRecruitCertificate = new URLConnector(recruitCertificatePhp);
 
             urlConnectorRecruit.start();
             try {
@@ -1120,6 +1121,13 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
             } catch (InterruptedException e) {
             }
             String recruitResult = urlConnectorRecruit.getResult();
+
+            urlConnectorRecruitCertificate.start();
+            try {
+                urlConnectorRecruitCertificate.join();
+            } catch (InterruptedException e) {
+            }
+            String recruitCertificateResult = urlConnectorRecruitCertificate.getResult();
 
             try {
                 JSONObject jsonObject = new JSONObject(recruitResult);
@@ -1147,6 +1155,31 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
                         new Query.RecruitDeleteAsyncTask(db.RecruitDao()).execute(jsonObject1.getString("recruit_id"));   // 백그라운드 DELETE 실행
                     }
                 }
+                Log.d("roomdb update check", "roomdb-recruit-updated");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                JSONObject jsonObject = new JSONObject(recruitCertificateResult);
+                JSONArray jsonArray = jsonObject.getJSONArray("result");
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject jsonObject1 = jsonArray.getJSONObject(i);
+                    if (jsonObject1.getString("deleted").equals("0")) {     // 새로 생긴 데이터
+                        String recruit_id = jsonObject1.getString("recruit_id");
+                        Integer certificate_no = jsonObject1.getInt("certificate_no");
+                        String certificate_id = jsonObject1.getString("certificate_id");
+                        RecruitCertificate newRecruitCertificate = new RecruitCertificate(certificate_no, recruit_id, certificate_id);
+                        new Query.CertifiInsertAsyncTask(db.recruitCertificateDao()).execute(newRecruitCertificate);   // 백그라운드 INSERT 실행
+                    } else {    // 지워진 기존 데이터
+                        String recruit_id = jsonObject1.getString("recruit_id");
+                        Integer certificate_no = jsonObject1.getInt("certificate_no");
+                        String certificate_id = jsonObject1.getString("certificate_id");
+                        RecruitCertificate newRecruitCertificate = new RecruitCertificate(certificate_no, recruit_id, certificate_id);
+                        new Query.CertifiDeleteAsyncTask(db.recruitCertificateDao()).execute(newRecruitCertificate);   // 백그라운드 DELETE 실행
+                    }
+                }
+                Log.d("roomdb update check", "roomdb-recruit_certificate-updated");
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -1195,75 +1228,6 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
                     } catch (InterruptedException e) {
                     }
                 }
-            }
-        }
-    }
-
-    private void checkCertifiLastUpdated() { // 기기의 업데이트 일시와 DB의 업데이트 일시를 확인
-        List<String> rows = null;
-        try {
-            rows = new Query.CertifiLastUpdateAsyncTask(db.recruitCertificateDao()).execute().get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-//        db.recruitCertificateDao().getLastUpdated();
-        String lastUpdated = rows.get(0);
-        Log.d("TAG", "certifi: " + rows);
-        String dbLastUpdated = "";
-
-        String php = getResources().getString(R.string.serverIP) + "recruit_lastupdated.php";
-        URLConnector urlConnector = new URLConnector(php);
-
-        urlConnector.start();
-        try {
-            urlConnector.join();
-        } catch (InterruptedException e) {
-        }
-        String result = urlConnector.getResult();
-        Log.d("TAG", "certifi :"+ result);
-
-        try {
-            JSONObject jsonObject = new JSONObject(result);
-            JSONArray jsonArray = jsonObject.getJSONArray("result");
-            dbLastUpdated = jsonArray.getJSONObject(0).getString("last_updated");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        if (lastUpdated!=null && !lastUpdated.equals(dbLastUpdated)) {   // 최신 업데이트 일시 확인(불일치 -> 데이터 가져오기)
-            String recruitCertificatePhp = getResources().getString(R.string.serverIP) + "certificate_update.php?last_updated=" + lastUpdated;
-            URLConnector urlConnectorRecruitCertificate = new URLConnector(recruitCertificatePhp);
-
-            urlConnectorRecruitCertificate.start();
-            try {
-                urlConnectorRecruitCertificate.join();
-            } catch (InterruptedException e) {
-            }
-            String recruitCertificateResult = urlConnectorRecruitCertificate.getResult();
-
-            try {
-                JSONObject jsonObject = new JSONObject(recruitCertificateResult);
-                JSONArray jsonArray = jsonObject.getJSONArray("result");
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    JSONObject jsonObject1 = jsonArray.getJSONObject(i);
-                    if (jsonObject1.getString("deleted").equals("0")) {     // 새로 생긴 데이터
-                        String recruit_id = jsonObject1.getString("recruit_id");
-                        Integer certificate_no = jsonObject1.getInt("certificate_no");
-                        String certificate_id = jsonObject1.getString("certificate_id");
-                        RecruitCertificate newRecruitCertificate = new RecruitCertificate(certificate_no, recruit_id, certificate_id);
-                        new Query.CertifiInsertAsyncTask(db.recruitCertificateDao()).execute(newRecruitCertificate);   // 백그라운드 INSERT 실행
-                    } else {    // 지워진 기존 데이터
-                        String recruit_id = jsonObject1.getString("recruit_id");
-                        Integer certificate_no = jsonObject1.getInt("certificate_no");
-                        String certificate_id = jsonObject1.getString("certificate_id");
-                        RecruitCertificate newRecruitCertificate = new RecruitCertificate(certificate_no, recruit_id, certificate_id);
-                        new Query.CertifiDeleteAsyncTask(db.recruitCertificateDao()).execute(newRecruitCertificate);   // 백그라운드 DELETE 실행
-                    }
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
             }
         }
     }
