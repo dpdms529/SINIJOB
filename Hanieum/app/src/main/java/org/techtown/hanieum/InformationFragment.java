@@ -138,6 +138,14 @@ public class InformationFragment extends Fragment implements View.OnClickListene
                             pref.editor.remove(SharedPreference.ADDITIONAL_NO);
                             pref.editor.remove(SharedPreference.X);
                             pref.editor.remove(SharedPreference.Y);
+                            pref.editor.remove(SharedPreference.JOB_LIST);
+                            pref.editor.remove(SharedPreference.REGION_LIST);
+                            pref.editor.remove(SharedPreference.JOB_TMP);
+                            pref.editor.remove(SharedPreference.REGION_TMP);
+                            pref.editor.remove(SharedPreference.WORKFORM_STATUS);
+                            pref.editor.remove(SharedPreference.CAREER_STATUS);
+                            pref.editor.remove(SharedPreference.LICENSE_STATUS);
+                            pref.editor.remove(SharedPreference.TEXT_SIZE);
                             pref.editor.commit();
 
                             Intent intent = new Intent(context, LoginActivity.class);
@@ -168,6 +176,14 @@ public class InformationFragment extends Fragment implements View.OnClickListene
                                         pref.editor.remove(SharedPreference.ADDITIONAL_NO);
                                         pref.editor.remove(SharedPreference.X);
                                         pref.editor.remove(SharedPreference.Y);
+                                        pref.editor.remove(SharedPreference.JOB_LIST);
+                                        pref.editor.remove(SharedPreference.REGION_LIST);
+                                        pref.editor.remove(SharedPreference.JOB_TMP);
+                                        pref.editor.remove(SharedPreference.REGION_TMP);
+                                        pref.editor.remove(SharedPreference.WORKFORM_STATUS);
+                                        pref.editor.remove(SharedPreference.CAREER_STATUS);
+                                        pref.editor.remove(SharedPreference.LICENSE_STATUS);
+                                        pref.editor.remove(SharedPreference.TEXT_SIZE);
                                         pref.editor.commit();
 
                                         // db에서 삭제
