@@ -34,6 +34,7 @@ import android.widget.VideoView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
 
@@ -41,6 +42,7 @@ import org.techtown.hanieum.db.AppDatabase;
 import org.techtown.hanieum.db.dao.CoverLetterDao;
 import org.techtown.hanieum.db.entity.CoverLetter;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -221,13 +223,36 @@ public class ApplyActivity extends AppCompatActivity implements View.OnClickList
                 voiceOut(msg);
             }
         } else if (v == finishButton) {
+//            Intent i = getIntent();
+//            if (i.getStringExtra("type").equals("sms")) {
+//                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("tel:010-0000-0000"));
+//                intent.setType("vnd.android-dir/mms-sms");
+//                intent.putExtra("address", "010-0000-0000");
+//                intent.putExtra("sms_body", textMsg.getText().toString() + "\n자기소개 : " + selectedCL.first_item + "\n지원동기 : " + selectedCL.second_item + "\n경력 및 경험 : " + selectedCL.third_item);
+//                startActivity(intent);
             Intent i = getIntent();
             if (i.getStringExtra("type").equals("sms")) {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("tel:010-0000-0000"));
-                intent.setType("vnd.android-dir/mms-sms");
-                intent.putExtra("address", "010-0000-0000");
-                intent.putExtra("sms_body", textMsg.getText().toString() + "\n자기소개 : " + selectedCL.first_item + "\n지원동기 : " + selectedCL.second_item + "\n경력 및 경험 : " + selectedCL.third_item);
+                Intent intent;
+                if(items.get(spinner.getSelectedItemPosition()).get("dist").equals("0")) { // 영상 자기소개서 첨부
+                    intent = new Intent(Intent.ACTION_SEND, Uri.parse("tel:010-0000-0000"));
+                    intent.setType("vnd.android-dir/mms-sms");
+                    intent.putExtra("address", "010-0000-0000");
+                    String dirName = items.get(spinner.getSelectedItemPosition()).get("dirname");
+                    String url = ApplyActivity.this.getFilesDir().toString() + "/videocv_" + dirName + "/cv.mp4";
+                    File f = new File(url);
+                    Uri videoUri = Uri.parse(url);
+                    intent.setType("video/*");
+                    intent.putExtra(Intent.EXTRA_STREAM, FileProvider.getUriForFile(this, "org.techtown.hanieum.fileprovider", f));
+                    intent.putExtra("sms_body",textMsg.getText().toString());
+                } else {
+                    intent = new Intent(Intent.ACTION_VIEW, Uri.parse("tel:010-0000-0000"));
+                    intent.setType("vnd.android-dir/mms-sms");
+                    intent.putExtra("address", "010-0000-0000");
+                    intent.putExtra("sms_body", textMsg.getText().toString() + "\n자기소개 : " + selectedCL.first_item + "\n지원동기 : " + selectedCL.second_item + "\n경력 및 경험 : " + selectedCL.third_item);
+                }
                 startActivity(intent);
+
+
             } else {    // email
                 String uriText = "mailto:8bangwomen@hanium.com" + "?subject=" +
                         Uri.encode(i.getStringExtra("company") + "에 지원합니다.") + "&body=" + Uri.encode(textMsg.getText().toString() + "\n자기소개 : " + selectedCL.first_item + "\n지원동기 : " + selectedCL.second_item + "\n경력 및 경험 : " + selectedCL.third_item);
