@@ -129,7 +129,7 @@ public class ResumeFragment extends Fragment implements View.OnClickListener {
         // 학력사항
         String education = null;
         try {
-            education = new GetCvInfoAsyncTask(db.CvInfoDao()).execute().get();
+            education = new Query.CvInfoGetInfoCodeAsyncTask(db.CvInfoDao()).execute("E").get();
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -166,7 +166,7 @@ public class ResumeFragment extends Fragment implements View.OnClickListener {
         // 경력사항
         List<CvInfo> cv = null;
         try {
-            cv = new CarCerActivity.GetAllAsyncTask(db.CvInfoDao()).execute("CA").get();
+            cv = new Query.CvInfoGetAsyncTask(db.CvInfoDao()).execute("CA").get();
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -186,7 +186,7 @@ public class ResumeFragment extends Fragment implements View.OnClickListener {
         // 보유자격증
         cv = null;
         try {
-            cv = new CarCerActivity.GetAllAsyncTask(db.CvInfoDao()).execute("CE").get();
+            cv = new Query.CvInfoGetAsyncTask(db.CvInfoDao()).execute("CE").get();
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -238,32 +238,32 @@ public class ResumeFragment extends Fragment implements View.OnClickListener {
         return view;
     }
 
-    // 사용처: ResumeFragment, SchoolActivity
-    public static class GetCvInfoAsyncTask extends AsyncTask<Void, Void, String> {
-        private CvInfoDao mCvInfoDao;
-
-        public GetCvInfoAsyncTask(CvInfoDao cvInfoDao) {
-            this.mCvInfoDao = cvInfoDao;
-        }
-
-        @Override
-        protected String doInBackground(Void... voids) {
-            return mCvInfoDao.getInfoCode("E");
-        }
-    }
-
-    // 지울거
-    public static class GetAllAsyncTask extends AsyncTask<Void, Void, List<CvInfo>> {
-        private CvInfoDao mCvInfoDao;
-
-        public GetAllAsyncTask(CvInfoDao cvInfoDao) {
-            this.mCvInfoDao = cvInfoDao;
-        }
-
-        @Override
-        protected List<CvInfo> doInBackground(Void... voids) {
-            return mCvInfoDao.getCvInfo("CA");
-        }
-    }
+//    // 사용처: ResumeFragment, SchoolActivity
+//    public static class GetCvInfoAsyncTask extends AsyncTask<Void, Void, String> {
+//        private CvInfoDao mCvInfoDao;
+//
+//        public GetCvInfoAsyncTask(CvInfoDao cvInfoDao) {
+//            this.mCvInfoDao = cvInfoDao;
+//        }
+//
+//        @Override
+//        protected String doInBackground(Void... voids) {
+//            return mCvInfoDao.getInfoCode("E");
+//        }
+//    }
+//
+//    // 지울거
+//    public static class GetAllAsyncTask extends AsyncTask<Void, Void, List<CvInfo>> {
+//        private CvInfoDao mCvInfoDao;
+//
+//        public GetAllAsyncTask(CvInfoDao cvInfoDao) {
+//            this.mCvInfoDao = cvInfoDao;
+//        }
+//
+//        @Override
+//        protected List<CvInfo> doInBackground(Void... voids) {
+//            return mCvInfoDao.getCvInfo("CA");
+//        }
+//    }
 
 }

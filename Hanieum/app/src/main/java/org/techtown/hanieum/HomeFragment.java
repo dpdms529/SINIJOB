@@ -135,7 +135,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private void checkLastUpdated() { // 기기의 업데이트 일시와 DB의 업데이트 일시를 확인
         List<String> rows = null;
         try {
-            rows = new RecommendFragment.RecruitLastUpdateAsyncTask(db.RecruitDao()).execute().get();
+            rows = new Query.RecruitLastUpdateAsyncTask(db.RecruitDao()).execute().get();
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -195,9 +195,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                         String y = jsonObject1.getString("y");
                         String update_dt = jsonObject1.getString("update_dt");
                         Recruit newRecruit = new Recruit(recruit_id, title, organization, salary_type_code, salary, b_dong_code, job_code, career_required, career_min, enrollment_code, certificate_required, x, y, update_dt);
-                        new RecommendFragment.RecruitInsertAsyncTask(db.RecruitDao()).execute(newRecruit);   // 백그라운드 INSERT 실행
+                        new Query.RecruitInsertAsyncTask(db.RecruitDao()).execute(newRecruit);   // 백그라운드 INSERT 실행
                     } else {    // 지워진 기존 데이터
-                        new RecommendFragment.RecruitDeleteAsyncTask(db.RecruitDao()).execute(jsonObject1.getString("recruit_id"));   // 백그라운드 DELETE 실행
+                        new Query.RecruitDeleteAsyncTask(db.RecruitDao()).execute(jsonObject1.getString("recruit_id"));   // 백그라운드 DELETE 실행
                     }
                 }
             } catch (JSONException e) {
@@ -242,7 +242,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 String rId = hashMap.get("recruit_id");
                 List<Recruit> recruits = null;
                 try {
-                    recruits = new RecommendFragment.RecruitGetListAsyncTask(db.RecruitDao()).execute(rId).get();
+                    recruits = new Query.RecruitGetListAsyncTask(db.RecruitDao()).execute(rId).get();
                 } catch (ExecutionException e) {
                     e.printStackTrace();
                 } catch (InterruptedException e) {
@@ -265,7 +265,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private void checkCertifiLastUpdated() { // 기기의 업데이트 일시와 DB의 업데이트 일시를 확인
         List<String> rows = null;
         try {
-            rows = new CertifiLastUpdateAsyncTask(db.recruitCertificateDao()).execute().get();
+            rows = new Query.CertifiLastUpdateAsyncTask(db.recruitCertificateDao()).execute().get();
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -316,116 +316,18 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                         Integer certificate_no = jsonObject1.getInt("certificate_no");
                         String certificate_id = jsonObject1.getString("certificate_id");
                         RecruitCertificate newRecruitCertificate = new RecruitCertificate(certificate_no, recruit_id, certificate_id);
-                        new RecommendFragment.CertifiInsertAsyncTask(db.recruitCertificateDao()).execute(newRecruitCertificate);   // 백그라운드 INSERT 실행
+                        new Query.CertifiInsertAsyncTask(db.recruitCertificateDao()).execute(newRecruitCertificate);   // 백그라운드 INSERT 실행
                     } else {    // 지워진 기존 데이터
                         String recruit_id = jsonObject1.getString("recruit_id");
                         Integer certificate_no = jsonObject1.getInt("certificate_no");
                         String certificate_id = jsonObject1.getString("certificate_id");
                         RecruitCertificate newRecruitCertificate = new RecruitCertificate(certificate_no, recruit_id, certificate_id);
-                        new RecommendFragment.CertifiDeleteAsyncTask(db.recruitCertificateDao()).execute(newRecruitCertificate);   // 백그라운드 DELETE 실행
+                        new Query.CertifiDeleteAsyncTask(db.recruitCertificateDao()).execute(newRecruitCertificate);   // 백그라운드 DELETE 실행
                     }
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-        }
-    }
-
-    public static class RecruitGetListAsyncTask extends AsyncTask<String, Void, List<Recruit>> {
-        private RecruitDao mRecruitDao;
-
-        public RecruitGetListAsyncTask(RecruitDao recruitDao) {
-            this.mRecruitDao = recruitDao;
-        }
-
-        @Override
-        protected List<Recruit> doInBackground(String... strings) {
-            return mRecruitDao.getList(strings[0]);
-        }
-    }
-
-    public static class RecruitLastUpdateAsyncTask extends AsyncTask<Void, Void, List<String>> {
-        private RecruitDao mRecruitDao;
-
-        public RecruitLastUpdateAsyncTask(RecruitDao recruitDao) {
-            this.mRecruitDao = recruitDao;
-        }
-
-        @Override
-        protected List<String> doInBackground(Void... voids) {
-            return mRecruitDao.getLastUpdated();
-        }
-
-    }
-
-    public static class CertifiLastUpdateAsyncTask extends AsyncTask<Void, Void, List<String>> {
-        private RecruitCertificateDao mRecruitCertifiDao;
-
-        public CertifiLastUpdateAsyncTask(RecruitCertificateDao recruitCertificateDao) {
-            this.mRecruitCertifiDao = recruitCertificateDao;
-        }
-
-        @Override
-        protected List<String> doInBackground(Void... voids) {
-            return mRecruitCertifiDao.getLastUpdated();
-        }
-    }
-
-    // 메인스레드에서 데이터베이스에 접근할 수 없으므로 AsyncTask 사용 - INSERT
-    public static class RecruitInsertAsyncTask extends AsyncTask<Recruit, Void, Void> {
-        private RecruitDao mRecruitDao;
-
-        public RecruitInsertAsyncTask(RecruitDao recruitDao) {
-            this.mRecruitDao = recruitDao;
-        }
-
-        @Override // 백그라운드작업(메인스레드 X)
-        protected Void doInBackground(Recruit... recruits) {
-            mRecruitDao.insertNewRecruit(recruits[0]);
-            return null;
-        }
-    }
-
-    public static class CertifiInsertAsyncTask extends AsyncTask<RecruitCertificate, Void, Void> {
-        private RecruitCertificateDao mRecruitCertifiDao;
-
-        public CertifiInsertAsyncTask(RecruitCertificateDao recruitCertificateDao) {
-            this.mRecruitCertifiDao = recruitCertificateDao;
-        }
-
-        @Override // 백그라운드작업(메인스레드 X)
-        protected Void doInBackground(RecruitCertificate... recruits) {
-            mRecruitCertifiDao.insertNewRecruit(recruits[0]);
-            return null;
-        }
-    }
-
-    // 메인스레드에서 데이터베이스에 접근할 수 없으므로 AsyncTask 사용 - DELETE
-    public static class RecruitDeleteAsyncTask extends AsyncTask<String, Void, Void> {
-        private RecruitDao mRecruitDao;
-
-        public RecruitDeleteAsyncTask(RecruitDao recruitDao) {
-            this.mRecruitDao = recruitDao;
-        }
-
-        @Override // 백그라운드작업(메인스레드 X)
-        protected Void doInBackground(String... strings) {
-            mRecruitDao.deleteGoneRecruit(strings[0]);
-            return null;
-        }
-    }
-
-    public static class CertifiDeleteAsyncTask extends AsyncTask<RecruitCertificate, Void, Void> {
-        private RecruitCertificateDao mRecruitCertifiDao;
-
-        public CertifiDeleteAsyncTask(RecruitCertificateDao recruitCertificateDao) {
-            this.mRecruitCertifiDao = recruitCertificateDao;
-        }
-
-        @Override // 백그라운드작업(메인스레드 X)
-        protected Void doInBackground(RecruitCertificate... recruitCertificates) {
-            mRecruitCertifiDao.deleteGoneRecruit(recruitCertificates[0]);
-            return null;
         }
     }
 
@@ -479,7 +381,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 Log.d("TAG", "loadListData: "+recruit_id);
                 List<Recruit> recruit = null;
                 try {
-                    recruit = new RecruitGetListAsyncTask(db.RecruitDao()).execute(recruit_id).get();
+                    recruit = new Query.RecruitGetListAsyncTask(db.RecruitDao()).execute(recruit_id).get();
                 } catch (ExecutionException e) {
                     e.printStackTrace();
                 } catch (InterruptedException e) {
@@ -545,7 +447,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 if (count == 100) {
                     break;
                 }
-
 
             }
         } catch (JSONException e) {

@@ -78,7 +78,7 @@ public class JobDialog extends Dialog {
         if(career != null){
             job = null;
             try {
-                job = new JobGetAsyncTask(db.jobCategoryDao()).execute().get();
+                job = new Query.JobGetAsyncTask(db.jobCategoryDao()).execute().get();
             } catch (ExecutionException e) {
                 e.printStackTrace();
             } catch (InterruptedException e) {
@@ -87,7 +87,7 @@ public class JobDialog extends Dialog {
         }else if(certificate != null){
             try {
                 certificateList = null;
-                certificateList = new CertificateGetAsyncTask(db.CertificateDao()).execute().get();
+                certificateList = new Query.CertificateGetAsyncTask(db.CertificateDao()).execute().get();
             } catch (ExecutionException e) {
                 e.printStackTrace();
             } catch (InterruptedException e) {
@@ -164,30 +164,30 @@ public class JobDialog extends Dialog {
         });
     }
 
-    public static class JobGetAsyncTask extends AsyncTask<Void, Void, List<JobCategory>> {
-        private JobCategoryDao mJobCategoryDao;
-
-        public JobGetAsyncTask(JobCategoryDao jobCategoryDao) {
-            this.mJobCategoryDao = jobCategoryDao;
-        }
-
-        @Override
-        protected List<JobCategory> doInBackground(Void... voids) {
-            return mJobCategoryDao.getJob();
-        }
-    }
-
-    public static class CertificateGetAsyncTask extends AsyncTask<Void, Void, List<org.techtown.hanieum.db.entity.Certificate>> {
-        private CertificateDao mCertificateDao;
-
-        public CertificateGetAsyncTask(CertificateDao certificateDao) {
-            this.mCertificateDao = certificateDao;
-        }
-
-        @Override
-        protected List<org.techtown.hanieum.db.entity.Certificate> doInBackground(Void... voids) {
-            return mCertificateDao.getAll();
-        }
-    }
+//    public static class JobGetAsyncTask extends AsyncTask<Void, Void, List<JobCategory>> {
+//        private JobCategoryDao mJobCategoryDao;
+//
+//        public JobGetAsyncTask(JobCategoryDao jobCategoryDao) {
+//            this.mJobCategoryDao = jobCategoryDao;
+//        }
+//
+//        @Override
+//        protected List<JobCategory> doInBackground(Void... voids) {
+//            return mJobCategoryDao.getJob();
+//        }
+//    }
+//
+//    public static class CertificateGetAsyncTask extends AsyncTask<Void, Void, List<org.techtown.hanieum.db.entity.Certificate>> {
+//        private CertificateDao mCertificateDao;
+//
+//        public CertificateGetAsyncTask(CertificateDao certificateDao) {
+//            this.mCertificateDao = certificateDao;
+//        }
+//
+//        @Override
+//        protected List<org.techtown.hanieum.db.entity.Certificate> doInBackground(Void... voids) {
+//            return mCertificateDao.getAll();
+//        }
+//    }
 
 }

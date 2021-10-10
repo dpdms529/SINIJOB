@@ -103,7 +103,7 @@ public class BookmarkFragment extends Fragment {
                 Log.d("TAG", "loadListData: "+recruit_id);
                 List<Recruit> recruit = null;
                 try {
-                    recruit = new HomeFragment.RecruitGetListAsyncTask(db.RecruitDao()).execute(recruit_id).get();
+                    recruit = new Query.RecruitGetListAsyncTask(db.RecruitDao()).execute(recruit_id).get();
                 } catch (ExecutionException e) {
                     e.printStackTrace();
                 } catch (InterruptedException e) {
