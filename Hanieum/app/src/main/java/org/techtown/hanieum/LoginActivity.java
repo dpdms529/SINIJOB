@@ -67,6 +67,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         googleLoginBtn = findViewById(R.id.google_login_btn);
         loginBtn = findViewById(R.id.login_btn);
 
+        pref = new SharedPreference(getApplicationContext());
+
         //구글 로그인 버튼 text변경
         TextView textView = (TextView)googleLoginBtn.getChildAt(0);
         textView.setText("Google 계정 로그인");
@@ -121,7 +123,26 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     });
                 }else if(tokenInfo != null){
                     Log.i("TAG", "카카오 토큰 정보 보기 성공" + tokenInfo.getId());
-                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+
+                    String php = getResources().getString(R.string.serverIP) + "user_read.php?user_id=" + pref.preferences.getString(SharedPreference.USER_ID, "");
+                    URLConnector urlConnector = new URLConnector(php);
+                    urlConnector.start();
+                    try {
+                        urlConnector.join();
+                    } catch (InterruptedException e) {
+                    }
+                    String result = urlConnector.getResult();
+
+                    Log.d("TAG", result);
+
+                    Intent intent;
+                    // db에 회원정보 없으면
+                    if (result.contains("\"result\":[]")) {
+                        intent = new Intent(getApplicationContext(), InfoGetActivity.class);
+                    } else {
+                        intent = new Intent(getApplicationContext(), MainActivity.class);
+                    }
+
                     startActivity(intent);
                     finish();
                 }
@@ -131,12 +152,29 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         if(gsa != null){
             Log.i("TAG", "구글 로그인 성공");
-            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+
+            String php = getResources().getString(R.string.serverIP) + "user_read.php?user_id=" + pref.preferences.getString(SharedPreference.USER_ID, "");
+            URLConnector urlConnector = new URLConnector(php);
+            urlConnector.start();
+            try {
+                urlConnector.join();
+            } catch (InterruptedException e) {
+            }
+            String result = urlConnector.getResult();
+
+            Log.d("TAG", result);
+
+            Intent intent;
+            // db에 회원정보 없으면
+            if (result.contains("\"result\":[]")) {
+                intent = new Intent(getApplicationContext(), InfoGetActivity.class);
+            } else {
+                intent = new Intent(getApplicationContext(), MainActivity.class);
+            }
+
             startActivity(intent);
             finish();
         }
-
-        pref = new SharedPreference(getApplicationContext());
 
         kakaoLoginBtn.setOnClickListener(this);
         googleLoginBtn.setOnClickListener(this);
@@ -180,6 +218,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
                                 //회원가입한 경우
                                 if(result.contains("\"result\":[]")){
+                                    pref.editor.putString(SharedPreference.ADDRESS, "");
                                     pref.editor.putString(SharedPreference.USER_ID, String.valueOf(user.getId()));
                                     if (user.getKakaoAccount().getProfile().getNickname() != null) {
                                         pref.editor.putString(SharedPreference.NAME, user.getKakaoAccount().getProfile().getNickname());
@@ -231,6 +270,34 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                     } catch (JSONException e) {
                                         e.printStackTrace();
                                     }
+
+                                    String AddressPhp = getResources().getString(R.string.serverIP) + "address_read.php?" +
+                                            "street_code=" + pref.preferences.getString(SharedPreference.STREET_CODE, "") +
+                                            "&main_no=" + pref.preferences.getString(SharedPreference.MAIN_NO, "") +
+                                            "&additional_no=" + pref.preferences.getString(SharedPreference.ADDITIONAL_NO, "");
+                                    URLConnector AddressUrlConnector = new URLConnector(AddressPhp);
+                                    AddressUrlConnector.start();
+                                    try {
+                                        AddressUrlConnector.join();
+                                    } catch (InterruptedException e) {
+                                    }
+                                    String AddressResult = AddressUrlConnector.getResult();
+                                    Log.d("TAG", AddressResult);
+                                    try {
+                                        JSONObject jsonObject = new JSONObject(AddressResult);
+                                        JSONArray jsonArray = jsonObject.getJSONArray("result");
+                                        JSONObject jsonObject1 = jsonArray.getJSONObject(0);
+
+                                        String x = jsonObject1.getString("x");
+                                        String y = jsonObject1.getString("y");
+
+                                        pref.editor.putString(SharedPreference.X, x);
+                                        pref.editor.putString(SharedPreference.Y, y);
+                                        pref.editor.commit();
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+
                                     Log.d("TAG", "db 정보 불러오기 끝");
 
                                     intent = new Intent(getApplicationContext(), MainActivity.class);
@@ -284,6 +351,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
                                 Intent intent;
                                 if(result.contains("\"result\":[]")){
+                                    pref.editor.putString(SharedPreference.ADDRESS, "");
                                     pref.editor.putString(SharedPreference.USER_ID, user.getUid());
                                     if (user.getDisplayName() != null){
                                         pref.editor.putString(SharedPreference.NAME, user.getDisplayName());
@@ -328,6 +396,34 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                     } catch (JSONException e) {
                                         e.printStackTrace();
                                     }
+
+                                    String AddressPhp = getResources().getString(R.string.serverIP) + "address_read.php?" +
+                                            "street_code=" + pref.preferences.getString(SharedPreference.STREET_CODE, "") +
+                                            "main_no=" + pref.preferences.getString(SharedPreference.MAIN_NO, "") +
+                                            "additional_no=" + pref.preferences.getString(SharedPreference.ADDITIONAL_NO, "");
+                                    URLConnector AddressUrlConnector = new URLConnector(AddressPhp);
+                                    AddressUrlConnector.start();
+                                    try {
+                                        AddressUrlConnector.join();
+                                    } catch (InterruptedException e) {
+                                    }
+                                    String AddressResult = AddressUrlConnector.getResult();
+                                    Log.d("TAG", AddressResult);
+                                    try {
+                                        JSONObject jsonObject = new JSONObject(AddressResult);
+                                        JSONArray jsonArray = jsonObject.getJSONArray("result");
+                                        JSONObject jsonObject1 = jsonArray.getJSONObject(0);
+
+                                        String x = jsonObject1.getString("x");
+                                        String y = jsonObject1.getString("y");
+
+                                        pref.editor.putString(SharedPreference.X, x);
+                                        pref.editor.putString(SharedPreference.Y, y);
+                                        pref.editor.commit();
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+
                                     Log.d("TAG", "db 정보 불러오기 끝");
 
                                     intent = new Intent(getApplicationContext(), MainActivity.class);
