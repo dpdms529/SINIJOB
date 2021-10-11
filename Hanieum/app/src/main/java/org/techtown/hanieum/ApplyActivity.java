@@ -11,13 +11,13 @@ import android.graphics.drawable.shapes.OvalShape;
 import android.media.MediaPlayer;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -34,13 +34,15 @@ import android.widget.VideoView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
 
 import org.techtown.hanieum.db.AppDatabase;
-import org.techtown.hanieum.db.dao.CoverLetterDao;
 import org.techtown.hanieum.db.entity.CoverLetter;
+import org.techtown.hanieum.db.entity.CvInfo;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -73,7 +75,12 @@ public class ApplyActivity extends AppCompatActivity implements View.OnClickList
     TextView coverLetter1, coverLetter2, coverLetter3;
     CoverLetter selectedCL;
 
+    String name, gender, age, address, phone, email, school;
+    ArrayList<String> career, certificate;
+    StringBuilder recruit;
+
     AppDatabase db;
+    SharedPreference pref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,6 +103,110 @@ public class ApplyActivity extends AppCompatActivity implements View.OnClickList
         videoLayout = findViewById(R.id.coverVideoLayout);
 
         db = AppDatabase.getInstance(this);
+        pref = new SharedPreference(this);
+
+        name = pref.preferences.getString(SharedPreference.NAME, "");
+        if (pref.preferences.getString(SharedPreference.GENDER, "").equals("F")) {
+            gender = "여";
+            age = pref.preferences.getString(SharedPreference.AGE, "") + "세";
+        } else {
+            gender = "남";
+            age = pref.preferences.getString(SharedPreference.AGE, "") + "세";
+        }
+        address = pref.preferences.getString(SharedPreference.ADDRESS, "");
+        phone = pref.preferences.getString(SharedPreference.PHONE, "");
+        email = pref.preferences.getString(SharedPreference.EMAIL, "");
+
+        // 학력사항
+        String education = null;
+        try {
+            education = new Query.CvInfoGetInfoCodeAsyncTask(db.CvInfoDao()).execute("E").get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        if (education != null) {
+            if (education.equals("01")) {
+                school = "초등학교 졸업 이하";
+            } else if (education.equals("02")) {
+                school = "중학교 졸업";
+            } else if (education.equals("03")) {
+                school = "고등학교 졸업";
+            } else if (education.equals("04")) {
+                school = "대학(2,3년제) 졸업";
+            } else if (education.equals("05")) {
+                school = "대학(4년제) 졸업";
+            } else if (education.equals("06")) {
+                school = "석사";
+            } else if (education.equals("07")) {
+                school = "박사";
+            }
+        }
+
+        // 경력사항
+        List<CvInfo> cv = null;
+        try {
+            cv = new Query.CvInfoGetAsyncTask(db.CvInfoDao()).execute("CA").get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        if (cv != null) {
+            career = new ArrayList<>();
+            for (CvInfo cvInfo : cv) {
+                if (cvInfo.job_position.equals("")) {
+                    career.add((cvInfo.info_no + 1) + ". " + cvInfo.info + " / " + cvInfo.company_name + " / " + cvInfo.period + "개월");
+                } else {
+                    career.add((cvInfo.info_no + 1) + ". " + cvInfo.info + " / " + cvInfo.company_name + " / " + cvInfo.job_position + " / " + cvInfo.period + "개월");
+                }
+            }
+        }
+
+        // 보유자격증
+        cv = null;
+        try {
+            cv = new Query.CvInfoGetAsyncTask(db.CvInfoDao()).execute("CE").get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        if (cv != null) {
+            certificate = new ArrayList<>();
+            for (CvInfo cvInfo : cv) {
+                certificate.add((cvInfo.info_no + 1) + ". " + cvInfo.info);
+            }
+        }
+
+        recruit = new StringBuilder("이름 : " + name + "\n" +
+                "성별 : " + gender + "\n" +
+                "나이 : " + age + "\n" +
+                "주소 : " + address + "\n" +
+                "전화번호 : " + phone + "\n" +
+                "이메일 : " + email + "\n");
+        if (school != null) {
+            recruit.append("학력 : " + school + "\n");
+        }
+        if (career.size() == 0) {
+            recruit.append("경력 : 없음\n");
+        } else {
+            recruit.append("경력 : \n");
+            for (String s : career) {
+                recruit.append(s + "\n");
+            }
+        }
+        if (certificate.size() != 0) {
+            recruit.append("보유 자격증 : \n");
+            for (String s : certificate) {
+                recruit.append(s + "\n");
+            }
+        }
+        Log.d("TAG", "onCreate: " + recruit.toString());
 
         spinnerArray.add("선택");
         HashMap<String, String> item = new HashMap<>();
@@ -223,14 +334,33 @@ public class ApplyActivity extends AppCompatActivity implements View.OnClickList
         } else if (v == finishButton) {
             Intent i = getIntent();
             if (i.getStringExtra("type").equals("sms")) {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("tel:"));
-                intent.setType("vnd.android-dir/mms-sms");
-                intent.putExtra("address", "");
-                intent.putExtra("sms_body", textMsg.getText().toString());
+                Intent intent;
+                if (items.get(spinner.getSelectedItemPosition()).get("dist").equals("0")) { // 영상 자기소개서 첨부
+                    recruit.append("하고싶은 말 :\n" + textMsg.getText().toString());
+                    intent = new Intent(Intent.ACTION_SEND, Uri.parse("tel:010-0000-0000"));
+                    intent.setType("vnd.android-dir/mms-sms");
+                    intent.putExtra("address", "010-0000-0000");
+                    String dirName = items.get(spinner.getSelectedItemPosition()).get("dirname");
+                    String url = ApplyActivity.this.getFilesDir().toString() + "/videocv_" + dirName + "/cv.mp4";
+                    File f = new File(url);
+                    Uri videoUri = Uri.parse(url);
+                    intent.setType("video/*");
+                    intent.putExtra(Intent.EXTRA_STREAM, FileProvider.getUriForFile(this, "org.techtown.hanieum.fileprovider", f));
+                    intent.putExtra("sms_body", recruit.toString());
+                } else {
+                    recruit.append("자기소개 :\n" + selectedCL.first_item + "\n지원동기 :\n" + selectedCL.second_item + "\n경력 및 경험 :\n" + selectedCL.third_item + "\n하고싶은 말 :\n" + textMsg.getText().toString());
+                    intent = new Intent(Intent.ACTION_VIEW, Uri.parse("tel:010-0000-0000"));
+                    intent.setType("vnd.android-dir/mms-sms");
+                    intent.putExtra("address", "010-0000-0000");
+                    intent.putExtra("sms_body", recruit.toString());
+                }
                 startActivity(intent);
+
+
             } else {    // email
+                recruit.append("자기소개 :\n" + selectedCL.first_item + "\n지원동기 :\n" + selectedCL.second_item + "\n경력 및 경험 :\n" + selectedCL.third_item + "\n하고싶은 말 :\n" + textMsg.getText().toString());
                 String uriText = "mailto:8bangwomen@hanium.com" + "?subject=" +
-                        Uri.encode(i.getStringExtra("company") + "에 지원합니다.") + "&body=" + Uri.encode(textMsg.getText().toString() + "\n자기소개 : " + selectedCL.first_item + "\n지원동기 : " + selectedCL.second_item + "\n경력 및 경험 : " + selectedCL.third_item);
+                        Uri.encode(i.getStringExtra("company") + "에 지원합니다.") + "&body=" + Uri.encode(recruit.toString());
                 Uri uri = Uri.parse(uriText);
 
                 Intent intent = new Intent(Intent.ACTION_SENDTO);

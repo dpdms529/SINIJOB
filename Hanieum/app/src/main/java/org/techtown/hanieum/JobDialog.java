@@ -2,7 +2,6 @@ package org.techtown.hanieum;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -20,8 +19,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.techtown.hanieum.db.AppDatabase;
-import org.techtown.hanieum.db.dao.CertificateDao;
-import org.techtown.hanieum.db.dao.JobCategoryDao;
 import org.techtown.hanieum.db.entity.JobCategory;
 
 import java.util.ArrayList;
@@ -163,31 +160,5 @@ public class JobDialog extends Dialog {
             }
         });
     }
-
-//    public static class JobGetAsyncTask extends AsyncTask<Void, Void, List<JobCategory>> {
-//        private JobCategoryDao mJobCategoryDao;
-//
-//        public JobGetAsyncTask(JobCategoryDao jobCategoryDao) {
-//            this.mJobCategoryDao = jobCategoryDao;
-//        }
-//
-//        @Override
-//        protected List<JobCategory> doInBackground(Void... voids) {
-//            return mJobCategoryDao.getJob();
-//        }
-//    }
-//
-//    public static class CertificateGetAsyncTask extends AsyncTask<Void, Void, List<org.techtown.hanieum.db.entity.Certificate>> {
-//        private CertificateDao mCertificateDao;
-//
-//        public CertificateGetAsyncTask(CertificateDao certificateDao) {
-//            this.mCertificateDao = certificateDao;
-//        }
-//
-//        @Override
-//        protected List<org.techtown.hanieum.db.entity.Certificate> doInBackground(Void... voids) {
-//            return mCertificateDao.getAll();
-//        }
-//    }
 
 }

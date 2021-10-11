@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -15,7 +14,6 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import org.techtown.hanieum.db.AppDatabase;
-import org.techtown.hanieum.db.dao.CvInfoDao;
 import org.techtown.hanieum.db.entity.CvInfo;
 
 import java.util.ArrayList;
@@ -170,47 +168,5 @@ public class CarCerActivity extends AppCompatActivity implements View.OnClickLis
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
     }
-
-//    public static class GetAllAsyncTask extends AsyncTask<String, Void, List<CvInfo>> {
-//        private CvInfoDao mCvInfoDao;
-//
-//        public GetAllAsyncTask(CvInfoDao cvInfoDao) {
-//            this.mCvInfoDao = cvInfoDao;
-//        }
-//
-//        @Override
-//        protected List<CvInfo> doInBackground(String... strings) {
-//            Log.d("TAG", "doInBackground: " + strings[0]);
-//            return mCvInfoDao.getCvInfo(strings[0]);
-//        }
-//    }
-//
-//    public static class DeleteAsyncTask extends AsyncTask<String, Void, Void> {
-//        private CvInfoDao mCvInfoDao;
-//
-//        public DeleteAsyncTask(CvInfoDao cvInfoDao) {
-//            this.mCvInfoDao = cvInfoDao;
-//        }
-//
-//        @Override
-//        protected Void doInBackground(String... strings) {
-//            mCvInfoDao.deleteCvInfo(strings[0]);
-//            return null;
-//        }
-//    }
-//
-//    public static class CvInfoInsertAsyncTask extends AsyncTask<CvInfo, Void, Void> {
-//        private CvInfoDao mCvInfoDao;
-//
-//        public CvInfoInsertAsyncTask(CvInfoDao cvInfoDao) {
-//            this.mCvInfoDao = cvInfoDao;
-//        }
-//
-//        @Override
-//        protected Void doInBackground(CvInfo... cvInfos) {
-//            mCvInfoDao.insertCvInfo(cvInfos[0]);
-//            return null;
-//        }
-//    }
 
 }

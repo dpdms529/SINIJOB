@@ -68,7 +68,6 @@ public class PhoneFragment extends Fragment implements View.OnClickListener {
                 Toast.makeText(getContext(), "전화번호를 입력하세요", Toast.LENGTH_SHORT).show();
             } else {
                 pref.editor.putString(SharedPreference.PHONE, phoneText.getText().toString());
-                Intent intent = new Intent(getActivity(), MainActivity.class);
                 pref.editor.commit();
                 Log.d("TAG","user_id="+pref.preferences.getString(SharedPreference.USER_ID, "")+
                         "&street_code="+pref.preferences.getString(SharedPreference.STREET_CODE,"")+
@@ -100,6 +99,7 @@ public class PhoneFragment extends Fragment implements View.OnClickListener {
                     urlConnector.join();
                 } catch (InterruptedException e) {
                 }
+                Intent intent = new Intent(getActivity(), MainActivity.class);
                 startActivity(intent);
                 getActivity().finish();
             }

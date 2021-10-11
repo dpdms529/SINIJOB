@@ -38,15 +38,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.HashMap;
-
-import retrofit2.http.HEAD;
-
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
     ImageButton kakaoLoginBtn;
     SignInButton googleLoginBtn;
-    Button loginBtn;
 
     FirebaseAuth mAuth;
 
@@ -65,7 +60,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         kakaoLoginBtn = findViewById(R.id.kakao_login_btn);
         googleLoginBtn = findViewById(R.id.google_login_btn);
-        loginBtn = findViewById(R.id.login_btn);
+
+        pref = new SharedPreference(getApplicationContext());
 
         pref = new SharedPreference(getApplicationContext());
 
@@ -138,6 +134,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     Intent intent;
                     // db에 회원정보 없으면
                     if (result.contains("\"result\":[]")) {
+                        pref.editor.putString(SharedPreference.ADDRESS, "");
+                        pref.editor.commit();
                         intent = new Intent(getApplicationContext(), InfoGetActivity.class);
                     } else {
                         intent = new Intent(getApplicationContext(), MainActivity.class);
@@ -152,7 +150,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         if(gsa != null){
             Log.i("TAG", "구글 로그인 성공");
-
+git 
             String php = getResources().getString(R.string.serverIP) + "user_read.php?user_id=" + pref.preferences.getString(SharedPreference.USER_ID, "");
             URLConnector urlConnector = new URLConnector(php);
             urlConnector.start();
@@ -167,6 +165,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             Intent intent;
             // db에 회원정보 없으면
             if (result.contains("\"result\":[]")) {
+                pref.editor.putString(SharedPreference.ADDRESS, "");
+                pref.editor.commit();
+                Log.d("TAG", pref.preferences.getString(SharedPreference.ADDRESS,""));
                 intent = new Intent(getApplicationContext(), InfoGetActivity.class);
             } else {
                 intent = new Intent(getApplicationContext(), MainActivity.class);

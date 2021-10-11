@@ -25,7 +25,6 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -250,7 +249,8 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
                         address.setText(roadAddress+", "+buildingName);
                     }
                     streetCode = sigunguCode + roadnameCode;
-                    Log.d("TAG", "run: "+sigunguCode + roadnameCode);
+                    Log.d("TAG", "run: "+sigunguCode + " " +  roadnameCode);
+                    Log.d("TAG", "run: " + roadAddress +  buildingName);
                 }
             });
         }
