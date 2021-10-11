@@ -63,8 +63,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         pref = new SharedPreference(getApplicationContext());
 
-        pref = new SharedPreference(getApplicationContext());
-
         //구글 로그인 버튼 text변경
         TextView textView = (TextView)googleLoginBtn.getChildAt(0);
         textView.setText("Google 계정 로그인");
@@ -150,7 +148,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         if(gsa != null){
             Log.i("TAG", "구글 로그인 성공");
-git 
+
             String php = getResources().getString(R.string.serverIP) + "user_read.php?user_id=" + pref.preferences.getString(SharedPreference.USER_ID, "");
             URLConnector urlConnector = new URLConnector(php);
             urlConnector.start();
