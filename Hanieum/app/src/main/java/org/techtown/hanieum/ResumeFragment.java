@@ -3,7 +3,6 @@ package org.techtown.hanieum;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.annotation.Dimension;
@@ -21,7 +20,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.techtown.hanieum.db.AppDatabase;
-import org.techtown.hanieum.db.dao.CvInfoDao;
 import org.techtown.hanieum.db.entity.CoverLetter;
 import org.techtown.hanieum.db.entity.CvInfo;
 
@@ -238,32 +236,5 @@ public class ResumeFragment extends Fragment implements View.OnClickListener {
         return view;
     }
 
-//    // 사용처: ResumeFragment, SchoolActivity
-//    public static class GetCvInfoAsyncTask extends AsyncTask<Void, Void, String> {
-//        private CvInfoDao mCvInfoDao;
-//
-//        public GetCvInfoAsyncTask(CvInfoDao cvInfoDao) {
-//            this.mCvInfoDao = cvInfoDao;
-//        }
-//
-//        @Override
-//        protected String doInBackground(Void... voids) {
-//            return mCvInfoDao.getInfoCode("E");
-//        }
-//    }
-//
-//    // 지울거
-//    public static class GetAllAsyncTask extends AsyncTask<Void, Void, List<CvInfo>> {
-//        private CvInfoDao mCvInfoDao;
-//
-//        public GetAllAsyncTask(CvInfoDao cvInfoDao) {
-//            this.mCvInfoDao = cvInfoDao;
-//        }
-//
-//        @Override
-//        protected List<CvInfo> doInBackground(Void... voids) {
-//            return mCvInfoDao.getCvInfo("CA");
-//        }
-//    }
 
 }

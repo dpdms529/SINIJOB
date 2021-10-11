@@ -362,25 +362,11 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                                     Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("tel:" + contact));
                                     startActivity(intent);
                                 } else if (charSequences[which] == "문자") {
-//                                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("tel:"));
-//                                intent.setType("vnd.android-dir/mms-sms");
-//                                intent.putExtra("address", "");
-//                                intent.putExtra("sms_body", companyNameDetail.getText()+"에 지원합니다.");
-//                                startActivity(intent);
-
                                     Intent intent = new Intent(context, ApplyActivity.class);
                                     intent.putExtra("type", "sms");
                                     intent.putExtra("company", companyNameDetail.getText());
                                     startActivity(intent);
                                 } else if (charSequences[which] == "이메일") {
-//                                String uriText = "mailto:" + "?subject=" +
-//                                        Uri.encode(companyNameDetail.getText()+"에 지원합니다.") + "&body=" + Uri.encode("");
-//                                Uri uri = Uri.parse(uriText);
-//
-//                                Intent intent = new Intent(Intent.ACTION_SENDTO);
-//                                intent.setData(uri);
-//                                startActivity(Intent.createChooser(intent, "이메일 앱을 선택하세요"));
-
                                     Intent intent = new Intent(context, ApplyActivity.class);
                                     intent.putExtra("type", "email");
                                     intent.putExtra("company", companyNameDetail.getText());

@@ -2,12 +2,9 @@ package org.techtown.hanieum;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,8 +22,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.techtown.hanieum.db.AppDatabase;
-import org.techtown.hanieum.db.dao.RecruitCertificateDao;
-import org.techtown.hanieum.db.dao.RecruitDao;
 import org.techtown.hanieum.db.entity.Recruit;
 import org.techtown.hanieum.db.entity.RecruitCertificate;
 
