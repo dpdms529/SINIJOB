@@ -132,6 +132,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     Intent intent;
                     // db에 회원정보 없으면
                     if (result.contains("\"result\":[]")) {
+                        pref.editor.putString(SharedPreference.ADDRESS, "");
+                        pref.editor.commit();
                         intent = new Intent(getApplicationContext(), InfoGetActivity.class);
                     } else {
                         intent = new Intent(getApplicationContext(), MainActivity.class);
@@ -161,6 +163,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             Intent intent;
             // db에 회원정보 없으면
             if (result.contains("\"result\":[]")) {
+                pref.editor.putString(SharedPreference.ADDRESS, "");
+                pref.editor.commit();
+                Log.d("TAG", pref.preferences.getString(SharedPreference.ADDRESS,""));
                 intent = new Intent(getApplicationContext(), InfoGetActivity.class);
             } else {
                 intent = new Intent(getApplicationContext(), MainActivity.class);
