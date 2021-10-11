@@ -309,6 +309,14 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
         }
     }
 
+//    @Override
+//    public void onBackPressed() {
+//        if(item == null) {
+//            fileDelete();
+//        }
+//        finishActivity();
+//    }
+
     @Override
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
@@ -369,6 +377,26 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
         Bitmap thumb = ThumbnailUtils.createVideoThumbnail(path, MediaStore.Images.Thumbnails.MINI_KIND);
         BitmapDrawable bitmapDrawable = new BitmapDrawable(thumb);
         videoView.setBackground(bitmapDrawable);
+    }
+
+    private void fileDelete() {
+        File file = new File(this.getFilesDir().toString() + "/videocv_" + dirName);
+        File[] childFileList = file.listFiles();
+
+//        String[] testDir = file.list();
+//
+//        for (int i = 0; i < testDir.length; i++) {
+//            Log.e("testDirfilepath", testDir[i]);
+//        }
+        if(childFileList != null) {
+            for(File childFile : childFileList) {
+                childFile.delete();
+            }
+        }
+
+
+        file.delete();
+
     }
 
 }

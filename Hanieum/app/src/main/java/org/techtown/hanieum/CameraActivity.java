@@ -72,6 +72,7 @@ public class CameraActivity extends AppCompatActivity {
         Intent intent = getIntent();
         recordType = intent.getStringExtra("recordType");
         dirName = intent.getStringExtra("dirName");
+
         Log.e("dirName", intent.getStringExtra("dirName"));
         if (recordType.equals("full")) {
             guideline.setText(" 지금부터 영상 자기소개 촬영 방법을 안내해드리겠습니다 ");
