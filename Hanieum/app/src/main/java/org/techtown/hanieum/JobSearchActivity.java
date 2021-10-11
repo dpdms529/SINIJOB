@@ -50,7 +50,7 @@ public class JobSearchActivity extends AppCompatActivity {
         AppDatabase db = AppDatabase.getInstance(this);
         Log.e("JobDatabase", "job data 조회");
         try {
-            category = new JobGetCategoryAsyncTask(db.jobCategoryDao()).execute().get();
+            category = new Query.JobGetCategoryAsyncTask(db.jobCategoryDao()).execute().get();
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -189,16 +189,16 @@ public class JobSearchActivity extends AppCompatActivity {
         }
     }
 
-    public static class JobGetCategoryAsyncTask extends AsyncTask<Void, Void, List<JobCategory>> {
-        private JobCategoryDao mJobCategoryDao;
-
-        public JobGetCategoryAsyncTask(JobCategoryDao jobCategoryDao) {
-            this.mJobCategoryDao = jobCategoryDao;
-        }
-
-        @Override
-        protected List<JobCategory> doInBackground(Void... voids) {
-            return mJobCategoryDao.getCategory();
-        }
-    }
+//    public static class JobGetCategoryAsyncTask extends AsyncTask<Void, Void, List<JobCategory>> {
+//        private JobCategoryDao mJobCategoryDao;
+//
+//        public JobGetCategoryAsyncTask(JobCategoryDao jobCategoryDao) {
+//            this.mJobCategoryDao = jobCategoryDao;
+//        }
+//
+//        @Override
+//        protected List<JobCategory> doInBackground(Void... voids) {
+//            return mJobCategoryDao.getCategory();
+//        }
+//    }
 }

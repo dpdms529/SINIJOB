@@ -57,7 +57,7 @@ public class CarCerActivity extends AppCompatActivity implements View.OnClickLis
             // db에 저장된거 띄우기
             List<CvInfo> cv = null;
             try {
-                cv = new GetAllAsyncTask(db.CvInfoDao()).execute("CA").get();
+                cv = new Query.CvInfoGetAsyncTask(db.CvInfoDao()).execute("CA").get();
             } catch (ExecutionException e) {
                 e.printStackTrace();
             } catch (InterruptedException e) {
@@ -79,7 +79,7 @@ public class CarCerActivity extends AppCompatActivity implements View.OnClickLis
 
             List<CvInfo> cv = null;
             try {
-                cv = new GetAllAsyncTask(db.CvInfoDao()).execute("CE").get();
+                cv = new Query.CvInfoGetAsyncTask(db.CvInfoDao()).execute("CE").get();
             } catch (ExecutionException e) {
                 e.printStackTrace();
             } catch (InterruptedException e) {
@@ -102,7 +102,7 @@ public class CarCerActivity extends AppCompatActivity implements View.OnClickLis
         if (v == saveButton) {
             if (title.getText().equals("경력사항")) {
                 ArrayList<Career> items = adapter1.getItems();
-                new DeleteAsyncTask(db.CvInfoDao()).execute("CA");    // "CA"를 모두 지우고 다시 저장
+                new Query.CvInfoDeleteAsyncTask(db.CvInfoDao()).execute("CA");    // "CA"를 모두 지우고 다시 저장
                 for (int i = 0; i < items.size(); i++) {
                     Career item = items.get(i);
                     if (item.getJobCode() == null) {    // 직종을 선택하지 않았으면
@@ -118,11 +118,11 @@ public class CarCerActivity extends AppCompatActivity implements View.OnClickLis
                         return;
                     }
                     CvInfo cvInfo = new CvInfo("CA", i, item.getJobCode(), item.getJobName(), item.getCompName(), item.getPosition(), item.getCareerStart(), item.getCarrerEnd(), item.getPeriod());
-                    new CvInfoInsertAsyncTask(db.CvInfoDao()).execute(cvInfo);
+                    new Query.CvInfoInsertAsyncTask(db.CvInfoDao()).execute(cvInfo);
                 }
             } else if (title.getText().equals("보유자격증")) {
                 ArrayList<Certificate> items = adapter2.getItmes();
-                new DeleteAsyncTask(db.CvInfoDao()).execute("CE");
+                new Query.CvInfoDeleteAsyncTask(db.CvInfoDao()).execute("CE");
                 for(int i = 0; i < items.size();i++){
                     Certificate item = items.get(i);
                     if(item.getCertifiCode() == null){
@@ -130,7 +130,7 @@ public class CarCerActivity extends AppCompatActivity implements View.OnClickLis
                         return;
                     }
                     CvInfo cvInfo = new CvInfo("CE", i, item.getCertifiCode(), item.getCertifi(), null, null, null, null, 0);
-                    new CvInfoInsertAsyncTask(db.CvInfoDao()).execute(cvInfo);
+                    new Query.CvInfoInsertAsyncTask(db.CvInfoDao()).execute(cvInfo);
                 }
 
 
@@ -171,46 +171,46 @@ public class CarCerActivity extends AppCompatActivity implements View.OnClickLis
         alertDialog.show();
     }
 
-    public static class GetAllAsyncTask extends AsyncTask<String, Void, List<CvInfo>> {
-        private CvInfoDao mCvInfoDao;
-
-        public GetAllAsyncTask(CvInfoDao cvInfoDao) {
-            this.mCvInfoDao = cvInfoDao;
-        }
-
-        @Override
-        protected List<CvInfo> doInBackground(String... strings) {
-            Log.d("TAG", "doInBackground: " + strings[0]);
-            return mCvInfoDao.getCvInfo(strings[0]);
-        }
-    }
-
-    public static class DeleteAsyncTask extends AsyncTask<String, Void, Void> {
-        private CvInfoDao mCvInfoDao;
-
-        public DeleteAsyncTask(CvInfoDao cvInfoDao) {
-            this.mCvInfoDao = cvInfoDao;
-        }
-
-        @Override
-        protected Void doInBackground(String... strings) {
-            mCvInfoDao.deleteCvInfo(strings[0]);
-            return null;
-        }
-    }
-
-    public static class CvInfoInsertAsyncTask extends AsyncTask<CvInfo, Void, Void> {
-        private CvInfoDao mCvInfoDao;
-
-        public CvInfoInsertAsyncTask(CvInfoDao cvInfoDao) {
-            this.mCvInfoDao = cvInfoDao;
-        }
-
-        @Override
-        protected Void doInBackground(CvInfo... cvInfos) {
-            mCvInfoDao.insertCvInfo(cvInfos[0]);
-            return null;
-        }
-    }
+//    public static class GetAllAsyncTask extends AsyncTask<String, Void, List<CvInfo>> {
+//        private CvInfoDao mCvInfoDao;
+//
+//        public GetAllAsyncTask(CvInfoDao cvInfoDao) {
+//            this.mCvInfoDao = cvInfoDao;
+//        }
+//
+//        @Override
+//        protected List<CvInfo> doInBackground(String... strings) {
+//            Log.d("TAG", "doInBackground: " + strings[0]);
+//            return mCvInfoDao.getCvInfo(strings[0]);
+//        }
+//    }
+//
+//    public static class DeleteAsyncTask extends AsyncTask<String, Void, Void> {
+//        private CvInfoDao mCvInfoDao;
+//
+//        public DeleteAsyncTask(CvInfoDao cvInfoDao) {
+//            this.mCvInfoDao = cvInfoDao;
+//        }
+//
+//        @Override
+//        protected Void doInBackground(String... strings) {
+//            mCvInfoDao.deleteCvInfo(strings[0]);
+//            return null;
+//        }
+//    }
+//
+//    public static class CvInfoInsertAsyncTask extends AsyncTask<CvInfo, Void, Void> {
+//        private CvInfoDao mCvInfoDao;
+//
+//        public CvInfoInsertAsyncTask(CvInfoDao cvInfoDao) {
+//            this.mCvInfoDao = cvInfoDao;
+//        }
+//
+//        @Override
+//        protected Void doInBackground(CvInfo... cvInfos) {
+//            mCvInfoDao.insertCvInfo(cvInfos[0]);
+//            return null;
+//        }
+//    }
 
 }

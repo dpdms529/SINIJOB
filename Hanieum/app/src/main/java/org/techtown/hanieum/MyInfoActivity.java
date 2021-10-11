@@ -250,7 +250,8 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
                         address.setText(roadAddress+", "+buildingName);
                     }
                     streetCode = sigunguCode + roadnameCode;
-                    Log.d("TAG", "run: "+sigunguCode + roadnameCode);
+                    Log.d("TAG", "run: "+sigunguCode + " " +  roadnameCode);
+                    Log.d("TAG", "run: " + roadAddress +  buildingName);
                 }
             });
         }

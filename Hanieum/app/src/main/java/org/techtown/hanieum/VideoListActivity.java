@@ -263,11 +263,11 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
                 hm.put(2, null);
                 hm.put(3, null);
                 hm.put(4, Integer.toString(item.getNo()));
-                new CoverLetterActivity.CoverLetterUpdateAsyncTask(db.CoverLetterDao()).execute(hm);
+                new Query.CoverLetterUpdateAsyncTask(db.CoverLetterDao()).execute(hm);
                 Toast.makeText(this, "자기소개서가 수정되었습니다.", Toast.LENGTH_SHORT).show();
             } else {
                 CoverLetter coverLetter = new CoverLetter("0", dirName, null, null);
-                new CoverLetterActivity.CoverLetterInsertAsyncTask(db.CoverLetterDao()).execute(coverLetter);
+                new Query.CoverLetterInsertAsyncTask(db.CoverLetterDao()).execute(coverLetter);
                 Toast.makeText(this, "자기소개서가 저장되었습니다.", Toast.LENGTH_SHORT).show();
             }
             try {
@@ -275,8 +275,6 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            Intent intent = new Intent(this, SelfInfoActivity.class);
-            startActivity(intent);
 
         } else if (v == delBtn) {
 
@@ -285,10 +283,8 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
                     .setPositiveButton("삭제", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            new CoverLetterActivity.CoverLetterDeleteAsyncTask(db.CoverLetterDao()).execute(item.getNo());
+                            new Query.CoverLetterDeleteAsyncTask(db.CoverLetterDao()).execute(item.getNo());
                             Toast.makeText(getApplicationContext(), "자기소개서가 삭제되었습니다.", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(getApplicationContext(), SelfInfoActivity.class);
-                            startActivity(intent);
                             finish();
                         }
                     })
@@ -302,13 +298,6 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
             msgDlg.show();
 
         }
-    }
-
-    @Override
-    public void onBackPressed() {
-        Intent intent = new Intent(this, SelfInfoActivity.class);
-        startActivity(intent);
-        finish();
     }
 
     @Override
