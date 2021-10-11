@@ -67,6 +67,7 @@ public class SelfInfoActivity extends AppCompatActivity implements View.OnClickL
                 }
                 intent.putExtra("edit", item);
                 startActivity(intent);
+                finish();
             }
         });
         addButton.setOnClickListener(this);
@@ -102,6 +103,7 @@ public class SelfInfoActivity extends AppCompatActivity implements View.OnClickL
                         if (charSequences[which] == "영상") {
                             Intent intent = new Intent(getApplicationContext(), VideoListActivity.class);
                             startActivity(intent);
+                            finish();
                         } else if (charSequences[which] == "일반(글)") {
                             Intent intent = new Intent(getApplicationContext(), CoverLetterActivity.class);
                             startActivity(intent);
