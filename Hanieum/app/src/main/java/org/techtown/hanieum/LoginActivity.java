@@ -42,7 +42,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     ImageButton kakaoLoginBtn;
     SignInButton googleLoginBtn;
-    Button loginBtn;
 
     FirebaseAuth mAuth;
 
@@ -61,7 +60,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         kakaoLoginBtn = findViewById(R.id.kakao_login_btn);
         googleLoginBtn = findViewById(R.id.google_login_btn);
-        loginBtn = findViewById(R.id.login_btn);
 
         pref = new SharedPreference(getApplicationContext());
 
