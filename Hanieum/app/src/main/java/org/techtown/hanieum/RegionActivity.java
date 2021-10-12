@@ -13,7 +13,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -25,6 +24,7 @@ import org.techtown.hanieum.db.AppDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class RegionActivity extends AppCompatActivity implements View.OnClickListener {
     Toolbar toolbar;
@@ -85,10 +85,26 @@ public class RegionActivity extends AppCompatActivity implements View.OnClickLis
                 ArrayList<Region> region2 = new ArrayList<>();
                 ArrayList<Region> items3 = new ArrayList<>();
                 ArrayList<ChipList> chipList = pref.getArrayPref(SharedPreference.REGION_TMP);
-                String sidoTotalCode = db.BdongDao().getTotalSidoCode(region1.getRegion1());
+                String sidoTotalCode = null;
+                try {
+                    sidoTotalCode = new Query.BdongGetTotalSidoCodeAsyncTask(db.BdongDao()).execute(region1.getRegion1()).get();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+//                String sidoTotalCode = db.BdongDao().getTotalSidoCode(region1.getRegion1());
 
                 region2.add(new Region(region1.getRegion1(), "전체", "", sidoTotalCode, Code.ViewType.REGION2));
-                List<String> item2 = db.BdongDao().getsigungu(region1.getRegion1());
+                List<String> item2 = null;
+                try {
+                    item2 = new Query.BdongGetSigunguAsyncTask(db.BdongDao()).execute(region1.getRegion1()).get();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+//                List<String> item2 = db.BdongDao().getsigungu(region1.getRegion1());
                 for (int i = 0; i < item2.size(); i++) {
                     region2.add(new Region(region1.getRegion1(), item2.get(i), null, "0", Code.ViewType.REGION2));
                 }
@@ -116,14 +132,38 @@ public class RegionActivity extends AppCompatActivity implements View.OnClickLis
                 ArrayList<Region> items3 = new ArrayList<>();
                 ArrayList<ChipList> chipList = pref.getArrayPref(SharedPreference.REGION_TMP);
 
-                List<String> item3 = db.BdongDao().geteupmyeondong(item.getRegion1(), item.getRegion2());
-                String totalSigunguCode = db.BdongDao().getTotalSigunguCode(item.getRegion1(), item.getRegion2());
+//                List<String> item3 = db.BdongDao().geteupmyeondong(item.getRegion1(), item.getRegion2());
+                List<String> item3 = null;
+                try {
+                    item3 = new Query.BdongGetEupmyeondongAsyncTask(db.BdongDao()).execute(item.getRegion1(), item.getRegion2()).get();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+//                String totalSigunguCode = db.BdongDao().getTotalSigunguCode(item.getRegion1(), item.getRegion2());
+                String totalSigunguCode = null;
+                try {
+                    totalSigunguCode = new Query.BdongGetTotalSigunguCodeAsyncTask(db.BdongDao()).execute(item.getRegion1(), item.getRegion2()).get();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 if (item3.size() == 0) { // 전체를 선택했을 때
                     adapter3.setItems(new ArrayList<Region>()); // 어댑터 3을 빈 상태로 둠
                 } else {
                     items3.add(new Region(item.getRegion1(), item.getRegion2(), "전체", totalSigunguCode, Code.ViewType.REGION3));
                     for (int i = 0; i < item3.size(); i++) {
-                        String bDongCode = db.BdongDao().getBDongCode(item.getRegion1(), item.getRegion2(), item3.get(i));
+//                        String bDongCode = db.BdongDao().getBDongCode(item.getRegion1(), item.getRegion2(), item3.get(i));
+                        String bDongCode = null;
+                        try {
+                            bDongCode = new Query.BdongGetCodeAsyncTask(db.BdongDao()).execute(item.getRegion1(), item.getRegion2(), item3.get(i)).get();
+                        } catch (ExecutionException e) {
+                            e.printStackTrace();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                         items3.add(new Region(item.getRegion1(), item.getRegion2(), item3.get(i), bDongCode, Code.ViewType.REGION3));
                     }
                 }
@@ -201,7 +241,15 @@ public class RegionActivity extends AppCompatActivity implements View.OnClickLis
         ArrayList<Region> items2 = new ArrayList<>();
         ArrayList<Region> items3 = new ArrayList<>();
         AppDatabase db = AppDatabase.getInstance(this);
-        List<String> item1 = db.BdongDao().getsido();
+//        List<String> item1 = db.BdongDao().getsido();
+        List<String> item1 = null;
+        try {
+            item1 = new Query.BdongGetSidoAsyncTask(db.BdongDao()).execute().get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         RegionAdapter.lastSelectedPosition1 = -1;
         RegionAdapter.lastSelectedPosition2 = -1;

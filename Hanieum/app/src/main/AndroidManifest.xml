@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.techtown.hanieum">
+    package="org.techtown.hanieum" >
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> <!-- 음성인식에 필요함 -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <uses-feature android:name="android.hardware.camera.any" />
 
     <queries>
         <intent>
@@ -13,14 +16,49 @@
     </queries>
 
     <application
+        android:name=".GlobalApplication"
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Hanieum"
-        android:usesCleartextTraffic="true">
-        <activity android:name=".HelpActivity"></activity>
+        android:usesCleartextTraffic="true" >
+        <activity android:name=".InfoGetActivity" />
+        <activity
+            android:name=".VideoListActivity"
+            android:configChanges="screenSize|orientation" />
+        <activity android:name=".MyInfoActivity" />
+        <activity android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="oauth"
+                    android:scheme="@string/scheme" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".LoginActivity" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".CameraActivity"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".CoverLetterActivity"
+            android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".SelfInfoActivity" />
+        <activity android:name=".CarCerActivity" />
+        <activity android:name=".SchoolActivity" />
+        <activity android:name=".HelpActivity" />
         <activity android:name=".ApplyActivity" />
         <activity android:name=".DetailActivity" />
         <activity android:name=".JobActivity" />
@@ -28,13 +66,11 @@
         <activity android:name=".JobSearchActivity" />
         <activity android:name=".RegionActivity" />
         <activity android:name=".FilteringActivity" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity" >
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+
                 <!-- 검색 기능 구현 코드 (아래) -->
                 <action android:name="android.intent.action.SEARCH" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <!-- 검색 기능 구현 코드 (아래) -->
             <meta-data
@@ -45,6 +81,16 @@
         <meta-data
             android:name="com.kakao.sdk.AppKey"
             android:value="@string/kakaoAPI" />
+        
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="org.techtown.hanieum.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/filepaths" />
+        </provider>
     </application>
 
 </manifest>

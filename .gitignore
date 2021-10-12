@@ -12,3 +12,7 @@ key.xml
 key/
 
 Hanieum/app/release/
+
+google-services.json
+
+sqlite/

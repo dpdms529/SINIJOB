@@ -15,6 +15,9 @@ public interface JobCategoryDao {
     @Query("SELECT * FROM job_category WHERE LENGTH(category_code) < 5")
     List<JobCategory> getCategory();
 
+    @Query("SELECT * FROM job_category WHERE LENGTH(category_code) > 5")
+    List<JobCategory> getJob();
+
     @Query("select category_code from job_category where primary_cate_code = :primary_cate_code")
     List<String> getAllJobCode(String primary_cate_code);
 

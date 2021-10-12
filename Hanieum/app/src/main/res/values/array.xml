@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="schoolArray1">
+        <item>학교를 선택하세요</item>
+        <item>초등학교 졸업 이하</item>
+        <item>중학교 졸업</item>
+        <item>고등학교 졸업</item>
+        <item>대학(2,3년제) 졸업</item>
+        <item>대학(4년제) 졸업</item>
+        <item>석사</item>
+        <item>박사</item>
+    </string-array>
+</resources>

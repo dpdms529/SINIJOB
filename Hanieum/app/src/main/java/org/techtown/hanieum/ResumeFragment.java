@@ -1,32 +1,50 @@
 package org.techtown.hanieum;
 
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 
+import androidx.annotation.Dimension;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.Observer;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
-import java.util.ArrayList;
+import org.techtown.hanieum.db.AppDatabase;
+import org.techtown.hanieum.db.entity.CoverLetter;
+import org.techtown.hanieum.db.entity.CvInfo;
 
-public class ResumeFragment extends Fragment {
-    EditText job_code_1;
-    EditText job_code_2;
-    EditText job_code_3;
-    EditText career_period_1;
-    EditText career_period_2;
-    EditText career_period_3;
-    EditText certificate_id_1;
-    EditText certificate_id_2;
-    EditText certificate_id_3;
-    Button button;
-    ArrayList<String> job_code;
-    ArrayList<String> career_period;
-    ArrayList<String> certificate_id;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+
+public class ResumeFragment extends Fragment implements View.OnClickListener {
+
+    private static final float FONT_SIZE = 16;
+
+    LinearLayout schoolLayout;
+    LinearLayout careerLayout;
+    LinearLayout certifiLayout;
+    LinearLayout selfIntroLayout;
+    LinearLayout careerTextLayout;
+    LinearLayout certifiTextLayout;
+    TextView name, genderAge, address, phone, email, school;
+    ImageView setting;
+
+    RecyclerView selfInfoRecyclerView;
+    SelfInfoAdapter selfInfoAdapter;
+
+    Context context;
+
+    AppDatabase db;
 
     SharedPreference pref;
 
@@ -39,88 +57,184 @@ public class ResumeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_resume, container, false);
+        context = getContext();
 
-        job_code_1 = view.findViewById(R.id.job_code_1);
-        job_code_2 = view.findViewById(R.id.job_code_2);
-        job_code_3 = view.findViewById(R.id.job_code_3);
-        career_period_1 = view.findViewById(R.id.career_period_1);
-        career_period_2 = view.findViewById(R.id.career_period_2);
-        career_period_3 = view.findViewById(R.id.career_period_3);
-        certificate_id_1 = view.findViewById(R.id.certificate_id_1);
-        certificate_id_2 = view.findViewById(R.id.certificate_id_2);
-        certificate_id_3 = view.findViewById(R.id.certificate_id_3);
-        button = view.findViewById(R.id.button);
+        pref = new SharedPreference(context);
 
-        pref = new SharedPreference(view.getContext());
+        schoolLayout = view.findViewById(R.id.schoolLayout);
+        careerLayout = view.findViewById(R.id.careerLayout);
+        certifiLayout = view.findViewById(R.id.certifiLayout);
+        selfIntroLayout = view.findViewById(R.id.selfIntroLayout);
+        careerTextLayout = view.findViewById(R.id.careerTextLayout);
+        certifiTextLayout = view.findViewById(R.id.certifiTextLayout);
+        name = view.findViewById(R.id.name);
+        genderAge = view.findViewById(R.id.genderAge);
+        address = view.findViewById(R.id.address);
+        phone = view.findViewById(R.id.phone);
+        email = view.findViewById(R.id.email);
+        school = view.findViewById(R.id.school);
+        setting = view.findViewById(R.id.setting);
 
-        job_code = new ArrayList<String>();
-        career_period = new ArrayList<String>();
-        certificate_id = new ArrayList<String>();
+        selfInfoRecyclerView = view.findViewById(R.id.selfInfoRecyclerView);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
+        selfInfoRecyclerView.setLayoutManager(layoutManager);
+        selfInfoAdapter = new SelfInfoAdapter();
+        selfInfoRecyclerView.setAdapter(selfInfoAdapter);
 
-        job_code = pref.getStringArrayPref(SharedPreference.CAREER_JOB_CODE);
-        career_period = pref.getStringArrayPref(SharedPreference.CAREER_PERIOD);
-        certificate_id = pref.getStringArrayPref(SharedPreference.CERTIFICATE_CODE);
+        db = AppDatabase.getInstance(this.getContext());
 
-        if (job_code.size() > 0) {
-            job_code_1.setText(job_code.get(0));
-            job_code_2.setText(job_code.get(1));
-            job_code_3.setText(job_code.get(2));
-        }
-        if (career_period.size() > 0) {
-            career_period_1.setText(career_period.get(0));
-            career_period_2.setText(career_period.get(1));
-            career_period_3.setText(career_period.get(2));
-        }
-        if (certificate_id.size() > 0) {
-            certificate_id_1.setText(certificate_id.get(0));
-            certificate_id_2.setText(certificate_id.get(1));
-            certificate_id_3.setText(certificate_id.get(2));
-        }
-
-        button.setOnClickListener(new View.OnClickListener() {
+        db.CoverLetterDao().getAll().observe((LifecycleOwner) this, new Observer<List<CoverLetter>>() {
             @Override
-            public void onClick(View v) {
-                ArrayList<String> job_code_tmp = new ArrayList<String>();
-                ArrayList<String> career_period_tmp = new ArrayList<String>();
-                ArrayList<String> certificate_id_tmp = new ArrayList<String>();
-                // 경력 직종
-                if (!job_code_1.getText().equals("")) {
-                    job_code_tmp.add(String.valueOf(job_code_1.getText()));
+            public void onChanged(List<CoverLetter> coverLetters) {
+                selfInfoAdapter.clearItems();
+                for (CoverLetter c : coverLetters) {
+                    selfInfoAdapter.addItem(new SelfInfo(c));
                 }
-                if (!job_code_2.getText().equals("")) {
-                    job_code_tmp.add(String.valueOf(job_code_2.getText()));
-                }
-                if (!job_code_3.getText().equals("")) {
-                    job_code_tmp.add(String.valueOf(job_code_3.getText()));
-                }
-                // 경력 기간
-                if (!career_period_1.getText().equals("")) {
-                    career_period_tmp.add(String.valueOf(career_period_1.getText()));
-                }
-                if (!career_period_2.getText().equals("")) {
-                    career_period_tmp.add(String.valueOf(career_period_2.getText()));
-                }
-                if (!career_period_3.getText().equals("")) {
-                    career_period_tmp.add(String.valueOf(career_period_3.getText()));
-                }
-                // 보유 자격증
-                if (!certificate_id_1.getText().equals("")) {
-                    certificate_id_tmp.add(String.valueOf(certificate_id_1.getText()));
-                }
-                if (!certificate_id_2.getText().equals("")) {
-                    certificate_id_tmp.add(String.valueOf(certificate_id_2.getText()));
-                }
-                if (!certificate_id_3.getText().equals("")) {
-                    certificate_id_tmp.add(String.valueOf(certificate_id_3.getText()));
-                }
+                selfInfoAdapter.notifyDataSetChanged();
+            }
+        });
 
-                pref.setStringArrayPref(job_code_tmp, SharedPreference.CAREER_JOB_CODE);
-                pref.setStringArrayPref(career_period_tmp, SharedPreference.CAREER_PERIOD);
-                pref.setStringArrayPref(certificate_id_tmp, SharedPreference.CERTIFICATE_CODE);
-                Toast.makeText(view.getContext(), "SharedPreference에 저장됨", Toast.LENGTH_LONG).show();
+        setting.setOnClickListener(this);
+        schoolLayout.setOnClickListener(this);
+        careerLayout.setOnClickListener(this);
+        certifiLayout.setOnClickListener(this);
+        selfIntroLayout.setOnClickListener(this);
+        selfInfoAdapter.setOnItemClickListener(new OnSelfInfoItemClickListener() {
+            @Override
+            public void OnItemClick(SelfInfoAdapter.ViewHolder holder, View view, int position) {
+                Intent intent = new Intent(getContext(), SelfInfoActivity.class);
+                startActivity(intent);
             }
         });
 
         return view;
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        name.setText(pref.preferences.getString(SharedPreference.NAME,""));
+        if(pref.preferences.getString(SharedPreference.GENDER,"").equals("F")){
+            genderAge.setText("여자 / " + pref.preferences.getString(SharedPreference.AGE,"")+"세");
+        }else{
+            genderAge.setText("남자 / " + pref.preferences.getString(SharedPreference.AGE,"")+"세");
+        }
+        address.setText(pref.preferences.getString(SharedPreference.ADDRESS,""));
+        phone.setText(pref.preferences.getString(SharedPreference.PHONE,""));
+        email.setText(pref.preferences.getString(SharedPreference.EMAIL,""));
+
+        // 학력사항
+        String education = null;
+        try {
+            education = new Query.CvInfoGetInfoCodeAsyncTask(db.CvInfoDao()).execute("E").get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        if (education != null) {
+            if (education.equals("00")) {
+                school.setVisibility(View.GONE);
+            } else if (education.equals("01")) {
+                school.setText("초등학교 졸업 이하");
+                school.setVisibility(View.VISIBLE);
+            } else if (education.equals("02")) {
+                school.setText("중학교 졸업");
+                school.setVisibility(View.VISIBLE);
+            } else if (education.equals("03")) {
+                school.setText("고등학교 졸업");
+                school.setVisibility(View.VISIBLE);
+            } else if (education.equals("04")) {
+                school.setText("대학(2,3년제) 졸업");
+                school.setVisibility(View.VISIBLE);
+            } else if (education.equals("05")) {
+                school.setText("대학(4년제) 졸업");
+                school.setVisibility(View.VISIBLE);
+            } else if (education.equals("06")) {
+                school.setText("석사");
+                school.setVisibility(View.VISIBLE);
+            } else if (education.equals("07")) {
+                school.setText("박사");
+                school.setVisibility(View.VISIBLE);
+            }
+        }
+
+        // 경력사항
+        List<CvInfo> cv = null;
+        try {
+            cv = new Query.CvInfoGetAsyncTask(db.CvInfoDao()).execute("CA").get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        if (cv != null) {
+            careerTextLayout.removeAllViews();
+            for (CvInfo cvInfo : cv) {
+                if (cvInfo.job_position.equals("")) {
+                    careerTextLayout.addView(textview((cvInfo.info_no+1) + ". " + cvInfo.info + " / " + cvInfo.company_name + " / " + cvInfo.period + "개월"));
+                } else {
+                    careerTextLayout.addView(textview((cvInfo.info_no+1) + ". " + cvInfo.info + " / " + cvInfo.company_name + " / " + cvInfo.job_position + " / " + cvInfo.period + "개월")); }
+            }
+        }
+
+        // 보유자격증
+        cv = null;
+        try {
+            cv = new Query.CvInfoGetAsyncTask(db.CvInfoDao()).execute("CE").get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        if (cv != null) {
+            certifiTextLayout.removeAllViews();
+            for (CvInfo cvInfo : cv) {
+                certifiTextLayout.addView(textview((cvInfo.info_no+1) + ". " + cvInfo.info));
+            }
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v == schoolLayout) {
+            Intent intent = new Intent(getContext(), SchoolActivity.class);
+            startActivity(intent);
+        } else if (v == careerLayout) {
+            Intent intent = new Intent(getContext(), CarCerActivity.class);
+            intent.putExtra("type", "career");
+            startActivity(intent);
+        } else if (v == certifiLayout) {
+            Intent intent = new Intent(getContext(), CarCerActivity.class);
+            intent.putExtra("type", "certificate");
+            startActivity(intent);
+        } else if (v == selfIntroLayout) {
+            Intent intent = new Intent(getContext(), SelfInfoActivity.class);
+            startActivity(intent);
+        } else if(v == setting){
+            Intent intent = new Intent(getContext(), MyInfoActivity.class);
+            startActivity(intent);
+        }
+    }
+
+    public TextView textview(String a) {
+        //TextView 생성
+        TextView view = new TextView(context);
+        view.setText(a);
+        view.setTextSize(Dimension.SP, FONT_SIZE);
+        view.setTextColor(Color.BLACK);
+
+        //layout_width, layout_height, gravity 설정
+//        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+//        lp.gravity = Gravity.CENTER;
+//        view1.setLayoutParams(lp);
+
+        return view;
+    }
+
+
 }
