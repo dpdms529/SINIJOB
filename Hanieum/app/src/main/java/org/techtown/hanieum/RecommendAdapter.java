@@ -1,6 +1,7 @@
 package org.techtown.hanieum;
 
 import android.content.Context;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import org.apache.commons.text.StringEscapeUtils;
 
 import java.util.ArrayList;
 
@@ -137,8 +140,21 @@ public class RecommendAdapter extends RecyclerView.Adapter<RecommendAdapter.View
         }
 
         public void setItem(Recommendation item) {
-            companyName.setText(item.getCompanyName());
-            title.setText(item.getTitle());
+            String companyNm = item.getCompanyName();
+            String titleNm = item.getTitle();
+
+            for(int i=0;i<3;i++) {
+                if(!titleNm.contains("/&^[a-zA-z]+/;")) {
+                    titleNm=StringEscapeUtils.unescapeHtml4(titleNm);
+                }
+            }
+            for(int i=0;i<3;i++) {
+                if(!companyNm.contains("/&^[a-zA-z]+/;")) {
+                    companyNm=StringEscapeUtils.unescapeHtml4(companyNm);
+                }
+            }
+            companyName.setText(companyNm);
+            title.setText(titleNm);
             String salType = item.getSalaryType();
             salaryType.setText(salType);
             salary.setText(item.getSalary());

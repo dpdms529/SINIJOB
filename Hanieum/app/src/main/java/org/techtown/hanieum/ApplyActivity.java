@@ -17,6 +17,7 @@ import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -333,9 +334,10 @@ public class ApplyActivity extends AppCompatActivity implements View.OnClickList
             }
         } else if (v == finishButton) {
             Intent i = getIntent();
+            String cvCode = items.get(spinner.getSelectedItemPosition()).get("dist");
             if (i.getStringExtra("type").equals("sms")) {
                 Intent intent;
-                if (items.get(spinner.getSelectedItemPosition()).get("dist").equals("0")) { // 영상 자기소개서 첨부
+                if (cvCode.equals("0")) { // 영상 자기소개서 첨부
                     recruit.append("하고싶은 말 :\n" + textMsg.getText().toString());
                     intent = new Intent(Intent.ACTION_SEND, Uri.parse("tel:010-0000-0000"));
                     intent.setType("vnd.android-dir/mms-sms");
@@ -343,11 +345,10 @@ public class ApplyActivity extends AppCompatActivity implements View.OnClickList
                     String dirName = items.get(spinner.getSelectedItemPosition()).get("dirname");
                     String url = ApplyActivity.this.getFilesDir().toString() + "/videocv_" + dirName + "/cv.mp4";
                     File f = new File(url);
-                    Uri videoUri = Uri.parse(url);
                     intent.setType("video/*");
                     intent.putExtra(Intent.EXTRA_STREAM, FileProvider.getUriForFile(this, "org.techtown.hanieum.fileprovider", f));
                     intent.putExtra("sms_body", recruit.toString());
-                } else {
+                } else { // 글 자기소개서 첨부
                     recruit.append("자기소개 :\n" + selectedCL.first_item + "\n지원동기 :\n" + selectedCL.second_item + "\n경력 및 경험 :\n" + selectedCL.third_item + "\n하고싶은 말 :\n" + textMsg.getText().toString());
                     intent = new Intent(Intent.ACTION_VIEW, Uri.parse("tel:010-0000-0000"));
                     intent.setType("vnd.android-dir/mms-sms");
@@ -355,16 +356,31 @@ public class ApplyActivity extends AppCompatActivity implements View.OnClickList
                     intent.putExtra("sms_body", recruit.toString());
                 }
                 startActivity(intent);
-
-
             } else {    // email
-                recruit.append("자기소개 :\n" + selectedCL.first_item + "\n지원동기 :\n" + selectedCL.second_item + "\n경력 및 경험 :\n" + selectedCL.third_item + "\n하고싶은 말 :\n" + textMsg.getText().toString());
-                String uriText = "mailto:8bangwomen@hanium.com" + "?subject=" +
-                        Uri.encode(i.getStringExtra("company") + "에 지원합니다.") + "&body=" + Uri.encode(recruit.toString());
-                Uri uri = Uri.parse(uriText);
+                Intent intent;
+                if(cvCode.equals("0")) { // 영상 자기소개서 첨부
+                    if(!textMsg.getText().toString().equals("")) {
+                        recruit.append("하고싶은 말 :\n" + textMsg.getText().toString());
+                    }
+                    intent = new Intent(Intent.ACTION_SEND);
+                    String dirName = items.get(spinner.getSelectedItemPosition()).get("dirname");
+                    String url = ApplyActivity.this.getFilesDir().toString() + "/videocv_" + dirName + "/cv.mp4";
+                    File f = new File(url);
+                    intent.setType("plain/text");
+                    intent.putExtra(Intent.EXTRA_SUBJECT, i.getStringExtra("company") + "에 지원합니다."); //메일 제목
+                    intent.putExtra(Intent.EXTRA_EMAIL,new String[]{"mailto:8bangwomen@hanium.com"}); // 메일 주소
+                    intent.putExtra(Intent.EXTRA_TEXT, recruit.toString()); // 메일 내용
+                    intent.putExtra(Intent.EXTRA_STREAM, FileProvider.getUriForFile(this, "org.techtown.hanieum.fileprovider", f)); // 첨부파일
+                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION); // 첨부 권한 설정
+                } else {
+                    recruit.append("자기소개 :\n" + selectedCL.first_item + "\n지원동기 :\n" + selectedCL.second_item + "\n경력 및 경험 :\n" + selectedCL.third_item + "\n하고싶은 말 :\n" + textMsg.getText().toString());
+                    String uriText = "mailto:8bangwomen@hanium.com" + "?subject=" +
+                            Uri.encode(i.getStringExtra("company") + "에 지원합니다.") + "&body=" + Uri.encode(recruit.toString());
+                    Uri uri = Uri.parse(uriText);
 
-                Intent intent = new Intent(Intent.ACTION_SENDTO);
-                intent.setData(uri);
+                    intent = new Intent(Intent.ACTION_SENDTO);
+                    intent.setData(uri);
+                }
                 startActivity(Intent.createChooser(intent, "이메일 앱을 선택하세요"));
             }
         } else if (v == helpButton) {
