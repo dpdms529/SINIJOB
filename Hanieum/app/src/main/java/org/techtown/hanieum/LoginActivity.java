@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -308,8 +309,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     }
                     return null;
                 });
+            }else{
+                Toast.makeText(getApplicationContext(), "카카오톡을 설치해주세요", Toast.LENGTH_LONG).show();
             }
-
         }else if(view == googleLoginBtn){
             //구글 로그인
             Intent signInIntent = mGoogleSignInClient.getSignInIntent();
