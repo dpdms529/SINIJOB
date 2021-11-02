@@ -268,6 +268,7 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
             intent.putExtra("dirName", dirName);
             launcher.launch(intent);
         } else if (v == saveBtn) {
+            String toastMessage;
             if (item != null) {
                 HashMap<Integer, String> hm = new HashMap<>();
                 hm.put(1, dirName);
@@ -275,14 +276,14 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
                 hm.put(3, null);
                 hm.put(4, Integer.toString(item.getNo()));
                 new Query.CoverLetterUpdateAsyncTask(db.CoverLetterDao()).execute(hm);
-                Toast.makeText(this, "자기소개서가 수정되었습니다.", Toast.LENGTH_SHORT).show();
+                toastMessage = "자기소개서가 수정되었습니다.";
             } else {
                 CoverLetter coverLetter = new CoverLetter("0", dirName, null, null);
                 new Query.CoverLetterInsertAsyncTask(db.CoverLetterDao()).execute(coverLetter);
-                Toast.makeText(this, "자기소개서가 저장되었습니다.", Toast.LENGTH_SHORT).show();
+                toastMessage = "자기소개서가 저장되었습니다.";
             }
             try {
-                concatVideos();
+                concatVideos(toastMessage);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -313,20 +314,12 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
         }
     }
 
-//    @Override
-//    public void onBackPressed() {
-//        if(item == null) {
-//            fileDelete();
-//        }
-//        finishActivity();
-//    }
-
     @Override
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
     }
 
-    private void concatVideos() throws Exception {
+    private void concatVideos(String toastMessage) throws Exception {
         progressDialog.show();
         String rootDir = this.getFilesDir().toString();
         String dir = this.getFilesDir().toString() + "/videocv_" + dirName;
@@ -390,15 +383,18 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
             public void apply(final long executionId, final int returnCode) {
                 if (returnCode == RETURN_CODE_SUCCESS) {
 
+                    Toast.makeText(VideoListActivity.this, toastMessage, Toast.LENGTH_SHORT).show();
                     progressDialog.dismiss();
                     finishActivity();
 
                 } else if (returnCode == RETURN_CODE_CANCEL) {
+
                     Log.i(Config.TAG, "Async command execution cancelled by user.");
                     progressDialog.dismiss();
                     finishActivity();
 
                 } else {
+
                     Log.i(Config.TAG, String.format("Async command execution failed with returnCode=%d.", returnCode));
                     progressDialog.dismiss();
                     finishActivity();
@@ -426,11 +422,6 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
         File file = new File(this.getFilesDir().toString() + "/videocv_" + dirName);
         File[] childFileList = file.listFiles();
 
-//        String[] testDir = file.list();
-//
-//        for (int i = 0; i < testDir.length; i++) {
-//            Log.e("testDirfilepath", testDir[i]);
-//        }
         if(childFileList != null) {
             for(File childFile : childFileList) {
                 childFile.delete();
