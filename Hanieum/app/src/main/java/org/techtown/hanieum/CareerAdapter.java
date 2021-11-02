@@ -193,6 +193,7 @@ public class CareerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         public void setItem(Career item) {
             if(item.getJobName() == null){
+                job.setText("");
                 job.setHint("직종을 선택하세요");
             }else{
                 job.setText(item.getJobName());
@@ -200,6 +201,7 @@ public class CareerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             compName.setText(item.getCompName());
             position.setText(item.getPosition());
             if(item.getCareerStart() == null){
+                period.setText("");
                 period.setHint("기간을 설정하세요");
             }else{
                 period.setText(item.getCareerStart() + " ~ " + item.getCarrerEnd());

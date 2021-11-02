@@ -74,6 +74,7 @@ public class CertifiAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         public void setItem(Certificate item) {
             if(item.getCertifi() == null){
+                certificate.setText("");
                 certificate.setHint("자격증을 선택하세요");
             }else {
                 certificate.setText(item.getCertifi());
