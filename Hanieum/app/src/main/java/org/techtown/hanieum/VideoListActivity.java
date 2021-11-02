@@ -36,7 +36,11 @@ import com.arthenica.mobileffmpeg.FFmpeg;
 import org.techtown.hanieum.db.AppDatabase;
 import org.techtown.hanieum.db.entity.CoverLetter;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -324,22 +328,61 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
 
     private void concatVideos() throws Exception {
         progressDialog.show();
+        String rootDir = this.getFilesDir().toString();
         String dir = this.getFilesDir().toString() + "/videocv_" + dirName;
         File dest = new File(dir, "cv.mp4");
         String filePath = dest.getAbsolutePath();
 
+        File intro1 = new File(rootDir,"intro1.mov");
+        File intro2 = new File(rootDir,"intro2.mov");
+        File intro3 = new File(rootDir,"intro3.mov");
+
+        if (!intro1.exists() || !intro2.exists() || !intro3.exists()) {
+            InputStream input1 = getResources().openRawResource(R.raw.intro1);
+            InputStream input2 = getResources().openRawResource(R.raw.intro2);
+            InputStream input3 = getResources().openRawResource(R.raw.intro3);
+            OutputStream output1 = new FileOutputStream(intro1);
+            OutputStream output2 = new FileOutputStream(intro2);
+            OutputStream output3 = new FileOutputStream(intro3);
+
+            byte data1[] = new byte[1024];
+            int count1;
+            while ((count1 = input1.read(data1)) != -1) {
+                output1.write(data1, 0, count1);
+                Log.d("writeIntro", "intro1 writed");
+            }
+            byte data2[] = new byte[1024];
+            int count2;
+            while ((count2 = input2.read(data2)) != -1) {
+                output2.write(data2, 0, count2);
+                Log.d("writeIntro", "intro2 writed");
+            }
+            byte data3[] = new byte[1024];
+            int count3;
+            while ((count3 = input3.read(data3)) != -1) {
+                output3.write(data3, 0, count3);
+                Log.d("writeIntro", "intro3 writed");
+            }
+        }
+
         String exe;
         // the "exe" string contains the command to process video.The details of command are discussed later in this post.
         // "video_url" is the url of video which you want to edit. You can get this url from intent by selecting any video from gallery.
-        exe = "-y -i " + dir + "/cv_1.mp4" + " -i " + dir + "/cv_2.mp4" + " -i " + dir + "/cv_3.mp4"
+        exe = "-y -i " + rootDir + "/intro1.mov" + " -i " + dir + "/cv_1.mp4" + " -i " + rootDir + "/intro2.mov" + " -i " + dir + "/cv_2.mp4" + " -i " + rootDir + "/intro3.mov" + " -i " + dir + "/cv_3.mp4"
                 + " -filter_complex \"[0:v]setpts=PTS-STARTPTS,scale=1920x1080,fps=24,format=yuv420p[video0];" +
                 "[0:a]aformat=sample_fmts=fltp:sample_rates=48000:channel_layouts=stereo[audio0];" +
                 "[1:v]setpts=PTS-STARTPTS,scale=1920x1080,fps=24,format=yuv420p[video1];" +
                 "[1:a]aformat=sample_fmts=fltp:sample_rates=48000:channel_layouts=stereo[audio1];" +
                 "[2:v]setpts=PTS-STARTPTS,scale=1920x1080,fps=24,format=yuv420p[video2];" +
                 "[2:a]aformat=sample_fmts=fltp:sample_rates=48000:channel_layouts=stereo[audio2];" +
-                "[video0][audio0][video1][audio1][video2][audio2]" +
-                "concat=n=3:v=1:a=1[outv][outa]\" -map \"[outv]\" -map \"[outa]\" " + filePath;
+                "[3:v]setpts=PTS-STARTPTS,scale=1920x1080,fps=24,format=yuv420p[video3];" +
+                "[3:a]aformat=sample_fmts=fltp:sample_rates=48000:channel_layouts=stereo[audio3];" +
+                "[4:v]setpts=PTS-STARTPTS,scale=1920x1080,fps=24,format=yuv420p[video4];" +
+                "[4:a]aformat=sample_fmts=fltp:sample_rates=48000:channel_layouts=stereo[audio4];" +
+                "[5:v]setpts=PTS-STARTPTS,scale=1920x1080,fps=24,format=yuv420p[video5];" +
+                "[5:a]aformat=sample_fmts=fltp:sample_rates=48000:channel_layouts=stereo[audio5];" +
+                "[video0][audio0][video1][audio1][video2][audio2][video3][audio3][video4][audio4][video5][audio5]" +
+                "concat=n=6:v=1:a=1[outv][outa]\" -map \"[outv]\" -map \"[outa]\" " + filePath;
 
         long executionId = FFmpeg.executeAsync(exe, new ExecuteCallback() {
 
@@ -393,10 +436,6 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
                 childFile.delete();
             }
         }
-
-
         file.delete();
-
     }
-
 }
