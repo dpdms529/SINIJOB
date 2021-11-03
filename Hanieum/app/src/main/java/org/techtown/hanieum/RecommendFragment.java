@@ -113,6 +113,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
                 Recommendation item = adapter.getItem(position);
                 Intent intent = new Intent(getContext(), DetailActivity.class);
                 intent.putExtra("id", item.getId());
+                intent.putExtra("bookmark", item.getBookmark());
                 startActivity(intent);
             }
         });

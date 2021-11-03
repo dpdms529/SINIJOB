@@ -48,6 +48,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     //    Toolbar toolbar;
     MapView mapView;
     ImageButton helpButton; // 도움말 버튼
+    ImageButton bookmark;   // 북마크 버튼
     Button applyButton;
     Button findWay;
     Button goWorknetBtn;
@@ -64,6 +65,8 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     TextView textSize;
     Switch voiceTf;
 
+    boolean isBookmark;
+    String rId;
     String epX;
     String epY;
     String url;
@@ -174,6 +177,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
 //        toolbar = findViewById(R.id.toolbar0201);
         helpButton = findViewById(R.id.helpButton);
+        bookmark = findViewById(R.id.bookmark);
         applyButton = findViewById(R.id.applyButton);
         findWay = findViewById(R.id.findWay);
         goWorknetBtn = findViewById(R.id.goWorknetBtn);
@@ -269,8 +273,12 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         mapViewContainer.addView(mapView);
 
         Intent intent = getIntent();
-        String id = intent.getStringExtra("id");
-        loadData(id);
+        rId = intent.getStringExtra("id");
+        isBookmark = intent.getBooleanExtra("bookmark", false);
+        if (isBookmark) {
+            bookmark.setImageResource(R.drawable.bookmark);
+        }
+        loadData(rId);
 
 //        setSupportActionBar(toolbar);
 //        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -281,6 +289,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         mapView.setPOIItemEventListener(this);
 
         helpButton.setOnClickListener(this);
+        bookmark.setOnClickListener(this);
         applyButton.setOnClickListener(this);
         findWay.setOnClickListener(this);
         goWorknetBtn.setOnClickListener(this);
@@ -436,6 +445,28 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             Intent intent = new Intent(this, HelpActivity.class);
             intent.putExtra("from", "DetailActivity");
             startActivity(intent);
+        } else if (v == bookmark) {
+            isBookmark = !isBookmark;
+            String uId = pref.preferences.getString(SharedPreference.USER_ID, "");   // 유저 아이디
+            if (isBookmark == false) {   // 북마크 안 됨
+                bookmark.setImageResource(R.drawable.star);
+                String bookmarkPhp = context.getResources().getString(R.string.serverIP) + "bookmark_del.php?user_id=" + uId + "&recruit_id=" + rId;
+                URLConnector urlConnectorBookmark = new URLConnector(bookmarkPhp);
+                urlConnectorBookmark.start();
+                try {
+                    urlConnectorBookmark.join();
+                } catch (InterruptedException e) {
+                }
+            } else {    // 북마크 됨
+                bookmark.setImageResource(R.drawable.bookmark);
+                String bookmarkPhp = context.getResources().getString(R.string.serverIP) + "bookmark_save.php?user_id=" + uId + "&recruit_id=" + rId;
+                URLConnector urlConnectorBookmark = new URLConnector(bookmarkPhp);
+                urlConnectorBookmark.start();
+                try {
+                    urlConnectorBookmark.join();
+                } catch (InterruptedException e) {
+                }
+            }
         }
         if (voiceTf.isChecked()) {
             if (v == companyNameDetail) {
