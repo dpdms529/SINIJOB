@@ -10,7 +10,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.Button;
 
@@ -44,7 +46,11 @@ public class SelfInfoActivity extends AppCompatActivity implements View.OnClickL
 
         addButton = findViewById(R.id.addButton);
 
-        db.CoverLetterDao().getAll().observe((LifecycleOwner) this, new Observer<List<CoverLetter>>() {
+        SharedPreferences sharedPreferences = PreferenceManager
+                .getDefaultSharedPreferences(this);
+        String user_id = sharedPreferences.getString(SharedPreference.USER_ID,"");
+
+        db.CoverLetterDao().getUserAll(user_id).observe((LifecycleOwner) this, new Observer<List<CoverLetter>>() {
             @Override
             public void onChanged(List<CoverLetter> coverLetters) {
                 adapter.clearItems();

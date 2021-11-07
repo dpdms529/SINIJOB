@@ -15,6 +15,9 @@ public interface CoverLetterDao {
     @Query("SELECT * FROM cover_letter")
     LiveData<List<CoverLetter>> getAll();
 
+    @Query("SELECT * FROM cover_letter WHERE user_id = :user_id")
+    LiveData<List<CoverLetter>> getUserAll(String user_id);
+
     @Query("SELECT * FROM cover_letter where user_id = :user_id and cover_letter_no = :no")
     CoverLetter getSelected(String user_id, String no);
 

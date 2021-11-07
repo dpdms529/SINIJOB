@@ -45,7 +45,6 @@ public class ResumeFragment extends Fragment implements View.OnClickListener {
     Context context;
 
     AppDatabase db;
-
     SharedPreference pref;
 
     @Override
@@ -83,7 +82,7 @@ public class ResumeFragment extends Fragment implements View.OnClickListener {
 
         db = AppDatabase.getInstance(this.getContext());
 
-        db.CoverLetterDao().getAll().observe((LifecycleOwner) this, new Observer<List<CoverLetter>>() {
+        db.CoverLetterDao().getUserAll(pref.preferences.getString(SharedPreference.USER_ID,"")).observe((LifecycleOwner) this, new Observer<List<CoverLetter>>() {
             @Override
             public void onChanged(List<CoverLetter> coverLetters) {
                 selfInfoAdapter.clearItems();
