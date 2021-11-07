@@ -214,7 +214,7 @@ public class ApplyActivity extends AppCompatActivity implements View.OnClickList
         spinnerArray.add("선택");
         HashMap<String, String> item = new HashMap<>();
         item.put("dist", "null");
-        db.CoverLetterDao().getAll().observe((LifecycleOwner) this, new Observer<List<CoverLetter>>() {
+        db.CoverLetterDao().getUserAll(pref.preferences.getString(SharedPreference.USER_ID, "")).observe((LifecycleOwner) this, new Observer<List<CoverLetter>>() {
             @Override
             public void onChanged(List<CoverLetter> coverLetters) {
                 items.clear();
