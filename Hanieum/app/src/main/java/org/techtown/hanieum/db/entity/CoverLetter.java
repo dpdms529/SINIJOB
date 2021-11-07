@@ -7,6 +7,7 @@ import androidx.room.PrimaryKey;
 
 @Entity(tableName = "cover_letter")
 public class CoverLetter {
+
     @PrimaryKey(autoGenerate = true)
     @NonNull
     public Integer cover_letter_no;

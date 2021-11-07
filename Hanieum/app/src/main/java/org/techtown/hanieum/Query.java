@@ -223,7 +223,7 @@ public class Query {
 
         @Override
         protected String doInBackground(String... strings) {
-            return mCvInfoDao.getInfoCode(strings[0]);
+            return mCvInfoDao.getInfoCode(strings[0],strings[1]);
         }
     }
 
@@ -236,7 +236,7 @@ public class Query {
 
         @Override
         protected List<CvInfo> doInBackground(String... strings) {
-            return mCvInfoDao.getCvInfo(strings[0]);
+            return mCvInfoDao.getCvInfo(strings[0],strings[1]);
         }
     }
 
@@ -249,7 +249,7 @@ public class Query {
 
         @Override
         protected Void doInBackground(String... strings) {
-            mCvInfoDao.deleteCvInfo(strings[0]);
+            mCvInfoDao.deleteCvInfo(strings[0], strings[1]);
             return null;
         }
     }
