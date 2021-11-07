@@ -441,7 +441,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
         } else if (licenseStatus == 0) {    //경력 적용, 자격증 적용 안함
             List<CvInfo> careerInfo = null;
             try {
-                careerInfo = new Query.CvInfoGetAsyncTask(db.CvInfoDao()).execute("CA").get();
+                careerInfo = new Query.CvInfoGetAsyncTask(db.CvInfoDao()).execute(pref.preferences.getString(SharedPreference.USER_ID,""),"CA").get();
             } catch (ExecutionException e) {
                 e.printStackTrace();
             } catch (InterruptedException e) {
@@ -638,7 +638,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
             List<CvInfo> certifiInfo = null;
             List<String> certificate = new ArrayList<>();
             try {
-                certifiInfo = new Query.CvInfoGetAsyncTask(db.CvInfoDao()).execute("CE").get();
+                certifiInfo = new Query.CvInfoGetAsyncTask(db.CvInfoDao()).execute(pref.preferences.getString(SharedPreference.USER_ID,""),"CE").get();
             } catch (ExecutionException e) {
                 e.printStackTrace();
             } catch (InterruptedException e) {
@@ -829,7 +829,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
             //경력 정보
             List<CvInfo> careerInfo = null;
             try {
-                careerInfo = new Query.CvInfoGetAsyncTask(db.CvInfoDao()).execute("CA").get();
+                careerInfo = new Query.CvInfoGetAsyncTask(db.CvInfoDao()).execute(pref.preferences.getString(SharedPreference.USER_ID,""),"CA").get();
             } catch (ExecutionException e) {
                 e.printStackTrace();
             } catch (InterruptedException e) {
@@ -845,7 +845,7 @@ public class RecommendFragment extends Fragment implements View.OnClickListener 
             List<CvInfo> certifiInfo = null;
             List<String> certificate = new ArrayList<>();
             try {
-                certifiInfo = new Query.CvInfoGetAsyncTask(db.CvInfoDao()).execute("CE").get();
+                certifiInfo = new Query.CvInfoGetAsyncTask(db.CvInfoDao()).execute(pref.preferences.getString(SharedPreference.USER_ID,""),"CE").get();
             } catch (ExecutionException e) {
                 e.printStackTrace();
             } catch (InterruptedException e) {

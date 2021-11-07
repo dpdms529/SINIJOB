@@ -36,6 +36,7 @@ public class CoverLetterActivity extends AppCompatActivity implements View.OnCli
     ImageButton micBtn1, micBtn2, micBtn3;
 
     AppDatabase db;
+    SharedPreference pref;
 
     SelfInfo item;
 
@@ -64,6 +65,7 @@ public class CoverLetterActivity extends AppCompatActivity implements View.OnCli
         micBtn3 = findViewById(R.id.micBtn3);
 
         db = AppDatabase.getInstance(this);
+        pref = new SharedPreference(this);
 
         if (item != null) {
             title.setText("글 자기소개서 수정");
@@ -110,11 +112,12 @@ public class CoverLetterActivity extends AppCompatActivity implements View.OnCli
                 hm.put(1, selfIntro1.getText().toString());
                 hm.put(2, selfIntro2.getText().toString());
                 hm.put(3, selfIntro3.getText().toString());
-                hm.put(4, Integer.toString(item.getNo()));
+                hm.put(4, pref.preferences.getString(SharedPreference.USER_ID,""));
+                hm.put(5, item.getNo());
                 new Query.CoverLetterUpdateAsyncTask(db.CoverLetterDao()).execute(hm);
                 Toast.makeText(this, "자기소개서가 수정되었습니다.", Toast.LENGTH_SHORT).show();
             } else {
-                CoverLetter coverLetter = new CoverLetter("1", selfIntro1.getText().toString(), selfIntro2.getText().toString(), selfIntro3.getText().toString());
+                CoverLetter coverLetter = new CoverLetter(pref.preferences.getString(SharedPreference.USER_ID,""),String.valueOf(System.currentTimeMillis()),"1", selfIntro1.getText().toString(), selfIntro2.getText().toString(), selfIntro3.getText().toString());
                 new Query.CoverLetterInsertAsyncTask(db.CoverLetterDao()).execute(coverLetter);
                 Toast.makeText(this, "자기소개서가 저장되었습니다.", Toast.LENGTH_SHORT).show();
             }
@@ -127,7 +130,7 @@ public class CoverLetterActivity extends AppCompatActivity implements View.OnCli
                     .setPositiveButton("삭제", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            new Query.CoverLetterDeleteAsyncTask(db.CoverLetterDao()).execute(item.getNo());
+                            new Query.CoverLetterDeleteAsyncTask(db.CoverLetterDao()).execute(pref.preferences.getString(SharedPreference.USER_ID,""), item.getNo());
                             Toast.makeText(getApplicationContext(), "자기소개서가 삭제되었습니다.", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(getApplicationContext(), SelfInfoActivity.class);
                             startActivity(intent);

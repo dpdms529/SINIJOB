@@ -15,15 +15,15 @@ public interface CoverLetterDao {
     @Query("SELECT * FROM cover_letter")
     LiveData<List<CoverLetter>> getAll();
 
-    @Query("SELECT * FROM cover_letter where cover_letter_no = :no")
-    CoverLetter getSelected(int no);
+    @Query("SELECT * FROM cover_letter where user_id = :user_id and cover_letter_no = :no")
+    CoverLetter getSelected(String user_id, String no);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertCoverLetter(CoverLetter coverLetter);
 
-    @Query("DElETE FROM cover_letter WHERE cover_letter_no = :no")
-    void deleteCoverLetter(int no);
+    @Query("DElETE FROM cover_letter WHERE user_id = :user_id and cover_letter_no = :no")
+    void deleteCoverLetter(String user_id, String no);
 
-    @Query("UPDATE cover_letter SET first_item = :first, second_item = :second, third_item = :third where cover_letter_no = :no")
-    void updateCoverLetter(String first, String second, String third, int no);
+    @Query("UPDATE cover_letter SET first_item = :first, second_item = :second, third_item = :third where user_id = :user_id and cover_letter_no = :no")
+    void updateCoverLetter(String first, String second, String third, String user_id, String no);
 }

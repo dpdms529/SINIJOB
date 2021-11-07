@@ -59,6 +59,7 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
     private ProgressDialog progressDialog;
 
     AppDatabase db;
+    SharedPreference pref;
 
     SelfInfo item;
 
@@ -166,6 +167,7 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
         }
 
         db = AppDatabase.getInstance(this);
+        pref = new SharedPreference(this);
 
         startRecord.setOnClickListener(this);
         introduceRecord.setOnClickListener(this);
@@ -274,11 +276,12 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
                 hm.put(1, dirName);
                 hm.put(2, null);
                 hm.put(3, null);
-                hm.put(4, Integer.toString(item.getNo()));
+                hm.put(4, pref.preferences.getString(SharedPreference.USER_ID,""));
+                hm.put(5, item.getNo());
                 new Query.CoverLetterUpdateAsyncTask(db.CoverLetterDao()).execute(hm);
                 toastMessage = "자기소개서가 수정되었습니다.";
             } else {
-                CoverLetter coverLetter = new CoverLetter("0", dirName, null, null);
+                CoverLetter coverLetter = new CoverLetter(pref.preferences.getString(SharedPreference.USER_ID,""),String.valueOf(System.currentTimeMillis()),"0", dirName, null, null);
                 new Query.CoverLetterInsertAsyncTask(db.CoverLetterDao()).execute(coverLetter);
                 toastMessage = "자기소개서가 저장되었습니다.";
             }
@@ -295,7 +298,7 @@ public class VideoListActivity extends AppCompatActivity implements View.OnClick
                     .setPositiveButton("삭제", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            new Query.CoverLetterDeleteAsyncTask(db.CoverLetterDao()).execute(item.getNo());
+                            new Query.CoverLetterDeleteAsyncTask(db.CoverLetterDao()).execute(pref.preferences.getString(SharedPreference.USER_ID,""), item.getNo());
                             Toast.makeText(getApplicationContext(), "자기소개서가 삭제되었습니다.", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(getApplicationContext(), SelfInfoActivity.class);
                             startActivity(intent);

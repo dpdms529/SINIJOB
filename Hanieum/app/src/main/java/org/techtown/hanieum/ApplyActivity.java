@@ -76,7 +76,7 @@ public class ApplyActivity extends AppCompatActivity implements View.OnClickList
     TextView coverLetter1, coverLetter2, coverLetter3;
     CoverLetter selectedCL;
 
-    String name, gender, age, address, phone, email, school;
+    String name, gender, age, address, phone, email, school, userInfo;
     ArrayList<String> career, certificate;
     StringBuilder recruit;
 
@@ -121,7 +121,7 @@ public class ApplyActivity extends AppCompatActivity implements View.OnClickList
         // 학력사항
         String education = null;
         try {
-            education = new Query.CvInfoGetInfoCodeAsyncTask(db.CvInfoDao()).execute("E").get();
+            education = new Query.CvInfoGetInfoCodeAsyncTask(db.CvInfoDao()).execute(pref.preferences.getString(SharedPreference.USER_ID,""),"E").get();
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -149,7 +149,7 @@ public class ApplyActivity extends AppCompatActivity implements View.OnClickList
         // 경력사항
         List<CvInfo> cv = null;
         try {
-            cv = new Query.CvInfoGetAsyncTask(db.CvInfoDao()).execute("CA").get();
+            cv = new Query.CvInfoGetAsyncTask(db.CvInfoDao()).execute(pref.preferences.getString(SharedPreference.USER_ID,""),"CA").get();
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -170,7 +170,7 @@ public class ApplyActivity extends AppCompatActivity implements View.OnClickList
         // 보유자격증
         cv = null;
         try {
-            cv = new Query.CvInfoGetAsyncTask(db.CvInfoDao()).execute("CE").get();
+            cv = new Query.CvInfoGetAsyncTask(db.CvInfoDao()).execute(pref.preferences.getString(SharedPreference.USER_ID,""),"CE").get();
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -207,6 +207,8 @@ public class ApplyActivity extends AppCompatActivity implements View.OnClickList
                 recruit.append(s + "\n");
             }
         }
+        userInfo = recruit.toString();
+
         Log.d("TAG", "onCreate: " + recruit.toString());
 
         spinnerArray.add("선택");
@@ -218,7 +220,11 @@ public class ApplyActivity extends AppCompatActivity implements View.OnClickList
                 items.clear();
                 items.add(item);
                 for (CoverLetter c : coverLetters) {
-                    spinnerArray.add("자기소개서 " + c.cover_letter_no);
+                    if(c.cover_dist_code.equals("0")){
+                        spinnerArray.add("영상_" + c.cover_letter_no);
+                    }else{
+                        spinnerArray.add("일반_" + c.cover_letter_no);
+                    }
                     HashMap<String, String> dbitem = new HashMap<>();
                     dbitem.put("dist", c.cover_dist_code);
                     if (c.cover_dist_code.equals("0")) {
@@ -261,9 +267,9 @@ public class ApplyActivity extends AppCompatActivity implements View.OnClickList
                             }
                         });
                     } else if (items.get(i).get("dist").equals("1")) {
-                        int no = Integer.parseInt(spinnerArray.get(i).substring(6));
+                        String no = spinnerArray.get(i).substring(3);
                         try {
-                            selectedCL = new Query.CoverLetterGetSelectedAsyncTask(db.CoverLetterDao()).execute(no).get();
+                            selectedCL = new Query.CoverLetterGetSelectedAsyncTask(db.CoverLetterDao()).execute(pref.preferences.getString(SharedPreference.USER_ID,""), no).get();
                         } catch (ExecutionException e) {
                             e.printStackTrace();
                         } catch (InterruptedException e) {
@@ -356,6 +362,7 @@ public class ApplyActivity extends AppCompatActivity implements View.OnClickList
                     intent.putExtra("sms_body", recruit.toString());
                 }
                 startActivity(intent);
+                recruit = new StringBuilder(userInfo);
             } else {    // email
                 Intent intent;
                 if(cvCode.equals("0")) { // 영상 자기소개서 첨부
@@ -382,6 +389,7 @@ public class ApplyActivity extends AppCompatActivity implements View.OnClickList
                     intent.setData(uri);
                 }
                 startActivity(Intent.createChooser(intent, "이메일 앱을 선택하세요"));
+                recruit = new StringBuilder(userInfo);
             }
         } else if (v == helpButton) {
             Intent intent = new Intent(this, HelpActivity.class);
