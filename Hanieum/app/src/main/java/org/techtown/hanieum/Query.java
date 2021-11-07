@@ -269,7 +269,7 @@ public class Query {
     }
 
     //CoverLetter
-    public static class CoverLetterGetSelectedAsyncTask extends AsyncTask<Integer, Void, CoverLetter> {
+    public static class CoverLetterGetSelectedAsyncTask extends AsyncTask<String, Void, CoverLetter> {
         private CoverLetterDao mCoverLetterDao;
 
         public CoverLetterGetSelectedAsyncTask(CoverLetterDao coverLetterDao) {
@@ -277,8 +277,8 @@ public class Query {
         }
 
         @Override
-        protected CoverLetter doInBackground(Integer... integers) {
-            return mCoverLetterDao.getSelected(integers[0]);
+        protected CoverLetter doInBackground(String... strings) {
+            return mCoverLetterDao.getSelected(strings[0],strings[1]);
         }
     }
 
@@ -305,12 +305,12 @@ public class Query {
 
         @Override
         protected Void doInBackground(HashMap<Integer, String>... hashMaps) {
-            mCoverLetterDao.updateCoverLetter(hashMaps[0].get(1), hashMaps[0].get(2), hashMaps[0].get(3), Integer.parseInt(hashMaps[0].get(4)));
+            mCoverLetterDao.updateCoverLetter(hashMaps[0].get(1), hashMaps[0].get(2), hashMaps[0].get(3), hashMaps[0].get(4), hashMaps[0].get(5));
             return null;
         }
     }
 
-    public static class CoverLetterDeleteAsyncTask extends AsyncTask<Integer, Void, Void> {
+    public static class CoverLetterDeleteAsyncTask extends AsyncTask<String, Void, Void> {
         private CoverLetterDao mCoverLetterDao;
 
         public CoverLetterDeleteAsyncTask(CoverLetterDao coverLetterDao) {
@@ -318,8 +318,8 @@ public class Query {
         }
 
         @Override
-        protected Void doInBackground(Integer... integers) {
-            mCoverLetterDao.deleteCoverLetter(integers[0]);
+        protected Void doInBackground(String... strings) {
+            mCoverLetterDao.deleteCoverLetter(strings[0], strings[1]);
             return null;
         }
     }
