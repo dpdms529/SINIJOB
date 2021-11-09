@@ -102,6 +102,8 @@ public class PhoneFragment extends Fragment implements View.OnClickListener {
                 Intent intent = new Intent(getActivity(), MainActivity.class);
                 startActivity(intent);
                 getActivity().finish();
+
+//                ((InfoGetActivity)getActivity()).replaceFragment(KeywordFragment.newInstance());
             }
         }
     }
