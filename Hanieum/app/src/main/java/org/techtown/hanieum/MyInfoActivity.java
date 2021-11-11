@@ -112,21 +112,18 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
         String mon = prefBirth.substring(4, 6);
         String day = prefBirth.substring(6);
         try {
-            String filename = "profile_pic.jpg";
+            String filename = "profile_pic_" + pref.preferences.getString(SharedPreference.USER_ID, "") + ".jpg";
             String storage = getFilesDir() + "/" + pref.preferences.getString(SharedPreference.USER_ID, "");
             File storageDir = new File(getFilesDir() + "/" + pref.preferences.getString(SharedPreference.USER_ID, ""));
-            Bitmap bitmap = BitmapFactory.decodeFile(storage+"/"+filename);
-            picture.setImageBitmap(bitmap);
-            String[] fileList = storageDir.list();
-            for(int i=0;i< fileList().length;i++) {
-                Log.e("profile Dir",fileList[i]);
+            if(!storageDir.exists()) {
+                Log.d("profile Dir","프로필 사진 저장 폴더 없음");
+                picture.setImageResource(R.drawable.person);
+            } else {
+                Bitmap bitmap = BitmapFactory.decodeFile(storage+"/"+filename);
+                picture.setImageBitmap(bitmap);
             }
         } catch(Exception e) { // 프로필 사진 없는 경우
-            Log.e("TAG","프로필 사진 없음");
-            picture.setImageResource(R.drawable.person);
-        }
-        if(picture==null) {
-            picture.setImageResource(R.drawable.person);
+            Log.e("TAG",e.getMessage());
         }
 
         name.setText(pref.preferences.getString(SharedPreference.NAME,""));
@@ -394,7 +391,7 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
             if(!storageDir.exists()) {
                 storageDir.mkdirs();
             }
-            String filename = "profile_pic.jpg";
+            String filename = "profile_pic_"+pref.preferences.getString(SharedPreference.USER_ID, "") + ".jpg";
 
             File file = new File(storageDir, filename);
             boolean deleted = file.delete();
@@ -416,13 +413,9 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
                     e.printStackTrace();
                 }
             }
-            Log.e("TAG","Profile picture saved");
-            String[] fileList = storageDir.list();
-            for(int i=0;i< fileList().length;i++) {
-                Log.e("profile Dir",fileList[i]);
-            }
+            Log.d("TAG","프로필 사진 저장 완료");
         } catch (Exception e) {
-            Log.e("TAG","Profile picture saving error");
+            Log.e("TAG","프로필 사진 저장 실패" + e.getMessage());
         }
 
     }
