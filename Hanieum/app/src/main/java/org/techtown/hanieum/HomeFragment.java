@@ -292,6 +292,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         ArrayList<Recommendation> items = new ArrayList<>();
         String recoPhp = getResources().getString(R.string.serverIP) + "reco_list.php?user_id=" + pref.preferences.getString(SharedPreference.USER_ID, "");
         URLConnector urlConnector = new URLConnector(recoPhp);
+        Boolean noBookmark = false;
 
         ArrayList<String> jobNm = new ArrayList<>(); // 직종명과 추천순위 저장
 
@@ -310,6 +311,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             JSONObject jsonObject = new JSONObject(bookmarkResult);
             JSONArray jsonArray = jsonObject.getJSONArray("result");
 
+            if(jsonArray.length()==0){
+
+                noBookmark = true;
+            }
+
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonObject1 = jsonArray.getJSONObject(i);
                 String recruit_id = jsonObject1.getString("recruit_id");
@@ -317,6 +323,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             }
         } catch (JSONException e) {
             e.printStackTrace();
+        }
+
+        if(noBookmark){
+            Log.d("TAG", "키워드 추천");
+        }else{
+            Log.d("TAG", "일반 추천");
         }
 
         urlConnector.start();
