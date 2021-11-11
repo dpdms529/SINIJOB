@@ -30,7 +30,7 @@
     </androidx.appcompat.widget.Toolbar>
 
     <Button
-        android:id="@+id/saveButton"
+        android:id="@+id/saveBtn"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
@@ -57,7 +57,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="25dp"
-                android:text="찾고계신 일자리와\n관련된 단어를 선택해주세요\n(1개 이상)"
+                android:text="찾고계신 일자리와\n관련된 단어를 선택해주세요\n(1~10개)"
                 android:textSize="20sp"
                 android:textAlignment="center"/>
 

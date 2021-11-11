@@ -40,10 +40,8 @@ public class MainActivity extends AppCompatActivity {
                                         new HomeFragment()).commit();
                                 break;
                             case R.id.starItem:
-//                                getSupportFragmentManager().beginTransaction().replace(R.id.mainFrame,
-//                                        new BookmarkFragment()).commit();
                                 getSupportFragmentManager().beginTransaction().replace(R.id.mainFrame,
-                                        new KeywordFragment()).commit();
+                                        new BookmarkFragment()).commit();
                                 break;
                             case R.id.myItem:
                                 getSupportFragmentManager().beginTransaction().replace(R.id.mainFrame,
