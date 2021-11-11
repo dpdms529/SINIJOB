@@ -17,12 +17,12 @@ public interface CvInfoDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertCvInfo(CvInfo cvInfo);
 
-    @Query("select info_code from cv_info where cv_dist_code = :cv_dist_code")
-    String getInfoCode(String cv_dist_code);
+    @Query("select info_code from cv_info where user_id = :user_id and cv_dist_code = :cv_dist_code")
+    String getInfoCode(String user_id, String cv_dist_code);
 
-    @Query("select * from cv_info where cv_dist_code = :cv_dist_code")
-    List<CvInfo> getCvInfo(String cv_dist_code);
+    @Query("select * from cv_info where user_id = :user_id and cv_dist_code = :cv_dist_code")
+    List<CvInfo> getCvInfo(String user_id, String cv_dist_code);
 
-    @Query("delete from cv_info where cv_dist_code = :cv_dist_code")
-    void deleteCvInfo(String cv_dist_code);
+    @Query("delete from cv_info where user_id = :user_id and cv_dist_code = :cv_dist_code")
+    void deleteCvInfo(String user_id, String cv_dist_code);
 }

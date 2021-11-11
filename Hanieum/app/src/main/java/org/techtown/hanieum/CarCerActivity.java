@@ -31,6 +31,7 @@ public class CarCerActivity extends AppCompatActivity implements View.OnClickLis
     CertifiAdapter adapter2;
 
     AppDatabase db;
+    SharedPreference pref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +44,7 @@ public class CarCerActivity extends AppCompatActivity implements View.OnClickLis
         title = findViewById(R.id.title);
 
         db = AppDatabase.getInstance(this);
+        pref = new SharedPreference(this);
 
         Intent intent = getIntent();
         if (intent.getStringExtra("type").equals("career")) {   // 경력사항
@@ -55,7 +57,7 @@ public class CarCerActivity extends AppCompatActivity implements View.OnClickLis
             // db에 저장된거 띄우기
             List<CvInfo> cv = null;
             try {
-                cv = new Query.CvInfoGetAsyncTask(db.CvInfoDao()).execute("CA").get();
+                cv = new Query.CvInfoGetAsyncTask(db.CvInfoDao()).execute(pref.preferences.getString(SharedPreference.USER_ID," "),"CA").get();
             } catch (ExecutionException e) {
                 e.printStackTrace();
             } catch (InterruptedException e) {
@@ -77,7 +79,7 @@ public class CarCerActivity extends AppCompatActivity implements View.OnClickLis
 
             List<CvInfo> cv = null;
             try {
-                cv = new Query.CvInfoGetAsyncTask(db.CvInfoDao()).execute("CE").get();
+                cv = new Query.CvInfoGetAsyncTask(db.CvInfoDao()).execute(pref.preferences.getString(SharedPreference.USER_ID," "),"CE").get();
             } catch (ExecutionException e) {
                 e.printStackTrace();
             } catch (InterruptedException e) {
@@ -100,7 +102,7 @@ public class CarCerActivity extends AppCompatActivity implements View.OnClickLis
         if (v == saveButton) {
             if (title.getText().equals("경력사항")) {
                 ArrayList<Career> items = adapter1.getItems();
-                new Query.CvInfoDeleteAsyncTask(db.CvInfoDao()).execute("CA");    // "CA"를 모두 지우고 다시 저장
+                new Query.CvInfoDeleteAsyncTask(db.CvInfoDao()).execute(pref.preferences.getString(SharedPreference.USER_ID,""), "CA");    // "CA"를 모두 지우고 다시 저장
                 for (int i = 0; i < items.size(); i++) {
                     Career item = items.get(i);
                     if (item.getJobCode() == null) {    // 직종을 선택하지 않았으면
@@ -115,19 +117,19 @@ public class CarCerActivity extends AppCompatActivity implements View.OnClickLis
                         alterDialog("기간을 설정하세요");
                         return;
                     }
-                    CvInfo cvInfo = new CvInfo("CA", i, item.getJobCode(), item.getJobName(), item.getCompName(), item.getPosition(), item.getCareerStart(), item.getCarrerEnd(), item.getPeriod());
+                    CvInfo cvInfo = new CvInfo(pref.preferences.getString(SharedPreference.USER_ID,""),"CA", i, item.getJobCode(), item.getJobName(), item.getCompName(), item.getPosition(), item.getCareerStart(), item.getCarrerEnd(), item.getPeriod());
                     new Query.CvInfoInsertAsyncTask(db.CvInfoDao()).execute(cvInfo);
                 }
             } else if (title.getText().equals("보유자격증")) {
                 ArrayList<Certificate> items = adapter2.getItmes();
-                new Query.CvInfoDeleteAsyncTask(db.CvInfoDao()).execute("CE");
+                new Query.CvInfoDeleteAsyncTask(db.CvInfoDao()).execute(pref.preferences.getString(SharedPreference.USER_ID,""), "CE");
                 for(int i = 0; i < items.size();i++){
                     Certificate item = items.get(i);
                     if(item.getCertifiCode() == null){
                         alterDialog("자격증을 선택하세요");
                         return;
                     }
-                    CvInfo cvInfo = new CvInfo("CE", i, item.getCertifiCode(), item.getCertifi(), null, null, null, null, 0);
+                    CvInfo cvInfo = new CvInfo(pref.preferences.getString(SharedPreference.USER_ID,""),"CE", i, item.getCertifiCode(), item.getCertifi(), null, null, null, null, 0);
                     new Query.CvInfoInsertAsyncTask(db.CvInfoDao()).execute(cvInfo);
                 }
 
