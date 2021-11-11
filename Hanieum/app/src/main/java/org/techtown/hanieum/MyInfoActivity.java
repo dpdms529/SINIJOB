@@ -4,14 +4,17 @@ import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Bundle;
@@ -44,17 +47,20 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 public class MyInfoActivity extends AppCompatActivity implements View.OnClickListener {
     EditText name, address, phone, email;
     EditText birth;
     Spinner gender;
     Button saveButton;
-    Button picEdit;
     WebView webView;
     ImageView picture;
 
@@ -83,7 +89,6 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
         gender = findViewById(R.id.gender);
         saveButton = findViewById(R.id.saveButton);
         webView = findViewById(R.id.webview);
-        picEdit = findViewById(R.id.pic_edit);
         picture = findViewById(R.id.imageView3);
 
         items.add("남");
@@ -106,8 +111,23 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
         String year = prefBirth.substring(0, 4);
         String mon = prefBirth.substring(4, 6);
         String day = prefBirth.substring(6);
-        String image = pref.preferences.getString(SharedPreference.PROFILE_PIC, "");
-        bitmap = StringToMap(image);
+        try {
+            String filename = "profile_pic.jpg";
+            String storage = getFilesDir() + "/" + pref.preferences.getString(SharedPreference.USER_ID, "");
+            File storageDir = new File(getFilesDir() + "/" + pref.preferences.getString(SharedPreference.USER_ID, ""));
+            Bitmap bitmap = BitmapFactory.decodeFile(storage+"/"+filename);
+            picture.setImageBitmap(bitmap);
+            String[] fileList = storageDir.list();
+            for(int i=0;i< fileList().length;i++) {
+                Log.e("profile Dir",fileList[i]);
+            }
+        } catch(Exception e) { // 프로필 사진 없는 경우
+            Log.e("TAG","프로필 사진 없음");
+            picture.setImageResource(R.drawable.person);
+        }
+        if(picture==null) {
+            picture.setImageResource(R.drawable.person);
+        }
 
         name.setText(pref.preferences.getString(SharedPreference.NAME,""));
         birth.setText(year + "년 " + mon + "월 " + day + "일");
@@ -120,12 +140,11 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
             gender.setSelection(1);
         }
         streetCode = pref.preferences.getString(SharedPreference.STREET_CODE,"");
-        picture.setImageBitmap(bitmap);
 
         birth.setOnClickListener(this);
         saveButton.setOnClickListener(this);
         address.setOnClickListener(this);
-        picEdit.setOnClickListener(this);
+        picture.setOnClickListener(this);
 
         handler = new Handler();
     }
@@ -157,11 +176,29 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
             oDialog.show();
         } else if(v == address){
             init_webView();
-        } else if(v == picEdit) {
-            Intent intent = new Intent();
-            intent.setType("image/*");
-            intent.setAction(Intent.ACTION_GET_CONTENT);
-            launcher.launch(intent);
+        } else if(v == picture) {
+            List<CharSequence> items = new ArrayList<>();
+            items.add("사진 삭제");
+            items.add("앨범에서 선택");
+            CharSequence[] charSequences = items.toArray(new CharSequence[items.size()]);
+
+            AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+            alertDialog.setTitle("프로필 사진 변경");
+            alertDialog.setItems(charSequences, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (charSequences[which] == "앨범에서 선택") {
+                        Intent intent = new Intent();
+                        intent.setType("image/*");
+                        intent.setAction(Intent.ACTION_GET_CONTENT);
+                        launcher.launch(intent);
+                    } else if (charSequences[which] == "사진 삭제") {
+                        picture.setImageResource(R.drawable.person);
+                        bitmap = null;
+                    }
+                }
+            });
+            alertDialog.show();
         } else if (v == saveButton) {
             if (name.getText().length() == 0) {
                 Toast.makeText(getApplicationContext(), "이름을 입력하세요", Toast.LENGTH_SHORT).show();
@@ -176,10 +213,15 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
                 } else {
                     tmpGender = "F";
                 }
+                try {
+                    // 프로필 사진 저장
+                    saveProfilePic();
+                } catch (Exception e) { // 기본 프로필 사진일 경우
+                    e.printStackTrace();
+                }
                 int year = Integer.parseInt(birth.getText().toString().substring(0, 4));
                 String month = birth.getText().subSequence(6, 8).toString();
                 String day = birth.getText().subSequence(10, 12).toString();
-                String image = BitMapToString(bitmap);
                 Calendar calendar = new GregorianCalendar();
                 pref.editor.putString(SharedPreference.NAME, name.getText().toString());
                 pref.editor.putString(SharedPreference.AGE, String.valueOf(calendar.get(Calendar.YEAR) - year + 1));
@@ -189,7 +231,6 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
                 pref.editor.putString(SharedPreference.BIRTH, year + month + day);
                 pref.editor.putString(SharedPreference.STREET_CODE, streetCode);
                 pref.editor.putString(SharedPreference.ADDRESS, address.getText().toString());
-                pref.editor.putString(SharedPreference.PROFILE_PIC, image);
                 pref.editor.commit();
                 String kakaoApi = getResources().getString(R.string.serverIP) + "kakao_api.php?" +
                         "street_code=" + pref.preferences.getString(SharedPreference.STREET_CODE, "") +
@@ -307,21 +348,83 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
 
     public String BitMapToString(Bitmap bitmap) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] b = baos.toByteArray();
         String temp = Base64.encodeToString(b, Base64.DEFAULT);
+//        String temp = byteArrayToBinaryString(b);
         return temp;
     }
 
-    public Bitmap StringToMap(String encodedString) {
+    public static String byteArrayToBinaryString(byte[] b) {
+        StringBuilder sb = new StringBuilder();
+        for(int i=0;i<b.length; i++) {
+            sb.append(byteToBinaryString(b[i]));
+        }
+        return sb.toString();
+    }
+
+    public static String byteToBinaryString(byte n) {
+        StringBuilder sb = new StringBuilder("00000000");
+        for(int bit = 0; bit<8; bit++) {
+            if(((n >> bit) & 1) > 0) {
+                sb.setCharAt(7 - bit, '1');
+            }
+        }
+        return sb.toString();
+    }
+
+    public Bitmap StringToBitMap(String encodedString) {
+        Log.e("StringToBitMap",encodedString);
         try {
             byte[] encodeByte = Base64.decode(encodedString, Base64.DEFAULT);
+            Log.e("StringToBitMap",encodeByte.toString());
             Bitmap bitmap = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+            Log.e("StringToBitMap","bitmap : "+bitmap);
             return bitmap;
         } catch(Exception e) {
             e.getMessage();
+            Log.e("StringToBitMap",e.getMessage());
             return null;
         }
+    }
+
+    private void saveProfilePic() {
+        try {
+            File storageDir = new File(getFilesDir() + "/" + pref.preferences.getString(SharedPreference.USER_ID, ""));
+            if(!storageDir.exists()) {
+                storageDir.mkdirs();
+            }
+            String filename = "profile_pic.jpg";
+
+            File file = new File(storageDir, filename);
+            boolean deleted = file.delete();
+            Log.d("TAG", "Delete duplication check :"+deleted);
+            FileOutputStream output = null;
+
+            try {
+                output = new FileOutputStream(file);
+                BitmapDrawable drawable = (BitmapDrawable) picture.getDrawable();
+                Bitmap bitmap = drawable.getBitmap();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 70, output);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    assert output != null;
+                    output.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            Log.e("TAG","Profile picture saved");
+            String[] fileList = storageDir.list();
+            for(int i=0;i< fileList().length;i++) {
+                Log.e("profile Dir",fileList[i]);
+            }
+        } catch (Exception e) {
+            Log.e("TAG","Profile picture saving error");
+        }
+
     }
 
     WebViewClient client = new WebViewClient(){
