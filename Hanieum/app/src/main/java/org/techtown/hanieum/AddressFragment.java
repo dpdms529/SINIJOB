@@ -23,6 +23,7 @@ import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -88,42 +89,46 @@ public class AddressFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         if (v == nextBtn) {
-            pref.editor.putString(SharedPreference.STREET_CODE,streetCode);
-            pref.editor.putString(SharedPreference.ADDRESS,addressText.getText().toString());
-            pref.editor.commit();
+            if (addressText.getText().length() == 0) {
+                Toast.makeText(getContext(), "주소를 설정하세요", Toast.LENGTH_SHORT).show();
+            } else {
+                pref.editor.putString(SharedPreference.STREET_CODE, streetCode);
+                pref.editor.putString(SharedPreference.ADDRESS, addressText.getText().toString());
+                pref.editor.commit();
 
-            String php = getResources().getString(R.string.serverIP) + "kakao_api.php?" +
-                    "street_code="+pref.preferences.getString(SharedPreference.STREET_CODE,"")+
-                    "&address="+pref.preferences.getString(SharedPreference.ADDRESS,"");
-            URLConnector urlConnector = new URLConnector(php);
-            urlConnector.start();
-            try {
-                urlConnector.join();
-            } catch (InterruptedException e) {
-            }
-            String result = urlConnector.getResult();
-            Log.d("TAG", "onClick: "+result);
-
-            try {
-                JSONObject jsonObject = new JSONObject(result);
-                JSONArray jsonArray = jsonObject.getJSONArray("result");
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    JSONObject jsonObject1 = jsonArray.getJSONObject(i);
-                    String x = jsonObject1.getString("x");
-                    String y = jsonObject1.getString("y");
-                    String main_no = jsonObject1.getString("main_no");
-                    String additional_no = jsonObject1.getString("additional_no");
-                    pref.editor.putString(SharedPreference.X,x);
-                    pref.editor.putString(SharedPreference.Y,y);
-                    pref.editor.putString(SharedPreference.MAIN_NO,main_no);
-                    pref.editor.putString(SharedPreference.ADDITIONAL_NO,additional_no);
-                    pref.editor.commit();
+                String php = getResources().getString(R.string.serverIP) + "kakao_api.php?" +
+                        "street_code=" + pref.preferences.getString(SharedPreference.STREET_CODE, "") +
+                        "&address=" + pref.preferences.getString(SharedPreference.ADDRESS, "");
+                URLConnector urlConnector = new URLConnector(php);
+                urlConnector.start();
+                try {
+                    urlConnector.join();
+                } catch (InterruptedException e) {
                 }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+                String result = urlConnector.getResult();
+                Log.d("TAG", "onClick: " + result);
 
-            ((InfoGetActivity)getActivity()).replaceFragment(NameFragment.newInstance());
+                try {
+                    JSONObject jsonObject = new JSONObject(result);
+                    JSONArray jsonArray = jsonObject.getJSONArray("result");
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject jsonObject1 = jsonArray.getJSONObject(i);
+                        String x = jsonObject1.getString("x");
+                        String y = jsonObject1.getString("y");
+                        String main_no = jsonObject1.getString("main_no");
+                        String additional_no = jsonObject1.getString("additional_no");
+                        pref.editor.putString(SharedPreference.X, x);
+                        pref.editor.putString(SharedPreference.Y, y);
+                        pref.editor.putString(SharedPreference.MAIN_NO, main_no);
+                        pref.editor.putString(SharedPreference.ADDITIONAL_NO, additional_no);
+                        pref.editor.commit();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                ((InfoGetActivity) getActivity()).replaceFragment(NameFragment.newInstance());
+            }
         } else if(v == addressText){
             init_webView();
         }
