@@ -45,7 +45,6 @@ public class ResumeFragment extends Fragment implements View.OnClickListener {
     Context context;
 
     AppDatabase db;
-
     SharedPreference pref;
 
     @Override
@@ -83,7 +82,7 @@ public class ResumeFragment extends Fragment implements View.OnClickListener {
 
         db = AppDatabase.getInstance(this.getContext());
 
-        db.CoverLetterDao().getAll().observe((LifecycleOwner) this, new Observer<List<CoverLetter>>() {
+        db.CoverLetterDao().getUserAll(pref.preferences.getString(SharedPreference.USER_ID,"")).observe((LifecycleOwner) this, new Observer<List<CoverLetter>>() {
             @Override
             public void onChanged(List<CoverLetter> coverLetters) {
                 selfInfoAdapter.clearItems();
@@ -127,7 +126,7 @@ public class ResumeFragment extends Fragment implements View.OnClickListener {
         // 학력사항
         String education = null;
         try {
-            education = new Query.CvInfoGetInfoCodeAsyncTask(db.CvInfoDao()).execute("E").get();
+            education = new Query.CvInfoGetInfoCodeAsyncTask(db.CvInfoDao()).execute(pref.preferences.getString(SharedPreference.USER_ID, " "),"E").get();
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -164,7 +163,7 @@ public class ResumeFragment extends Fragment implements View.OnClickListener {
         // 경력사항
         List<CvInfo> cv = null;
         try {
-            cv = new Query.CvInfoGetAsyncTask(db.CvInfoDao()).execute("CA").get();
+            cv = new Query.CvInfoGetAsyncTask(db.CvInfoDao()).execute(pref.preferences.getString(SharedPreference.USER_ID, " "), "CA").get();
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -184,7 +183,7 @@ public class ResumeFragment extends Fragment implements View.OnClickListener {
         // 보유자격증
         cv = null;
         try {
-            cv = new Query.CvInfoGetAsyncTask(db.CvInfoDao()).execute("CE").get();
+            cv = new Query.CvInfoGetAsyncTask(db.CvInfoDao()).execute(pref.preferences.getString(SharedPreference.USER_ID, " "), "CE").get();
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {

@@ -20,6 +20,7 @@ public class SchoolActivity extends AppCompatActivity {
     ArrayAdapter adapter;
 
     AppDatabase db;
+    SharedPreference pref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,9 +31,11 @@ public class SchoolActivity extends AppCompatActivity {
         spinner = findViewById(R.id.spinner);
 
         db = AppDatabase.getInstance(this);
+        pref = new SharedPreference(this);
+
         String education = null;
         try {
-            education = new Query.CvInfoGetInfoCodeAsyncTask(db.CvInfoDao()).execute("E").get();
+            education = new Query.CvInfoGetInfoCodeAsyncTask(db.CvInfoDao()).execute(pref.preferences.getString(SharedPreference.USER_ID," "),"E").get();
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -77,7 +80,7 @@ public class SchoolActivity extends AppCompatActivity {
                 } else if (spinner.getSelectedItem().equals("초등학교 졸업 이하")) {
                     code = "01";
                 }
-                CvInfo cvInfo = new CvInfo("E", 0, code, spinner.getSelectedItem().toString(), null, null, null, null, 0);
+                CvInfo cvInfo = new CvInfo(pref.preferences.getString(SharedPreference.USER_ID," "),"E", 0, code, spinner.getSelectedItem().toString(), null, null, null, null, 0);
                 new Query.CvInfoInsertAsyncTask(db.CvInfoDao()).execute(cvInfo);
 
                 finish();

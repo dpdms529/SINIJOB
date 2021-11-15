@@ -1,13 +1,24 @@
 package org.techtown.hanieum;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.MediaStore;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +35,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -31,6 +43,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -40,7 +54,9 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
     EditText birth;
     Spinner gender;
     Button saveButton;
+    Button picEdit;
     WebView webView;
+    ImageView picture;
 
     Handler handler;
 
@@ -49,6 +65,8 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
     SharedPreference pref;
 
     String streetCode;
+
+    Bitmap bitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +83,8 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
         gender = findViewById(R.id.gender);
         saveButton = findViewById(R.id.saveButton);
         webView = findViewById(R.id.webview);
+        picEdit = findViewById(R.id.pic_edit);
+        picture = findViewById(R.id.imageView3);
 
         items.add("남");
         items.add("여");
@@ -86,6 +106,8 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
         String year = prefBirth.substring(0, 4);
         String mon = prefBirth.substring(4, 6);
         String day = prefBirth.substring(6);
+        String image = pref.preferences.getString(SharedPreference.PROFILE_PIC, "");
+        bitmap = StringToMap(image);
 
         name.setText(pref.preferences.getString(SharedPreference.NAME,""));
         birth.setText(year + "년 " + mon + "월 " + day + "일");
@@ -98,10 +120,12 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
             gender.setSelection(1);
         }
         streetCode = pref.preferences.getString(SharedPreference.STREET_CODE,"");
+        picture.setImageBitmap(bitmap);
 
         birth.setOnClickListener(this);
         saveButton.setOnClickListener(this);
         address.setOnClickListener(this);
+        picEdit.setOnClickListener(this);
 
         handler = new Handler();
     }
@@ -131,8 +155,13 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
             };
             DatePickerDialog oDialog = new DatePickerDialog(this, android.R.style.Theme_DeviceDefault_Light_Dialog,mDateSetListener,year,month,day);
             oDialog.show();
-        }else if(v == address){
+        } else if(v == address){
             init_webView();
+        } else if(v == picEdit) {
+            Intent intent = new Intent();
+            intent.setType("image/*");
+            intent.setAction(Intent.ACTION_GET_CONTENT);
+            launcher.launch(intent);
         } else if (v == saveButton) {
             if (name.getText().length() == 0) {
                 Toast.makeText(getApplicationContext(), "이름을 입력하세요", Toast.LENGTH_SHORT).show();
@@ -150,6 +179,7 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
                 int year = Integer.parseInt(birth.getText().toString().substring(0, 4));
                 String month = birth.getText().subSequence(6, 8).toString();
                 String day = birth.getText().subSequence(10, 12).toString();
+                String image = BitMapToString(bitmap);
                 Calendar calendar = new GregorianCalendar();
                 pref.editor.putString(SharedPreference.NAME, name.getText().toString());
                 pref.editor.putString(SharedPreference.AGE, String.valueOf(calendar.get(Calendar.YEAR) - year + 1));
@@ -159,6 +189,7 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
                 pref.editor.putString(SharedPreference.BIRTH, year + month + day);
                 pref.editor.putString(SharedPreference.STREET_CODE, streetCode);
                 pref.editor.putString(SharedPreference.ADDRESS, address.getText().toString());
+                pref.editor.putString(SharedPreference.PROFILE_PIC, image);
                 pref.editor.commit();
                 String kakaoApi = getResources().getString(R.string.serverIP) + "kakao_api.php?" +
                         "street_code=" + pref.preferences.getString(SharedPreference.STREET_CODE, "") +
@@ -227,6 +258,24 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
+    ActivityResultLauncher<Intent> launcher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        Intent intent = result.getData();
+                        Uri uri = intent.getData();
+                        try {
+                            bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+                            picture.setImageBitmap(bitmap);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
+
     public void init_webView(){
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
@@ -253,6 +302,25 @@ public class MyInfoActivity extends AppCompatActivity implements View.OnClickLis
                     Log.d("TAG", "run: " + roadAddress +  buildingName);
                 }
             });
+        }
+    }
+
+    public String BitMapToString(Bitmap bitmap) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        byte[] b = baos.toByteArray();
+        String temp = Base64.encodeToString(b, Base64.DEFAULT);
+        return temp;
+    }
+
+    public Bitmap StringToMap(String encodedString) {
+        try {
+            byte[] encodeByte = Base64.decode(encodedString, Base64.DEFAULT);
+            Bitmap bitmap = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+            return bitmap;
+        } catch(Exception e) {
+            e.getMessage();
+            return null;
         }
     }
 
