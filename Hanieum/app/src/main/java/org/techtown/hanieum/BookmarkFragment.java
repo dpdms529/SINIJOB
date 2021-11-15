@@ -137,7 +137,7 @@ public class BookmarkFragment extends Fragment {
                     String[] tmp3 = tmp[1].split("만원|원");
                     sal = tmp2[0] + " ~ " + tmp3[0];
                 }
-                DistanceCalculator distance = new DistanceCalculator(pref.preferences.getString(SharedPreference.X,"127.12934"), pref.preferences.getString(SharedPreference.Y,"35.84688"), recruit.get(0).x_coordinate, recruit.get(0).y_coordinate);
+                DistanceCalculator distance = new DistanceCalculator(pref.preferences.getString(SharedPreference.X,"126.977829174031"), pref.preferences.getString(SharedPreference.Y,"37.5663174209601"), recruit.get(0).x_coordinate, recruit.get(0).y_coordinate);
                 Double dist = distance.getStraightDist();   // 직선거리 구하는 함수
                 items.add(new Recommendation(recruit.get(0).recruit_id, recruit.get(0).organization, recruit.get(0).recruit_title, salaryType, sal, dist, true));
             }
