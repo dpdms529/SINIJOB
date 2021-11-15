@@ -370,14 +370,6 @@
                     android:layout_height="match_parent" />
 
             </LinearLayout>
-
-            <ImageView
-                android:id="@+id/imageView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/camera"
-                app:layout_constraintBottom_toBottomOf="@+id/imageView3"
-                app:layout_constraintEnd_toEndOf="@+id/imageView3" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 

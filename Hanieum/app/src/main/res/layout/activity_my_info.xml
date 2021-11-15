@@ -61,15 +61,6 @@
             android:layout_marginTop="10dp"
             android:src="@drawable/person" />
 
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="사진 편집"
-            android:textSize="16sp"
-            android:layout_gravity="right"
-            android:id="@+id/pic_edit"/>
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"

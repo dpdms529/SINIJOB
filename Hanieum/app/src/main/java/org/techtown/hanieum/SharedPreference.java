@@ -32,7 +32,6 @@ public class SharedPreference {
     public static final String BIRTH = "birth";
     public static final String AGE = "age";
     public static final String USER_ID = "userId";
-    public static final String PROFILE_PIC = "profile_pic";
     public static final String KEYWORD = "keyword";
     // for test
     public static final String CAREER_JOB_CODE = "careerJobCode";
