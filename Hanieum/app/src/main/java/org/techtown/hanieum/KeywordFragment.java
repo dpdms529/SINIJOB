@@ -3,13 +3,9 @@ package org.techtown.hanieum;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.annotation.Dimension;
-import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -23,13 +19,8 @@ import android.widget.Toast;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
 
 public class KeywordFragment extends Fragment implements View.OnClickListener {
 
@@ -159,4 +150,5 @@ public class KeywordFragment extends Fragment implements View.OnClickListener {
             chipGroup.addView(chip);
         }
     }
+
 }
