@@ -2,6 +2,8 @@ package org.techtown.hanieum;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
 
@@ -12,6 +14,7 @@ import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +26,7 @@ import org.techtown.hanieum.db.AppDatabase;
 import org.techtown.hanieum.db.entity.CoverLetter;
 import org.techtown.hanieum.db.entity.CvInfo;
 
+import java.io.File;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -37,7 +41,7 @@ public class ResumeFragment extends Fragment implements View.OnClickListener {
     LinearLayout careerTextLayout;
     LinearLayout certifiTextLayout;
     TextView name, genderAge, address, phone, email, school;
-    ImageView setting;
+    ImageView setting, profile_pic;
 
     RecyclerView selfInfoRecyclerView;
     SelfInfoAdapter selfInfoAdapter;
@@ -73,6 +77,7 @@ public class ResumeFragment extends Fragment implements View.OnClickListener {
         email = view.findViewById(R.id.email);
         school = view.findViewById(R.id.school);
         setting = view.findViewById(R.id.setting);
+        profile_pic = view.findViewById(R.id.imageView3);
 
         selfInfoRecyclerView = view.findViewById(R.id.selfInfoRecyclerView);
         LinearLayoutManager layoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
@@ -195,6 +200,22 @@ public class ResumeFragment extends Fragment implements View.OnClickListener {
             for (CvInfo cvInfo : cv) {
                 certifiTextLayout.addView(textview((cvInfo.info_no+1) + ". " + cvInfo.info));
             }
+        }
+
+        //프로필 사진
+        try {
+            String filename = "profile_pic_" + pref.preferences.getString(SharedPreference.USER_ID, "") + ".jpg";
+            String storage = getContext().getFilesDir() + "/" + pref.preferences.getString(SharedPreference.USER_ID, "");
+            File storageDir = new File(getContext().getFilesDir() + "/" + pref.preferences.getString(SharedPreference.USER_ID, ""));
+            if(!storageDir.exists()) {
+                Log.d("profile Dir","프로필 사진 저장 폴더 없음");
+                profile_pic.setImageResource(R.drawable.person);
+            } else {
+                Bitmap bitmap = BitmapFactory.decodeFile(storage+"/"+filename);
+                profile_pic.setImageBitmap(bitmap);
+            }
+        } catch(Exception e) { // 프로필 사진 없는 경우
+            Log.e("TAG",e.getMessage());
         }
     }
 
