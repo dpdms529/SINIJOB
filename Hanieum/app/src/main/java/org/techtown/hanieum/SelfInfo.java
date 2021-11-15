@@ -6,7 +6,7 @@ import java.io.Serializable;
 
 public class SelfInfo implements Serializable {
     private static final long serialVersionUID = 1L;
-    private int no;
+    private String no;
     private String code;    //자기소개서 종류(영상,글)
     private String first_item;
     private String second_item;
@@ -20,9 +20,9 @@ public class SelfInfo implements Serializable {
         second_item = coverLetter.second_item;
         third_item = coverLetter.third_item;
         if(code.equals("0")) {
-            title = "영상 자기소개서 " + no;
+            title = "영상 자기소개서_" + no;
         } else {
-            title = "일반 자기소개서 " + no;
+            title = "일반 자기소개서_" + no;
         }
     }
 
@@ -30,11 +30,11 @@ public class SelfInfo implements Serializable {
         return serialVersionUID;
     }
 
-    public int getNo() {
+    public String getNo() {
         return no;
     }
 
-    public void setNo(int no) {
+    public void setNo(String no) {
         this.no = no;
     }
 

@@ -12,8 +12,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-@Entity(tableName = "cv_info", primaryKeys = {"cv_dist_code", "info_no"})
+@Entity(tableName = "cv_info", primaryKeys = {"user_id","cv_dist_code", "info_no"})
 public class CvInfo {
+    @NonNull
+    public String user_id;
+
     @NonNull
     public String cv_dist_code;
 
@@ -43,7 +46,8 @@ public class CvInfo {
     @ColumnInfo(name = "period")
     public Integer period;
 
-    public CvInfo(String cv_dist_code, Integer info_no, String info_code, String info, String company_name, String job_position, String career_start, String career_end, int period){
+    public CvInfo(String user_id, String cv_dist_code, Integer info_no, String info_code, String info, String company_name, String job_position, String career_start, String career_end, int period){
+        this.user_id = user_id;
         this.cv_dist_code = cv_dist_code;
         this.info_no = info_no;
         this.info_code = info_code;
