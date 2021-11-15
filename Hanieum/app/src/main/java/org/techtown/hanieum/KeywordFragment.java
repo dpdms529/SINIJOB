@@ -1,8 +1,10 @@
 package org.techtown.hanieum;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.annotation.Dimension;
@@ -77,51 +79,80 @@ public class KeywordFragment extends Fragment implements View.OnClickListener {
             } else if (choice.size() > 10) {
                 Toast.makeText(getContext(), "단어를 10개이하 선택해주세요", Toast.LENGTH_SHORT).show();
             } else {
-                keywordText = choice.get(0);
-                for (int i=1; i<choice.size(); i++) {
-                    keywordText = keywordText + "|" + choice.get(i);
-                }
-
-                pref.editor.putString(SharedPreference.KEYWORD, keywordText);
-                pref.editor.commit();
-
-                Log.d("TAG","user_id="+pref.preferences.getString(SharedPreference.USER_ID, "")+
-                        "&street_code="+pref.preferences.getString(SharedPreference.STREET_CODE,"")+
-                        "&main_no="+pref.preferences.getString(SharedPreference.MAIN_NO,"")+
-                        "&additional_no="+pref.preferences.getString(SharedPreference.ADDITIONAL_NO,"") +
-                        "&name="+pref.preferences.getString(SharedPreference.NAME, "")+
-                        "&age="+pref.preferences.getString(SharedPreference.AGE, "")+
-                        "&gender="+pref.preferences.getString(SharedPreference.GENDER, "")+
-                        "&phone_number="+pref.preferences.getString(SharedPreference.PHONE, "")+
-                        "&email="+pref.preferences.getString(SharedPreference.EMAIL, "none")+
-                        "&address="+pref.preferences.getString(SharedPreference.ADDRESS,"")  +
-                        "&birthday="+pref.preferences.getString(SharedPreference.BIRTH, "") +
-                        "&keyword="+pref.preferences.getString(SharedPreference.KEYWORD, ""));
-                // db에 저장
-                String php = getResources().getString(R.string.serverIP) + "user_save.php?" +
-                        "user_id="+pref.preferences.getString(SharedPreference.USER_ID, "")+
-                        "&street_code="+pref.preferences.getString(SharedPreference.STREET_CODE,"")+
-                        "&main_no="+pref.preferences.getString(SharedPreference.MAIN_NO,"")+
-                        "&additional_no="+pref.preferences.getString(SharedPreference.ADDITIONAL_NO,"") +
-                        "&name="+pref.preferences.getString(SharedPreference.NAME, "")+
-                        "&age="+pref.preferences.getString(SharedPreference.AGE, "")+
-                        "&gender="+pref.preferences.getString(SharedPreference.GENDER, "")+
-                        "&phone_number="+pref.preferences.getString(SharedPreference.PHONE, "")+
-                        "&email="+pref.preferences.getString(SharedPreference.EMAIL, "none")+
-                        "&address="+pref.preferences.getString(SharedPreference.ADDRESS,"")  +
-                        "&birthday="+pref.preferences.getString(SharedPreference.BIRTH, "") +
-                        "&keyword="+pref.preferences.getString(SharedPreference.KEYWORD, "");
-                URLConnector urlConnector = new URLConnector(php);
-                urlConnector.start();
-                try {
-                    urlConnector.join();
-                } catch (InterruptedException e) {
-                }
-
-                Intent intent = new Intent(getActivity(), MainActivity.class);
-                startActivity(intent);
-                getActivity().finish();
+                SaveInfoTask task = new SaveInfoTask();
+                task.execute();
             }
+        }
+    }
+
+    private class SaveInfoTask extends AsyncTask<Void, Void, Void> {
+
+        ProgressDialog asyncDialog = new ProgressDialog(
+                getContext());
+
+        @Override
+        protected void onPreExecute() {
+            asyncDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            asyncDialog.setMessage("로딩중입니다..");
+
+            // show dialog
+            asyncDialog.show();
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Void doInBackground(Void... arg0) {
+            keywordText = choice.get(0);
+            for (int i=1; i<choice.size(); i++) {
+                keywordText = keywordText + "|" + choice.get(i);
+            }
+
+            pref.editor.putString(SharedPreference.KEYWORD, keywordText);
+            pref.editor.commit();
+
+            Log.d("TAG","user_id="+pref.preferences.getString(SharedPreference.USER_ID, "")+
+                    "&street_code="+pref.preferences.getString(SharedPreference.STREET_CODE,"")+
+                    "&main_no="+pref.preferences.getString(SharedPreference.MAIN_NO,"")+
+                    "&additional_no="+pref.preferences.getString(SharedPreference.ADDITIONAL_NO,"") +
+                    "&name="+pref.preferences.getString(SharedPreference.NAME, "")+
+                    "&age="+pref.preferences.getString(SharedPreference.AGE, "")+
+                    "&gender="+pref.preferences.getString(SharedPreference.GENDER, "")+
+                    "&phone_number="+pref.preferences.getString(SharedPreference.PHONE, "")+
+                    "&email="+pref.preferences.getString(SharedPreference.EMAIL, "none")+
+                    "&address="+pref.preferences.getString(SharedPreference.ADDRESS,"")  +
+                    "&birthday="+pref.preferences.getString(SharedPreference.BIRTH, "") +
+                    "&keyword="+pref.preferences.getString(SharedPreference.KEYWORD, ""));
+            // db에 저장
+            String php = getResources().getString(R.string.serverIP) + "user_save.php?" +
+                    "user_id="+pref.preferences.getString(SharedPreference.USER_ID, "")+
+                    "&street_code="+pref.preferences.getString(SharedPreference.STREET_CODE,"")+
+                    "&main_no="+pref.preferences.getString(SharedPreference.MAIN_NO,"")+
+                    "&additional_no="+pref.preferences.getString(SharedPreference.ADDITIONAL_NO,"") +
+                    "&name="+pref.preferences.getString(SharedPreference.NAME, "")+
+                    "&age="+pref.preferences.getString(SharedPreference.AGE, "")+
+                    "&gender="+pref.preferences.getString(SharedPreference.GENDER, "")+
+                    "&phone_number="+pref.preferences.getString(SharedPreference.PHONE, "")+
+                    "&email="+pref.preferences.getString(SharedPreference.EMAIL, "none")+
+                    "&address="+pref.preferences.getString(SharedPreference.ADDRESS,"")  +
+                    "&birthday="+pref.preferences.getString(SharedPreference.BIRTH, "") +
+                    "&keyword="+pref.preferences.getString(SharedPreference.KEYWORD, "");
+            URLConnector urlConnector = new URLConnector(php);
+            urlConnector.start();
+            try {
+                urlConnector.join();
+            } catch (InterruptedException e) {
+            }
+
+            Intent intent = new Intent(getActivity(), MainActivity.class);
+            startActivity(intent);
+            getActivity().finish();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            asyncDialog.dismiss();
+            super.onPostExecute(result);
         }
     }
 
