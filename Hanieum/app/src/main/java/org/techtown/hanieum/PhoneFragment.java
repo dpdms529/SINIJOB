@@ -69,39 +69,7 @@ public class PhoneFragment extends Fragment implements View.OnClickListener {
             } else {
                 pref.editor.putString(SharedPreference.PHONE, phoneText.getText().toString());
                 pref.editor.commit();
-                Log.d("TAG","user_id="+pref.preferences.getString(SharedPreference.USER_ID, "")+
-                        "&street_code="+pref.preferences.getString(SharedPreference.STREET_CODE,"")+
-                        "&main_no="+pref.preferences.getString(SharedPreference.MAIN_NO,"")+
-                        "&additional_no="+pref.preferences.getString(SharedPreference.ADDITIONAL_NO,"") +
-                        "&name="+pref.preferences.getString(SharedPreference.NAME, "")+
-                        "&age="+pref.preferences.getString(SharedPreference.AGE, "")+
-                        "&gender="+pref.preferences.getString(SharedPreference.GENDER, "")+
-                        "&phone_number="+pref.preferences.getString(SharedPreference.PHONE, "")+
-                        "&email="+pref.preferences.getString(SharedPreference.EMAIL, "none")+
-                        "&address="+pref.preferences.getString(SharedPreference.ADDRESS,"")  +
-                        "&birthday="+pref.preferences.getString(SharedPreference.BIRTH, "") );
-                // db에 저장
-                String php = getResources().getString(R.string.serverIP) + "user_save.php?" +
-                        "user_id="+pref.preferences.getString(SharedPreference.USER_ID, "")+
-                        "&street_code="+pref.preferences.getString(SharedPreference.STREET_CODE,"")+
-                        "&main_no="+pref.preferences.getString(SharedPreference.MAIN_NO,"")+
-                        "&additional_no="+pref.preferences.getString(SharedPreference.ADDITIONAL_NO,"") +
-                        "&name="+pref.preferences.getString(SharedPreference.NAME, "")+
-                        "&age="+pref.preferences.getString(SharedPreference.AGE, "")+
-                        "&gender="+pref.preferences.getString(SharedPreference.GENDER, "")+
-                        "&phone_number="+pref.preferences.getString(SharedPreference.PHONE, "")+
-                        "&email="+pref.preferences.getString(SharedPreference.EMAIL, "none")+
-                        "&address="+pref.preferences.getString(SharedPreference.ADDRESS,"")  +
-                        "&birthday="+pref.preferences.getString(SharedPreference.BIRTH, "");
-                URLConnector urlConnector = new URLConnector(php);
-                urlConnector.start();
-                try {
-                    urlConnector.join();
-                } catch (InterruptedException e) {
-                }
-                Intent intent = new Intent(getActivity(), MainActivity.class);
-                startActivity(intent);
-                getActivity().finish();
+                ((InfoGetActivity)getActivity()).replaceFragment(KeywordFragment.newInstance());
             }
         }
     }

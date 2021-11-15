@@ -126,7 +126,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     }
                     String result = urlConnector.getResult();
 
-                    Log.d("TAG", result);
+                    Log.d("TAG", "result=" + result);
 
                     Intent intent;
                     // db에 회원정보 없으면
@@ -157,7 +157,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             }
             String result = urlConnector.getResult();
 
-            Log.d("TAG", result);
+            Log.d("TAG", "result=" + result);
 
             Intent intent;
             // db에 회원정보 없으면
@@ -212,7 +212,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 }
                                 String result = urlConnector.getResult();
 
-                                Log.d("TAG", result);
+                                Log.d("TAG", "result=" + result);
 
                                 //회원가입한 경우
                                 if(result.contains("\"result\":[]")){
@@ -227,7 +227,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                         }else{
                                             pref.editor.putString(SharedPreference.GENDER, "M");
                                         }
-
                                     }
                                     if (user.getKakaoAccount().getEmail() != null) {
                                         pref.editor.putString(SharedPreference.EMAIL, user.getKakaoAccount().getEmail());
@@ -252,6 +251,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                         String email = jsonObject1.getString("email");
                                         String address = jsonObject1.getString("address");
                                         String birthday = jsonObject1.getString("birthday");
+                                        String keyword = jsonObject1.getString("keyword");
 
                                         pref.editor.putString(SharedPreference.USER_ID, user_id);
                                         pref.editor.putString(SharedPreference.STREET_CODE, street_code);
@@ -264,6 +264,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                         pref.editor.putString(SharedPreference.EMAIL, email);
                                         pref.editor.putString(SharedPreference.ADDRESS, address);
                                         pref.editor.putString(SharedPreference.BIRTH, birthday);
+                                        pref.editor.putString(SharedPreference.KEYWORD, keyword);
                                         pref.editor.commit();
                                     } catch (JSONException e) {
                                         e.printStackTrace();
@@ -346,7 +347,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 }
                                 String result = urlConnector.getResult();
 
-                                Log.d("TAG", result);
+                                Log.d("TAG", "result=" + result);
 
                                 Intent intent;
                                 if(result.contains("\"result\":[]")){
@@ -379,6 +380,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                         String email = jsonObject1.getString("email");
                                         String address = jsonObject1.getString("address");
                                         String birthday = jsonObject1.getString("birthday");
+                                        String keyword = jsonObject1.getString("keyword");
 
                                         pref.editor.putString(SharedPreference.USER_ID, user_id);
                                         pref.editor.putString(SharedPreference.STREET_CODE, street_code);
@@ -391,6 +393,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                         pref.editor.putString(SharedPreference.EMAIL, email);
                                         pref.editor.putString(SharedPreference.ADDRESS, address);
                                         pref.editor.putString(SharedPreference.BIRTH, birthday);
+                                        pref.editor.putString(SharedPreference.KEYWORD, keyword);
                                         pref.editor.commit();
                                     } catch (JSONException e) {
                                         e.printStackTrace();
