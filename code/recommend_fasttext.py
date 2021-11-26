@@ -41,7 +41,7 @@ def db_select_userId():  # 유저 id 불러오기
     cursor = db.cursor(pymysql.cursors.DictCursor)
 
     try:
-        sql = """select user_id from user;"""
+        sql = """select user_id from users;"""
         cursor.execute(sql)
         results = cursor.fetchall()
         result = []

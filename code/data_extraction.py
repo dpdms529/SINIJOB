@@ -360,9 +360,7 @@ def getXY(street_code, main_no, additional_no, address, index, del_list):
 
     if r.status_code == 200:
         if r.json()["documents"]:
-            result_address = r.json()["documents"][0]["address"]
-            if not result_address:
-                result_address = r.json()["documents"][0]["road_address"]
+            result_address = r.json()["documents"][0]
             result.append(result_address["x"])
             result.append(result_address["y"])
             result.append(street_code)
