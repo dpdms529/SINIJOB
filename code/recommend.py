@@ -22,7 +22,7 @@ def db_select_favorite(userId): # 선호 공고 데이터 불러오기
     cursor = db.cursor(pymysql.cursors.DictCursor)
     
     try:
-        sql = """select recruit_id from temp_favorite where user_id = %s;"""
+        sql = """select recruit_id from user_favorite where user_id = %s;"""
         cursor.execute(sql,userId)
         results = cursor.fetchall()
         result = []
@@ -39,7 +39,9 @@ def db_select_userId(): # 선호 공고 데이터 불러오기
     cursor = db.cursor(pymysql.cursors.DictCursor)
     
     try:
-        sql = """select user_id from temp_favorite group by user_id;"""
+        sql = """DELETE FROM `user_favorite` WHERE user_id = "";"""
+        cursor.execute(sql)
+        sql = """select user_id from user_favorite group by user_id;"""
         cursor.execute(sql)
         results = cursor.fetchall()
         result = []
